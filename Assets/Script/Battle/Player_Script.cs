@@ -17,17 +17,10 @@ public class Player_Script : Character_Script
     [SerializeField]
     private MoveDir moveDir;
 
-    public IEnumerator Init_Cor()
+    public void BattleEnter_Func()
     {
         Instance = this;
 
-        base.Init_Func(GroupType.Ally);
-
-        yield break;
-    }
-
-    public void BattleEnter_Func()
-    {
         base.Init_Func(GroupType.Ally);
 
         for (int i = 0; i < playerUnitClassArr.Length; i++)

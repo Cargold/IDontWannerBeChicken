@@ -7,18 +7,23 @@ public class Game_Manager : MonoBehaviour
     public static Game_Manager Instance;
 
     public Battle_Manager battleClass;
-    public Farm_Manager farmClass;
-
+    public Lobby_Manager lobbyClass;
     public ObjectPoolManager objectPoolManager;
-    public Player_Script playerClass;
     public SmoothFollow_Script mainCameraSmoothClass;
+
+    #region Reference Variable
+    // Lobby_Manager . LobbyUiControl
+    public RectTransform menuGroupTrf;
+    public RectTransform lobbyViewTrf;
+
+
+    #endregion
 
     public enum GameState
     {
         None = -1,
-        MainState,
-        FarmState,
-        BattleState,
+        Battle,
+        Lobby,
     }
     public GameState gameState;
 
@@ -31,10 +36,10 @@ public class Game_Manager : MonoBehaviour
     {
         yield return InitMain_Cor();
         yield return battleClass.Init_Cor();
-        yield return farmClass.Init_Cor();
-
-        yield return playerClass.Init_Cor();
+        yield return lobbyClass.Init_Cor();
         yield return objectPoolManager.Init_Cor();
+
+        yield return LoadingOver_Cor();
     }
 
     IEnumerator InitMain_Cor()
@@ -43,27 +48,21 @@ public class Game_Manager : MonoBehaviour
 
         yield break;
     }
-
-    #region Farm State
-    public void FarmEnter_Func()
+    
+    IEnumerator LoadingOver_Cor()
     {
-        gameState = GameState.FarmState;
+        yield break;
+    }
 
-        farmClass.FarmEnter_Func();
-    }
-    #endregion
-    #region Main State
-    public void MainEnter_Func()
-    {
-        gameState = GameState.MainState;
-    }
-    #endregion
-    #region Battle State
     public void BattleEnter_Func()
     {
-        gameState = GameState.BattleState;
+        gameState = GameState.Battle;
 
         battleClass.BattleEnter_Func();
     }
-    #endregion
+
+    public void LobbyEnter_Func()
+    {
+        gameState = GameState.Lobby;
+    }
 }

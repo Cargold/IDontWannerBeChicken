@@ -1,13 +1,11 @@
 ﻿public enum CharacterType
 {
     None = -1,
+    AllyUnit_Melee,
+    AllyUnit_Range,
+    EnemyUnit_Melee,
+    EnemyUnit_Range,
     Player,
-    Warrior,
-    Archer,
-    Hero,
-    Goblin,
-    Orc,
-    Skeleton,
 }
 
 public enum GroupType
@@ -16,4 +14,13 @@ public enum GroupType
     Ally,
     Enemy,
     Neutral,
+}
+
+public enum PoolingType
+{
+    None = -1,
+    AllyUnit_Melee,
+    AllyUnit_Range,
+    EnemyUnit_Melee,
+    EnemyUnit_Range,
 }

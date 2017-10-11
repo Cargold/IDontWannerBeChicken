@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{88D412ED-B0D5-FA07-1EE3-E8EA8D85AE80}</ProjectGuid>
+    <ProjectGuid>{87068726-12B4-287F-78D7-0BC47779691A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -39,46 +39,59 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+      <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+      <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Script\Battle_Manager.cs" />
+     <Compile Include="Assets\Script\Battle\Battle_Manager.cs" />
+     <Compile Include="Assets\Script\Battle\Player_Script.cs" />
      <Compile Include="Assets\Script\Character\Character_Script.cs" />
      <Compile Include="Assets\Script\Character\Unit_Script.cs" />
      <Compile Include="Assets\Script\Common\AnimationHierarchyEditor.cs" />
      <Compile Include="Assets\Script\Common\Cargold_Library.cs" />
+     <Compile Include="Assets\Script\Common\EnumGroup.cs" />
      <Compile Include="Assets\Script\Common\ObjectPoolManager.cs" />
      <Compile Include="Assets\Script\Common\Singleton.cs" />
-     <Compile Include="Assets\Script\EnumGroup.cs" />
-     <Compile Include="Assets\Script\Farm\Farm_Script.cs" />
-     <Compile Include="Assets\Script\Farm_Manager.cs" />
+     <Compile Include="Assets\Script\Common\SmoothFollow_Script.cs" />
      <Compile Include="Assets\Script\Game_Manager.cs" />
-     <Compile Include="Assets\Script\Player_Script.cs" />
-     <Compile Include="Assets\Script\SmoothFollow_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\HeroManagement\HeroManagement_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\LobbyUI_Parent.cs" />
+     <Compile Include="Assets\Script\Lobby\Lobby_Manager.cs" />
+     <Compile Include="Assets\Script\Lobby\PoultryFarm\Basket\BaketInner_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\PoultryFarm\Basket\Basket_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\PoultryFarm\Basket\Food_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\PoultryFarm\PoultryFarm_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\StageSelect\StageSelect_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\Store\Store_Script.cs" />
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.TestRunner">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
  </Reference>
  <Reference Include="nunit.framework">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.VR">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions.Common">
+ <HintPath>C:/Program Files/CargoldFolder/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

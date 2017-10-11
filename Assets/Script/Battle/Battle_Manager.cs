@@ -12,20 +12,64 @@ public class Battle_Manager : MonoBehaviour
 
     public Unit_Script[] enemyUnitClassArr;
 
+    public enum BattleState
+    {
+        None = -1,
+        Setting,
+        Play,
+        Result,
+        Pause,
+    }
+    public BattleState battleState
+    {
+        get
+        {
+            return m_BattleState;
+        }
+    }
+    private BattleState m_BattleState;
+
     public IEnumerator Init_Cor()
     {
         Instance = this;
 
         yield break;
     }
-
+    #region Setting Group
     public void BattleEnter_Func()
     {
+        m_BattleState = BattleState.Setting;
+
+        StartCoroutine(BattleEnter_Cor());
+    }
+    IEnumerator BattleEnter_Cor()
+    {
+        yield return DirectingStart_Cor();
+        yield return SetData_Cor();
+        BattleStart_Func();
+
+        yield break;
+    }
+    #region Directing Start Group
+    IEnumerator DirectingStart_Cor()
+    {
+        // 전투 시작 연출
+
+        yield break;
+    }
+    #endregion
+    #region Set Data
+    IEnumerator SetData_Cor()
+    {
+        // 전투 데이터 세팅
+
         playerClass.BattleEnter_Func();
-        InitEnemy_Func();
+        EnemySpawn_Func();
+
+        yield break;
     }
 
-    void InitEnemy_Func()
+    void EnemySpawn_Func()
     {
         for (int i = 0; i < enemyUnitClassArr.Length; i++)
         {
@@ -53,7 +97,65 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
+    #endregion
+    #endregion
+    #region Play Group
+    void BattleStart_Func()
+    {
+        m_BattleState = BattleState.Play;
+    }
 
+    public void OnMoveLeft_Func(bool _isDown)
+    {
+        if(m_BattleState == BattleState.Play)
+        {
+            if(_isDown == true)
+            {
+                playerClass.MoveLeft_Func();
+            }
+            else if(_isDown == false)
+            {
+                playerClass.MoveOver_Func();
+            }
+        }
+    }
+
+    public void OnMoveRight_Func(bool _isDown)
+    {
+        if (m_BattleState == BattleState.Play)
+        {
+            if (_isDown == true)
+            {
+                playerClass.MoveRight_Func();
+            }
+            else if (_isDown == false)
+            {
+                playerClass.MoveOver_Func();
+            }
+        }
+    }
+    #endregion
+    #region Result Group
+    public void GameClear_Func()
+    {
+        m_BattleState = BattleState.Result;
+
+        OnResult_Func();
+    }
+
+    public void GameOver_Func()
+    {
+        m_BattleState = BattleState.Result;
+
+        OnResult_Func();
+    }
+
+    void OnResult_Func()
+    {
+
+    }
+    #endregion
+    #region Test Group
     public bool isTest = false;
     void Update()
     {
@@ -69,4 +171,5 @@ public class Battle_Manager : MonoBehaviour
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(GroupType.Enemy);
     }
+    #endregion
 }
