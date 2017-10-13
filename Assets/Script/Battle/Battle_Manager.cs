@@ -12,6 +12,8 @@ public class Battle_Manager : MonoBehaviour
 
     public Unit_Script[] enemyUnitClassArr;
 
+    public RectTransform battleUITrf;
+
     public enum BattleState
     {
         None = -1,
@@ -54,6 +56,9 @@ public class Battle_Manager : MonoBehaviour
     IEnumerator DirectingStart_Cor()
     {
         // 전투 시작 연출
+
+        battleUITrf.sizeDelta = Vector2.zero;
+        battleUITrf.anchoredPosition = Vector2.zero;
 
         yield break;
     }
@@ -152,7 +157,8 @@ public class Battle_Manager : MonoBehaviour
 
     void OnResult_Func()
     {
-
+        battleUITrf.sizeDelta = new Vector2(0f, 300f);
+        battleUITrf.anchoredPosition = new Vector2(0f, -150f);
     }
     #endregion
     #region Test Group
