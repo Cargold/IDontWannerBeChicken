@@ -71,6 +71,8 @@
      <Compile Include="Assets\Script\Lobby\Lobby_Manager.cs" />
      <Compile Include="Assets\Script\Lobby\MainLobby\MainLobby_Script.cs" />
      <Compile Include="Assets\Script\Lobby\PartySetting\PartySetting_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\PartySetting\PartySlot_Script.cs" />
+     <Compile Include="Assets\Script\Lobby\PartySetting\UnitCard_Script.cs" />
      <Compile Include="Assets\Script\Lobby\PlayerWealth\PlayerWealth_Script.cs" />
      <Compile Include="Assets\Script\Lobby\StageSelect\StageSelect_Script.cs" />
      <Compile Include="Assets\Script\Lobby\Store\Store_Script.cs" />
