@@ -13,6 +13,10 @@ public abstract class LobbyUI_Parent : MonoBehaviour
 
         lobbyType = _lobbyType;
 
+        RectTransform _thisRTrf = this.gameObject.GetComponent<RectTransform>();
+        _thisRTrf.localPosition = Vector3.zero;
+        _thisRTrf.anchoredPosition = Vector2.zero;
+
         InitUI_Func();
     }
     protected abstract void InitUI_Func();

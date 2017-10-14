@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoultryFarm_Script : LobbyUI_Parent
+public class MainLobby_Script : LobbyUI_Parent
 {
     #region Override Group
     protected override void InitUI_Func()

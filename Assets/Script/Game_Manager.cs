@@ -12,10 +12,6 @@ public class Game_Manager : MonoBehaviour
     public SmoothFollow_Script mainCameraSmoothClass;
 
     #region Reference Variable
-    // Lobby_Manager . LobbyUiControl
-    public RectTransform menuGroupTrf;
-    public RectTransform lobbyViewTrf;
-
 
     #endregion
 

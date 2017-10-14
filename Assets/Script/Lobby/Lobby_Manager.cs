@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class Lobby_Manager : MonoBehaviour
 {
+    public Transform menuGroupTrf;
     public LobbyUI_Parent[] lobbyUIParentClassArr;
-    LobbyUiControl lobbyUiControlClass;
+    public MainLobby_Script mainLobbyClass;
+    public StageSelect_Script stageSelectClass;
+    public HeroManagement_Script heroManagementClass;
+    public PartySetting_Script partySettingClass;
+    public FeedingRoom_Script feedingRoomClass;
+    public Store_Script storeClass;
+
     public enum LobbyState
     {
         None = -1,
+        MainLobby,
         StageSelect,
         HeroManagement,
-        PoultryFarm,
+        PartySetting,
+        FeedingRoom,
         Store,
     }
     public LobbyState lobbyState
@@ -24,25 +33,36 @@ public class Lobby_Manager : MonoBehaviour
     private LobbyState m_LobbyState;
     private LobbyUI_Parent recentUIClass;
 
+    public PlayerWealth_Script playerWealthClass;
+
     public IEnumerator Init_Cor()
     {
-        for (int i = 0; i < 4; i++)
+        int _menuNum = menuGroupTrf.childCount;
+        lobbyUIParentClassArr = new LobbyUI_Parent[_menuNum];
+
+        for (int i = 0; i < _menuNum; i++)
         {
-            lobbyUIParentClassArr[i].Init_Func(this, (LobbyState)i);
+            LobbyUI_Parent _lobbyUiParentClass = menuGroupTrf.GetChild(i).GetComponent<LobbyUI_Parent>();
+
+            _lobbyUiParentClass.Init_Func(this, (LobbyState)i);
+
+            lobbyUIParentClassArr[i] = _lobbyUiParentClass;
         }
 
-        recentUIClass = lobbyUIParentClassArr[0];
+        mainLobbyClass = (MainLobby_Script)lobbyUIParentClassArr[0];
+        stageSelectClass = (StageSelect_Script)lobbyUIParentClassArr[1];
+        heroManagementClass = (HeroManagement_Script)lobbyUIParentClassArr[2];
+        partySettingClass = (PartySetting_Script)lobbyUIParentClassArr[3];
+        feedingRoomClass = (FeedingRoom_Script)lobbyUIParentClassArr[4];
+        storeClass = (Store_Script)lobbyUIParentClassArr[5];
 
-        lobbyUiControlClass = new LobbyUiControl();
-        lobbyUiControlClass.Init_Func();
+        recentUIClass = lobbyUIParentClassArr[0];
 
         yield break;
     }
     #region Lobby Group
     public void LobbyEnter_Func()
     {
-        lobbyUiControlClass.Active_Func(true);
-
         Enter_Func(0);
 
         Game_Manager.Instance.LobbyEnter_Func();
@@ -51,53 +71,28 @@ public class Lobby_Manager : MonoBehaviour
     {
         m_LobbyState = (LobbyState)_lobbyTypeID;
 
-        lobbyUiControlClass.MoveView_Func(_lobbyTypeID);
-
         recentUIClass.Exit_Func();
         recentUIClass = lobbyUIParentClassArr[_lobbyTypeID];
         recentUIClass.Enter_Func();
+    }
+    public void Enter_Func(string _loobyTypeText)
+    {
+        LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
+        Enter_Func(_lobbyState);
+    }
+    public void Enter_Func(LobbyState _lobbyState)
+    {
+        Enter_Func((int)_lobbyState);
+    }
+    public void EnterPartySetting_Func(int _partyMemberId)
+    {
+
     }
     #endregion
     #region Stage Select Group
     public void BattleEnter_Func()
     {
-        lobbyUiControlClass.Active_Func(false);
-
         Game_Manager.Instance.BattleEnter_Func();
     }
     #endregion
-}
-
-class LobbyUiControl
-{
-    private RectTransform menuGroupTrf;
-    private RectTransform lobbyViewTrf;
-
-    public void Init_Func()
-    {
-        menuGroupTrf = Game_Manager.Instance.menuGroupTrf;
-        lobbyViewTrf = Game_Manager.Instance.lobbyViewTrf;
-    }
-    public void Active_Func(bool _isActive)
-    {
-        if(_isActive == true)
-        {
-            lobbyViewTrf.gameObject.SetActive(true);
-            menuGroupTrf.anchoredPosition = Vector2.zero;
-        }
-        else if(_isActive == false)
-        {
-            lobbyViewTrf.gameObject.SetActive(false);
-            menuGroupTrf.anchoredPosition = Vector2.left * 300f;
-        }
-    }
-    public void MoveView_Func(int _lobbyTypeID)
-    {
-        Vector2 _arrivePos = Vector2.zero;
-
-        _arrivePos.x = lobbyViewTrf.anchoredPosition.x;
-        _arrivePos.y = _lobbyTypeID * 1080f;
-
-        lobbyViewTrf.anchoredPosition = _arrivePos;
-    }
 }
