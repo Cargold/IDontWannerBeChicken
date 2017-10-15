@@ -90,7 +90,7 @@ public class Battle_Manager : MonoBehaviour
 
             for (int i = 0; i < _unitClass.spawnNum; i++)
             {
-                GameObject _charObj = ObjectPoolManager.Instance.Get_Func(_unitClass.charType.ToString());
+                GameObject _charObj = ObjectPoolManager.Instance.Get_Func(_unitClass.charName);
 
                 Vector3 _spawnPos = new Vector3(spawnPos.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
 

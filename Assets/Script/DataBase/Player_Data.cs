@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Player_Data : MonoBehaviour
 {
-    public Player_Data Instance;
+    public static Player_Data Instance;
 
     public int goldValue;
     public int mineralValue;
 
     public Unit_Script[] partyMemberClassArr;
 
-    void Awake()
+    public Unit_Script[] unitClassArr;
+
+    public IEnumerator Init_Cor()
     {
         Instance = this;
+
+        yield break;
     }
 }

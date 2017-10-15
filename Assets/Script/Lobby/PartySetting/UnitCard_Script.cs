@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class UnitCard_Script : MonoBehaviour
 {
+    public int cardId;
     public PartySetting_Script partySettingClass;
 
     public enum CardState
@@ -12,32 +13,33 @@ public class UnitCard_Script : MonoBehaviour
         None = -1,
         Lock,
         Active,
-        Party,
     }
     public CardState cardState;
 
-    public enum CardPurpose
-    {
-        None = -1,
-        UnitSlot,
-        Drag,
-        PartySlot,
-    }
-    public CardPurpose cardPurpose;
-
+    public int populValue;
     public Image populationImage;
     public Image unitImage;
     public GameObject[] cardStateObjArr;
 
-    public void Init_Func(PartySetting_Script _partySettingClass, CardState _cardState, CardPurpose _cardPurpose)
+    public void Init_Func(PartySetting_Script _partySettingClass, int _cardId, CardState _cardState)
     {
         partySettingClass = _partySettingClass;
 
+        cardId = _cardId;
+
         SetState_Func(_cardState);
 
-        cardPurpose = _cardPurpose;
-    }
+        populValue = DataBase_Manager.Instance.charDataArr[_cardId].populationValue;
 
+        Sprite _populationSprite = Game_Manager.Instance.populationSpriteArr[populValue];
+        populationImage.sprite = _populationSprite;
+        populationImage.SetNativeSize();
+
+        Sprite _unitSprite = DataBase_Manager.Instance.charDataArr[_cardId].charSprite;
+        unitImage.sprite = _unitSprite;
+        unitImage.SetNativeSize();
+    }
+    
     public void SetState_Func(CardState _cardState)
     {
         cardState = _cardState;
@@ -49,10 +51,6 @@ public class UnitCard_Script : MonoBehaviour
                 break;
             case CardState.Active:
                 cardStateObjArr[0].SetActive(false);
-                cardStateObjArr[1].SetActive(false);
-                break;
-            case CardState.Party:
-                cardStateObjArr[1].SetActive(true);
                 break;
         }
     }
@@ -75,5 +73,11 @@ public class UnitCard_Script : MonoBehaviour
     public void DragEnd_Func()
     {
         partySettingClass.DragEnd_Func(this);
+    }
+
+    public void InitPos_Func()
+    {
+        Vector2 _initPos = partySettingClass.unitCardPosInitArr[cardId];
+        this.transform.localPosition = _initPos;
     }
 }

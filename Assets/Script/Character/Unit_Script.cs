@@ -10,6 +10,11 @@ public class Unit_Script : Character_Script
     public int spawnNum;
     public float spawnInterval;
 
+    public void SetData_Func(Character_Data _charData)
+    {
+        
+    }
+
     public void Init_Func(GroupType _groupType)
     {
         base.Init_Func(_groupType);

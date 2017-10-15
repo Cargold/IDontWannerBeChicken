@@ -56,6 +56,7 @@
      <Compile Include="Assets\Script\Common\ObjectPoolManager.cs" />
      <Compile Include="Assets\Script\Common\Singleton.cs" />
      <Compile Include="Assets\Script\Common\SmoothFollow_Script.cs" />
+     <Compile Include="Assets\Script\DataBase\Character_Data.cs" />
      <Compile Include="Assets\Script\DataBase\DataBase_Manager.cs" />
      <Compile Include="Assets\Script\DataBase\Player_Data.cs" />
      <Compile Include="Assets\Script\DataBase\Stomach_Data.cs" />

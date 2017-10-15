@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class DataBase_Manager : MonoBehaviour
 {
-    public int goldValue;
-    public int mineralValue;
+    public static DataBase_Manager Instance;
 
-    void Awake()
+    public Character_Data[] charDataArr
     {
+        get
+        {
+            return m_CharDataArr;
+        }
+    }
+    [SerializeField]
+    private Character_Data[] m_CharDataArr;
 
+    public IEnumerator Init_Cor()
+    {
+        Instance = this;
+
+        yield break;
     }
 }

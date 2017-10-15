@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Character_Script : MonoBehaviour
 {
+    public int charId;
+    public string charName;
+    public string charDesc;
+
     public bool isAlive = false;
     public float healthPoint_Max;
     [SerializeField]
@@ -54,7 +58,6 @@ public class Character_Script : MonoBehaviour
 
     // Info Data
     public GroupType groupType;
-    public CharacterType charType;
 
     // Rendering Data
     public Image hpImage;
@@ -76,7 +79,7 @@ public class Character_Script : MonoBehaviour
         defenceValue_Calc = 1f - (defenceValue * 0.01f);
 
         // Init Renderer
-        charNameText.text = charType.ToString();
+        charNameText.text = charName;
 
         SetState_Func(CharacterState.Move);
     }

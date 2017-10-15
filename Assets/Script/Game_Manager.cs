@@ -6,13 +6,18 @@ public class Game_Manager : MonoBehaviour
 {
     public static Game_Manager Instance;
 
+    public DataBase_Manager databaseClass;
+    public Player_Data playerDataClass;
     public Battle_Manager battleClass;
     public Lobby_Manager lobbyClass;
     public ObjectPoolManager objectPoolManager;
     public SmoothFollow_Script mainCameraSmoothClass;
 
     #region Reference Variable
+    public Sprite[] populationSpriteArr;
+    public Sprite[] manaCostSpriteArr;
 
+    public Color textColor;
     #endregion
 
     public enum GameState
@@ -31,6 +36,8 @@ public class Game_Manager : MonoBehaviour
     IEnumerator Init_Cor()
     {
         yield return InitMain_Cor();
+        yield return databaseClass.Init_Cor();
+        yield return playerDataClass.Init_Cor();
         yield return battleClass.Init_Cor();
         yield return lobbyClass.Init_Cor();
         yield return objectPoolManager.Init_Cor();
