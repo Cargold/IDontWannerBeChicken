@@ -18,6 +18,8 @@ public class Game_Manager : MonoBehaviour
     public Sprite[] manaCostSpriteArr;
 
     public Color textColor;
+
+    public GameObject unitObj;
     #endregion
 
     public enum GameState
@@ -67,5 +69,7 @@ public class Game_Manager : MonoBehaviour
     public void LobbyEnter_Func()
     {
         gameState = GameState.Lobby;
+
+        lobbyClass.LobbyEnter_Func();
     }
 }

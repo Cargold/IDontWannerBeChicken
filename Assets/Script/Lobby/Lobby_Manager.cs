@@ -63,9 +63,16 @@ public class Lobby_Manager : MonoBehaviour
     #region Lobby Group
     public void LobbyEnter_Func()
     {
-        Enter_Func(0);
-
-        Game_Manager.Instance.LobbyEnter_Func();
+        Enter_Func(LobbyState.MainLobby);
+    }
+    public void Enter_Func(LobbyState _lobbyState)
+    {
+        Enter_Func((int)_lobbyState);
+    }
+    public void Enter_Func(string _loobyTypeText)
+    {
+        LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
+        Enter_Func(_lobbyState);
     }
     public void Enter_Func(int _lobbyTypeID)
     {
@@ -75,23 +82,13 @@ public class Lobby_Manager : MonoBehaviour
         recentUIClass = lobbyUIParentClassArr[_lobbyTypeID];
         recentUIClass.Enter_Func();
     }
-    public void Enter_Func(string _loobyTypeText)
-    {
-        LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
-        Enter_Func(_lobbyState);
-    }
-    public void Enter_Func(LobbyState _lobbyState)
-    {
-        Enter_Func((int)_lobbyState);
-    }
-    public void EnterPartySetting_Func(int _partyMemberId)
-    {
-
-    }
     #endregion
     #region Stage Select Group
     public void BattleEnter_Func()
     {
+        stageSelectClass.Exit_Func();
+        mainLobbyClass.Exit_Func();
+
         Game_Manager.Instance.BattleEnter_Func();
     }
     #endregion

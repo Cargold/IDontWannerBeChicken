@@ -18,8 +18,35 @@ public class ObjectPoolManager : MonoBehaviour
     public IEnumerator Init_Cor()
     {
         Instance = this;
+
+        SetPoolingObj_Func();
+
         yield return InitObjectPool_Cor();
 	}
+    void SetPoolingObj_Func()
+    {
+        GameObject _sampleFolderObj = new GameObject();
+        _sampleFolderObj.transform.parent = this.transform;
+        _sampleFolderObj.transform.localPosition = Vector3.zero;
+        _sampleFolderObj.name = "SampleFolder";
+
+        int _charDataNum = DataBase_Manager.Instance.charDataArr.Length;
+        poolArr = new GameObject[_charDataNum];
+        for (int i = 0; i < _charDataNum; i++)
+        {
+            poolArr[i] = Instantiate(Game_Manager.Instance.unitObj);
+            poolArr[i].transform.parent = _sampleFolderObj.transform;
+
+            Character_Data _charData = DataBase_Manager.Instance.charDataArr[i];
+
+            Unit_Script _unitClass = poolArr[i].GetComponent<Unit_Script>();
+            _unitClass.SetData_Func(_charData);
+
+            poolArr[i].name = _unitClass.charName;
+
+            Player_Data.Instance.playerUnitDataArr[i].unitClass = _unitClass;
+        }
+    }
 
     IEnumerator InitObjectPool_Cor()
     {

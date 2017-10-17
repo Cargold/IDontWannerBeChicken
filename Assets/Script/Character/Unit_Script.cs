@@ -9,10 +9,35 @@ public class Unit_Script : Character_Script
 
     public int spawnNum;
     public float spawnInterval;
+    public int populationValue;
+    public Sprite charSprite;
 
     public void SetData_Func(Character_Data _charData)
     {
-        
+        charId = _charData.charId;
+        charName = _charData.charName;
+        charDesc = _charData.charDesc;
+
+        healthPoint_Max = _charData.healthPoint;
+        healthPoint_Recent = _charData.healthPoint;
+        defenceValue = _charData.defenceValue;
+        attackValue = _charData.attackValue;
+        attackRate_Max = _charData.attackRate;
+        attackRange = _charData.attackRange;
+        moveSpeed = _charData.moveSpeed;
+        criticalPercent = _charData.criticalPercent;
+        criticalBonus = _charData.criticalBonus;
+        shootType = _charData.shootType;
+        shootSpeed = _charData.shootSpeed;
+        shootHeight = _charData.shootHeight;
+        attackType = _charData.attackType;
+
+        spawnNum = _charData.spawnNum;
+        spawnInterval = _charData.spawnInterval;
+        populationValue = _charData.populationValue;
+
+        groupType = _charData.groupType;
+        charSprite = _charData.charSprite;
     }
 
     public void Init_Func(GroupType _groupType)

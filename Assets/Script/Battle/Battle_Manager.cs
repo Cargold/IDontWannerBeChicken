@@ -7,12 +7,11 @@ public class Battle_Manager : MonoBehaviour
     public static Battle_Manager Instance;
 
     public Player_Script playerClass;
-
-    public Transform spawnPos;
-
+    public Transform spawnPos_Enemy;
     public Unit_Script[] enemyUnitClassArr;
-
     public RectTransform battleUITrf;
+    public BattleSpawn_Script[] spawnClassArr_Ally;
+    public BattleSpawn_Script[] spawnClassArr_Enemy;
 
     public enum BattleState
     {
@@ -34,6 +33,17 @@ public class Battle_Manager : MonoBehaviour
     public IEnumerator Init_Cor()
     {
         Instance = this;
+
+        spawnClassArr_Ally = new BattleSpawn_Script[5];
+        for (int i = 0; i < 5; i++)
+        {
+            GameObject _spawnAllyObj = new GameObject();
+            _spawnAllyObj.transform.parent = this.transform;
+            _spawnAllyObj.name = "SpawnObjAlly_" + i;
+
+            spawnClassArr_Ally[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
+            spawnClassArr_Ally[i].Init_Func(GroupType.Ally);
+        }
 
         yield break;
     }
@@ -92,7 +102,7 @@ public class Battle_Manager : MonoBehaviour
             {
                 GameObject _charObj = ObjectPoolManager.Instance.Get_Func(_unitClass.charName);
 
-                Vector3 _spawnPos = new Vector3(spawnPos.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
+                Vector3 _spawnPos = new Vector3(spawnPos_Enemy.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
 
                 _charObj.transform.position = _spawnPos;
                 _charObj.transform.localScale = Vector3.one;
@@ -108,6 +118,25 @@ public class Battle_Manager : MonoBehaviour
     void BattleStart_Func()
     {
         m_BattleState = BattleState.Play;
+
+        OnSpawnAllyUnit_Func();
+        OnSpawnEnemyUnit_Func();
+    }
+    void OnSpawnAllyUnit_Func()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            int _partyUnitId = Player_Data.Instance.partyUnitIdArr[i];
+            if (0 <= _partyUnitId)
+            {
+                PlayerUnit_Data _playerUnitData = Player_Data.Instance.playerUnitDataArr[_partyUnitId];
+                spawnClassArr_Ally[i].ActiveSpawn_Func(_playerUnitData.unitClass);
+            }
+        }
+    }
+    void OnSpawnEnemyUnit_Func()
+    {
+
     }
 
     public void OnMoveLeft_Func(bool _isDown)
@@ -169,7 +198,7 @@ public class Battle_Manager : MonoBehaviour
         isTest = false;
         GameObject _charObj = ObjectPoolManager.Instance.Get_Func("Goblin");
 
-        Vector3 _spawnPos = new Vector3(spawnPos.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
+        Vector3 _spawnPos = new Vector3(spawnPos_Enemy.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
 
         _charObj.transform.position = _spawnPos;
         _charObj.transform.localScale = Vector3.one;

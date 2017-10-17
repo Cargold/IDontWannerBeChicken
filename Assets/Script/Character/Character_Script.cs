@@ -27,21 +27,9 @@ public class Character_Script : MonoBehaviour
     public float moveSpeed;
     public float criticalPercent;
     public float criticalBonus;
-    public enum ShootType
-    {
-        None = -1,
-        Melee,
-        Range,
-    }
     public ShootType shootType;
     public float shootSpeed;
     public float shootHeight;
-    public enum AttackType
-    {
-        None = -1,
-        Single,
-        Plural,
-    }
     public AttackType attackType;
     [SerializeField]
     protected List<Character_Script> targetClassList = new List<Character_Script>();

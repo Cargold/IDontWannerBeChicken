@@ -17,7 +17,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public PartySlot_Script disbandCardClass;
     public Transform partySlotGroupTrf;
     public Text playerPopulationText;
-    bool isPopulFailEffectProceed;
+    private bool isPopulFailEffectProceed;
 
     public int populationValue_Max;
     public int populationValue_Recent;
@@ -30,8 +30,11 @@ public class PartySetting_Script : LobbyUI_Parent
     {
         InitUnitCardSlot_Func();
         InitPartySlot_Func();
+        InitPartymember_Func();
 
         playerPopulationText.text = populationValue_Recent.ToString();
+
+        this.gameObject.SetActive(false);
     }
     void InitUnitCardSlot_Func()
     {
@@ -84,15 +87,26 @@ public class PartySetting_Script : LobbyUI_Parent
             partySlotClassArr[i].Init_Func(this, i, PartySlot_Script.CardState.Empty);
         }
     }
+    void InitPartymember_Func()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            int _unitId = Player_Data.Instance.partyUnitIdArr[i];
+            if (0 <= _unitId)
+            {
+                partySlotClassArr[i].JoinParty_Func(unitCardClassArr[_unitId], false);
+            }
+        }
+    }
 
     protected override void EnterUI_Func()
     {
-
+        this.gameObject.SetActive(true);
     }
 
     public override void Exit_Func()
     {
-
+        this.gameObject.SetActive(false);
     }
     #endregion
 
@@ -249,6 +263,10 @@ public class PartySetting_Script : LobbyUI_Parent
     {
         populationValue_Recent -= _populValue;
         playerPopulationText.text = populationValue_Recent.ToString();
+    }
+    public void JoinParty_Func(int _partySlotId, int _unitId)
+    {
+        Player_Data.Instance.JoinParty_Func(_partySlotId, _unitId);
     }
     #endregion
 }
