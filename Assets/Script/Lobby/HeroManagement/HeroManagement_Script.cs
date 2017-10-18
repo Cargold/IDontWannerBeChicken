@@ -12,12 +12,12 @@ public class HeroManagement_Script : LobbyUI_Parent
 
     protected override void EnterUI_Func()
     {
-
+        this.gameObject.SetActive(true);
     }
 
     public override void Exit_Func()
     {
-
+        this.gameObject.SetActive(false);
     }
     #endregion
 }

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public abstract class LobbyUI_Parent : MonoBehaviour
 {
+    [System.NonSerialized]
     public Lobby_Manager.LobbyState lobbyType;
+    [System.NonSerialized]
     public Lobby_Manager lobbyManager;
 
     public virtual void Init_Func(Lobby_Manager _lobbyManagerClass, Lobby_Manager.LobbyState _lobbyType)

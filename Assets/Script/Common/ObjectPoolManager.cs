@@ -29,6 +29,7 @@ public class ObjectPoolManager : MonoBehaviour
         _sampleFolderObj.transform.parent = this.transform;
         _sampleFolderObj.transform.localPosition = Vector3.zero;
         _sampleFolderObj.name = "SampleFolder";
+        _sampleFolderObj.SetActive(false);
 
         int _charDataNum = DataBase_Manager.Instance.charDataArr.Length;
         poolArr = new GameObject[_charDataNum];
@@ -102,7 +103,8 @@ public class ObjectPoolManager : MonoBehaviour
         else // 사용 가능한 오브젝트가 없을때
         {
             GameObject obj = Instantiate(pool.source);            
-            obj.transform.parent = pool.folder.transform;            
+            obj.transform.parent = pool.folder.transform;
+            obj.name = pool.source.name;
             return obj;
         }        
     }

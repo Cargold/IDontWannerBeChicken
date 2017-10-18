@@ -7,6 +7,8 @@ public class Unit_Script : Character_Script
     [SerializeField]
     private Vector3 moveDir;
 
+    public SpriteRenderer spriteRend;
+
     public int spawnNum;
     public float spawnInterval;
     public int populationValue;
@@ -38,6 +40,7 @@ public class Unit_Script : Character_Script
 
         groupType = _charData.groupType;
         charSprite = _charData.charSprite;
+        spriteRend.sprite = _charData.charSprite;
     }
 
     public void Init_Func(GroupType _groupType)

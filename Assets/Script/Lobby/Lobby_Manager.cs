@@ -5,13 +5,24 @@ using UnityEngine;
 public class Lobby_Manager : MonoBehaviour
 {
     public Transform menuGroupTrf;
+    [System.NonSerialized]
     public LobbyUI_Parent[] lobbyUIParentClassArr;
+    [System.NonSerialized]
     public MainLobby_Script mainLobbyClass;
+    [System.NonSerialized]
     public StageSelect_Script stageSelectClass;
+    [System.NonSerialized]
     public HeroManagement_Script heroManagementClass;
+    [System.NonSerialized]
     public PartySetting_Script partySettingClass;
+    [System.NonSerialized]
     public FeedingRoom_Script feedingRoomClass;
-    public Store_Script storeClass;
+    [System.NonSerialized]
+    public StoreRoom_Script storeRoomClass;
+    [System.NonSerialized]
+    public TrophyRoom_Script trophyRoomClass;
+    [System.NonSerialized]
+    public QuestRoom_Script questRoomClass;
 
     public enum LobbyState
     {
@@ -20,18 +31,20 @@ public class Lobby_Manager : MonoBehaviour
         StageSelect,
         HeroManagement,
         PartySetting,
+        StoreRoom,
+        QuestRoom,
+        TrophyRoom,
+
         FeedingRoom,
-        Store,
     }
-    public LobbyState lobbyState
-    {
-        get
-        {
-            return m_LobbyState;
-        }
-    }
-    private LobbyState m_LobbyState;
-    private LobbyUI_Parent recentUIClass;
+    //public LobbyState lobbyState
+    //{
+    //    get
+    //    {
+    //        return m_LobbyState;
+    //    }
+    //}
+    //private LobbyState m_LobbyState;
 
     public PlayerWealth_Script playerWealthClass;
 
@@ -53,11 +66,11 @@ public class Lobby_Manager : MonoBehaviour
         stageSelectClass = (StageSelect_Script)lobbyUIParentClassArr[1];
         heroManagementClass = (HeroManagement_Script)lobbyUIParentClassArr[2];
         partySettingClass = (PartySetting_Script)lobbyUIParentClassArr[3];
-        feedingRoomClass = (FeedingRoom_Script)lobbyUIParentClassArr[4];
-        storeClass = (Store_Script)lobbyUIParentClassArr[5];
-
-        recentUIClass = lobbyUIParentClassArr[0];
-
+        storeRoomClass = (StoreRoom_Script)lobbyUIParentClassArr[4];
+        questRoomClass = (QuestRoom_Script)lobbyUIParentClassArr[5];
+        trophyRoomClass = (TrophyRoom_Script)lobbyUIParentClassArr[6];
+        feedingRoomClass = (FeedingRoom_Script)lobbyUIParentClassArr[7];
+        
         yield break;
     }
     #region Lobby Group
@@ -76,11 +89,15 @@ public class Lobby_Manager : MonoBehaviour
     }
     public void Enter_Func(int _lobbyTypeID)
     {
-        m_LobbyState = (LobbyState)_lobbyTypeID;
-
-        recentUIClass.Exit_Func();
-        recentUIClass = lobbyUIParentClassArr[_lobbyTypeID];
-        recentUIClass.Enter_Func();
+        lobbyUIParentClassArr[_lobbyTypeID].Enter_Func();
+    }
+    public void Exit_Func(LobbyState _lobbyState)
+    {
+        Exit_Func((int)_lobbyState);
+    }
+    public void Exit_Func(int _lobbyTypeID)
+    {
+        lobbyUIParentClassArr[_lobbyTypeID].Exit_Func();
     }
     #endregion
     #region Stage Select Group
