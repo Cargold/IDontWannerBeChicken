@@ -20,6 +20,7 @@ public class Game_Manager : MonoBehaviour
     public Color textColor;
 
     public GameObject unitObj;
+    public GameObject foodObj;
     #endregion
 
     public enum GameState

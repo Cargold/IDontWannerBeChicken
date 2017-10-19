@@ -28,3 +28,38 @@ public enum PoolingType
     EnemyUnit_Melee,
     EnemyUnit_Range,
 }
+
+public enum WealthType
+{
+    None = -1,
+    Gold,
+    Mineral,
+}
+
+public enum FoodGrade
+{
+    None = -1,
+    Common,
+    Rare,
+    Legend,
+}
+
+public enum FoodEffect_Main
+{
+    None = -1,
+    AttackPower,
+    HealthPoint,
+    Gizzard,
+}
+
+public enum FoodEffect_Sub
+{
+    None = -1,
+    Critical,
+    SpawnInterval,
+    DecreaseHP,
+    DefenceValue,
+    DecreaseAttack,
+    Bonus_Apple,
+    Bounus_Fish,
+}

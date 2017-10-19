@@ -16,6 +16,16 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Character_Data[] m_CharDataArr;
 
+    public Food_Data[] foodDataArr
+    {
+        get
+        {
+            return m_FoodDataArr;
+        }
+    }
+    [SerializeField]
+    private Food_Data[] m_FoodDataArr;
+
     public IEnumerator Init_Cor()
     {
         Instance = this;

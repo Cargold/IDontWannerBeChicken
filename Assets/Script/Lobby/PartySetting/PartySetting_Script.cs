@@ -25,6 +25,8 @@ public class PartySetting_Script : LobbyUI_Parent
     public Text[] unitInfoTextArr;
     public Image unitInfoImage;
 
+    private Vector3 touchOffsetPos;
+
     #region Override Group
     protected override void InitUI_Func()
     {
@@ -135,10 +137,14 @@ public class PartySetting_Script : LobbyUI_Parent
         selectCardClass = _unitCardClass;
 
         selectCardClass.transform.SetAsLastSibling();
+
+        touchOffsetPos = Input.mousePosition - selectCardClass.transform.position;
     }
     public void Dragging_Func(UnitCard_Script _unitCardClass)
     {
-        selectCardClass.transform.position = Input.mousePosition;
+        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+
+        selectCardClass.transform.position = _dragPos;
     }
     public void DragEnd_Func(UnitCard_Script _unitCardClass)
     {

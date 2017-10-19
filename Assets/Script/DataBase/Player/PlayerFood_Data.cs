@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerFood_Data : MonoBehaviour
+[System.Serializable]
+public struct PlayerFood_Data
 {
     public int level;
     public int foodExp;
+    public int haveFoodID;
     public Food_Script foodClass;
 }

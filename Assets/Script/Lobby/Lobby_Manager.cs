@@ -46,8 +46,6 @@ public class Lobby_Manager : MonoBehaviour
     //}
     //private LobbyState m_LobbyState;
 
-    public PlayerWealth_Script playerWealthClass;
-
     public IEnumerator Init_Cor()
     {
         int _menuNum = menuGroupTrf.childCount;
