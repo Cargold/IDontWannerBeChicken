@@ -23,6 +23,8 @@ public class Game_Manager : MonoBehaviour
     public GameObject foodObj;
     #endregion
 
+    public float[] foodGradePenaltyValue;
+
     public enum GameState
     {
         None = -1,

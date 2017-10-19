@@ -5,30 +5,31 @@ using UnityEngine;
 public class Inventory_Script : MonoBehaviour
 {
     public FeedingRoom_Script feedingRoomClass;
-    public Food_Script[] foodClassArr;
+    [SerializeField]
+    private List<Food_Script> foodClassList;
 
+    public Transform bagGroupTrf;
     public Transform sortInitPos;
     public Vector2 sortGapPos;
     public int axisXNum;
-    public bool isInit = false;
     
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
         feedingRoomClass = _feedingRoomClass;
 
-        int _haveFoodNum = Player_Data.Instance.playerFoodDataArr.Length;
-        foodClassArr = new Food_Script[_haveFoodNum];
+        int _haveFoodNum = Player_Data.Instance.GetInventoryFoodNum_Func();
+        foodClassList = new List<Food_Script>();
         for (int i = 0; i < _haveFoodNum; i++)
         {
             GameObject _foodObj = Instantiate(Game_Manager.Instance.foodObj);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
-            PlayerFood_Data _playerFoodData = Player_Data.Instance.playerFoodDataArr[i];
+            PlayerFood_Data _playerFoodData = Player_Data.Instance.GetPlayerFoodData_Func(i);
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.haveFoodID];
             _foodClass.Init_Func(_feedingRoomClass, _foodData, _playerFoodData.level, _playerFoodData.foodExp);
-            foodClassArr[i] = _foodClass;
-            Player_Data.Instance.playerFoodDataArr[i].foodClass = _foodClass;
+            foodClassList.Add(_foodClass);
+            Player_Data.Instance.inventoryFoodDataList[i].foodClass = _foodClass;
 
-            _foodObj.transform.parent = this.transform;
+            _foodObj.transform.parent = bagGroupTrf;
             _foodObj.transform.localScale = Vector3.one;
         }
 
@@ -37,12 +38,12 @@ public class Inventory_Script : MonoBehaviour
     void SortInventory_Func()
     {
         Vector2 _sortPos = sortInitPos.localPosition;
-        for (int i = 0, count = -1; count < foodClassArr.Length; i++)
+        for (int i = 0, count = -1; count < foodClassList.Count; i++)
         {
             for (int j = 0; j < axisXNum; j++)
             {
                 count++;
-                if (foodClassArr.Length <= count)
+                if (foodClassList.Count <= count)
                 {
                     break;
                 }
@@ -52,7 +53,7 @@ public class Inventory_Script : MonoBehaviour
                         sortInitPos.localPosition.x + (sortGapPos.x * j),
                         sortInitPos.localPosition.y + (sortGapPos.y * i)
                     );
-                foodClassArr[count].transform.localPosition = _sortPos;
+                foodClassList[count].transform.localPosition = _sortPos;
             }
         }
     }
@@ -69,16 +70,31 @@ public class Inventory_Script : MonoBehaviour
 
     public void SetRegroupTrf_Func(Transform _regroupTrf)
     {
-        _regroupTrf.parent = this.transform;
+        _regroupTrf.parent = bagGroupTrf;
     }
 
     public Food_Script GetFood_Func(int _inventoryID)
     {
-        return foodClassArr[_inventoryID];
+        return foodClassList[_inventoryID];
     }
 
     public Food_Script GetFoodRand_Func()
     {
-        return foodClassArr[Random.Range(0, foodClassArr.Length)];
+        return foodClassList[Random.Range(0, foodClassList.Count)];
+    }
+
+    public bool CheckInventoryFood_Func(Food_Script _foodClass)
+    {
+        for (int i = 0; i < foodClassList.Count; i++)
+        {
+            if (_foodClass == foodClassList[i])
+                return true;
+        }
+
+        return false;
+    }
+    public void RemoveFood_Func(Food_Script _foodClass)
+    {
+        foodClassList.Remove(_foodClass);
     }
 }

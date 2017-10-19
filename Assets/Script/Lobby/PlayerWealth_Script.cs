@@ -19,4 +19,13 @@ public class PlayerWealth_Script : MonoBehaviour
             mineralText.text = _value.ToString();
         }
     }
+
+    public void Active_Func()
+    {
+        this.gameObject.SetActive(true);
+    }
+    public void Deactive_Func()
+    {
+        this.gameObject.SetActive(false);
+    }
 }

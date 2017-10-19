@@ -11,7 +11,6 @@ public struct Food_Data
     public FoodEffect_Main effectMain;
     public FoodEffect_Sub effectSub;
     public float mainEffectValue;
-    public float increaseEffectValue;
     public float subEffectValue;
     public Sprite foodSprite;
 }

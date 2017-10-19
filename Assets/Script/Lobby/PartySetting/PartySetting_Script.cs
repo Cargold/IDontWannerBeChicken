@@ -17,7 +17,6 @@ public class PartySetting_Script : LobbyUI_Parent
     public PartySlot_Script disbandCardClass;
     public Transform partySlotGroupTrf;
     public Text playerPopulationText;
-    private bool isPopulFailEffectProceed;
 
     public int populationValue_Max;
     public int populationValue_Recent;

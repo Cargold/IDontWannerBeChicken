@@ -17,7 +17,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public Transform selectPointingTrf;
     public Food_Script selectedFoodClass;
-    public Food_Script upgradeFoodClass;
+    public Food_Script materialFoodClass;
+    public bool isUpgradeReady;
     private Vector3 touchOffsetPos;
     public Image upgradeFocusImage;
     public Transform upgradeGroupTrf;
@@ -54,18 +55,141 @@ public class FeedingRoom_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
+    #region Food Control Group
+    public void PointDown_Func(Food_Script _foodClass)
+    {
+
+    }
+
+    public void PointUp_Func(Food_Script _foodClass)
+    {
+        if (selectedFoodClass == null || selectedFoodClass != _foodClass && materialFoodClass != _foodClass)
+        {
+            // 처음 먹이주기에 들어온 경우
+            // 선택되지도 않고, 재료 음식도 아닌 음식을 선택한 경우
+
+            SelectNewFood_Func(_foodClass);
+        }
+        else if(selectedFoodClass == _foodClass)
+        {
+
+        }
+        else if(materialFoodClass == _foodClass)
+        {
+            // 재료 음식을 선택 취소한 경우
+
+            if(isUpgradeReady == false)
+            {
+                UpgradeEnd_Func();
+            }
+            else if(isUpgradeReady == true)
+            {
+                Upgrade_Func();
+            }
+        }
+        else
+        {
+            Debug.LogError("Bug : 어느 음식도 선택되지 않았습니다.");
+        }
+    }
+    void SelectNewFood_Func(Food_Script _foodClass)
+    {
+        PrintFoodInfo_Func(_foodClass);
+
+        if(selectedFoodClass != null)
+        {
+            inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
+        }
+
+        selectedFoodClass = _foodClass;
+        SetTopDepthTrf_Func(selectedFoodClass.transform);
+        selectedFoodClass.transform.SetAsLastSibling();
+
+        touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
+        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+        selectPointingTrf.position = _dragPos;
+        selectPointingTrf.SetAsLastSibling();
+
+        guideSelectObj.SetActive(true);
+        guideDragObj.SetActive(false);
+    }
+    
+    public void DragBegin_Func(Food_Script _foodClass)
+    {
+        if (selectedFoodClass == _foodClass)
+        {
+            // 선택된 음식을 드래그한 경우
+
+            DragBeginSelectFood_Func();
+        }
+        else if(materialFoodClass == null)
+        {
+            // 재료 음식을 드래그한 경우
+            // 업그레이드 상황 시작
+
+            UpgradeBegin_Func(_foodClass);
+            PrintUpgradeInfo_Func();
+        }
+        else
+        {
+            Debug.LogError("Bug : 드래그를 시도하는 음식은 선택된 것도 아니며, 재료도 선택된 상태입니다.");
+        }
+    }
+    void DragBeginSelectFood_Func()
+    {
+        touchOffsetPos = Input.mousePosition - selectedFoodClass.transform.position;
+        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+        selectPointingTrf.position = _dragPos;
+        selectPointingTrf.SetAsLastSibling();
+    }
+    
+    void SetTopDepthTrf_Func(Transform _trf)
+    {
+        _trf.parent = upgradeGroupTrf;
+    }
+
+    public void Dragging_Func(Food_Script _foodClass)
+    {
+        if (selectedFoodClass == _foodClass)
+        {
+            // 선택된 음식을 드래그한 경우
+
+            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+
+            selectedFoodClass.transform.position = _dragPos;
+            selectPointingTrf.position = _dragPos;
+        }
+        else if(materialFoodClass == _foodClass)
+        {
+            // 재료 음식을 드래그한 경우
+
+            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+
+            materialFoodClass.transform.position = _dragPos;
+        }
+        else
+        {
+            Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
+        }
+    }
+
+    public void DragEnd_Func(Food_Script _foodClass)
+    {
+        
+    }
+    #endregion
 
     void PrintFoodInfo_Func(Food_Script _foodClass)
     {
-        foodText.text = _foodClass.foodName;
+        foodText.text = _foodClass.foodName + " Lv." + _foodClass.level;
 
         switch (_foodClass.effectMain)
         {
             case FoodEffect_Main.AttackPower:
-                mainEffectText.text = "Atk +" + _foodClass.mainEffectValue + "%";
+                mainEffectText.text = "Atk +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.HealthPoint:
-                mainEffectText.text = "HP +" + _foodClass.mainEffectValue + "%";
+                mainEffectText.text = "HP +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.Gizzard:
                 mainEffectText.text = "Nothing On You, Baby ~";
@@ -100,148 +224,101 @@ public class FeedingRoom_Script : LobbyUI_Parent
         guideSelectObj.SetActive(true);
         guideSelectObj.SetActive(false);
 
-        float _expPer = _foodClass.maxExp / _foodClass.recentExp;
+        float _expPer = _foodClass.remainExp / _foodClass.GetMaxExp_Func();
         expMainImage.fillAmount = _expPer;
         expProgressImage.fillAmount = 0f;
     }
-
-    #region Food Control Group
-    public void PointDown_Func(Food_Script _foodClass)
+    public bool CheckInventoryFood_Func(Food_Script _foodClass)
     {
-
+        return inventoryClass.CheckInventoryFood_Func(_foodClass);
+    }
+    public void RemoveFoodInInventory_Func(Food_Script _foodClass)
+    {
+        inventoryClass.RemoveFood_Func(_foodClass);
     }
 
-    public void PointUp_Func(Food_Script _foodClass)
+    #region Upgrade Group
+    private void PrintUpgradeInfo_Func()
     {
-        if (selectedFoodClass == null || selectedFoodClass != _foodClass && upgradeFoodClass != _foodClass)
-        {
-            // 처음 먹이주기에 들어온 경우
-            // 선택되지도 않고, 재료 음식도 아닌 음식을 선택한 경우
+        float _expTotal = materialFoodClass.GetMaterialExp_Func();
+        CalcFoodExpData _calcFoodExpData = selectedFoodClass.GetCalcExpData_Func(_expTotal);
 
-            SelectNewFood_Func(_foodClass);
-        }
-        else if(selectedFoodClass == _foodClass)
-        {
-
-        }
-        else if(upgradeFoodClass == _foodClass)
-        {
-            // 재료 음식을 선택 취소한 경우
-
-            CancelUgrade_Func();
-        }
+        if (_calcFoodExpData.exp_ReachedPer <= selectedFoodClass.GetExpPer_Func())
+            expProgressImage.fillAmount = 1f;
         else
+            expProgressImage.fillAmount = _calcFoodExpData.exp_ReachedPer;
+
+        if (0 < _calcFoodExpData.level_UpCount)
         {
-            Debug.LogError("Bug : 어느 음식도 선택되지 않았습니다.");
+            foodText.text = foodText.text + "  <color=#3ed525>+" + _calcFoodExpData.level_UpCount + "</color>";
+            mainEffectText.text = mainEffectText.text + " <color=#3ed525>+" + _calcFoodExpData.effectValue_UpValue + "%</color>";
         }
     }
-    void SelectNewFood_Func(Food_Script _foodClass)
+    private void UpgradeBegin_Func(Food_Script _foodClass)
     {
-        PrintFoodInfo_Func(_foodClass);
+        isUpgradeReady = false;
 
-        selectedFoodClass = _foodClass;
+        materialFoodClass = _foodClass;
+
+        guideSelectObj.SetActive(false);
+        guideDragObj.SetActive(true);
+
+        touchOffsetPos = Input.mousePosition - materialFoodClass.transform.position;
+
+
+        upgradeFocusImage.SetNaturalAlphaColor_Func(0.7f);
+        upgradeFocusImage.transform.SetAsLastSibling();
+
+        SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
-        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        selectPointingTrf.position = _dragPos;
         selectPointingTrf.SetAsLastSibling();
 
-        guideSelectObj.SetActive(true);
-        guideDragObj.SetActive(false);
+        SetTopDepthTrf_Func(materialFoodClass.transform);
+        materialFoodClass.transform.SetAsLastSibling();
     }
-    void CancelUgrade_Func()
+    public  void UpgradeFoodApproach_Func(Food_Script _materialFoodClass)
     {
-        inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
-        inventoryClass.SetRegroupTrf_Func(upgradeFoodClass.transform);
-        inventoryClass.SetRegroupTrf_Func(selectPointingTrf);
+        if(_materialFoodClass == materialFoodClass)
+        {
+            isUpgradeReady = true;
+        }
+    }
+    public  void UpgradeFoodAway_Func(Food_Script _exitFoodClass)
+    {
+        if(_exitFoodClass == materialFoodClass)
+        {
+            isUpgradeReady = false;
+        }
+    }
+    private void UpgradeEnd_Func()
+    {
+        isUpgradeReady = false;
 
-        upgradeFoodClass = null;
+        inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
+        inventoryClass.SetRegroupTrf_Func(materialFoodClass.transform);
+
+        materialFoodClass = null;
 
         guideSelectObj.SetActive(true);
         guideDragObj.SetActive(false);
 
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
+
+        PrintFoodInfo_Func(selectedFoodClass);
     }
-
-    public void DragBegin_Func(Food_Script _foodClass)
+    private void Upgrade_Func()
     {
-        if (selectedFoodClass == _foodClass)
-        {
-            // 선택된 음식을 드래그한 경우
+        isUpgradeReady = false;
 
-            DragBeginSelectFood_Func();
-        }
-        else if(upgradeFoodClass == null)
-        {
-            // 재료 음식을 드래그한 경우
-            // 업그레이드 상황 시작
+        float _materialExp = materialFoodClass.GetMaterialExp_Func();
+        materialFoodClass.Destroy_Func();
+        materialFoodClass = null;
 
-            UpgradeBegin_Func(_foodClass);
-        }
-        else
-        {
-            Debug.LogError("Bug : 드래그를 시도하는 음식은 선택된 것도 아니며, 재료도 선택된 상태입니다.");
-        }
-    }
-    void DragBeginSelectFood_Func()
-    {
-        touchOffsetPos = Input.mousePosition - selectedFoodClass.transform.position;
-        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        selectPointingTrf.position = _dragPos;
-        selectPointingTrf.SetAsLastSibling();
-    }
-    void UpgradeBegin_Func(Food_Script _foodClass)
-    {
-        upgradeFoodClass = _foodClass;
+        selectedFoodClass.GetExp_Func(_materialExp);
+        PrintFoodInfo_Func(selectedFoodClass);
 
-        guideSelectObj.SetActive(false);
-        guideDragObj.SetActive(true);
-
-        touchOffsetPos = Input.mousePosition - upgradeFoodClass.transform.position;
-        
-
-        upgradeFocusImage.SetNaturalAlphaColor_Func(0.7f);
-        upgradeFocusImage.transform.SetAsLastSibling();
-
-        selectedFoodClass.transform.parent = upgradeGroupTrf;
-        selectedFoodClass.transform.SetAsLastSibling();
-
-        selectPointingTrf.parent = upgradeGroupTrf;
-        selectPointingTrf.SetAsLastSibling();
-
-        upgradeFoodClass.transform.parent = upgradeGroupTrf;
-        upgradeFoodClass.transform.SetAsLastSibling();
-    }
-
-    public void Dragging_Func(Food_Script _foodClass)
-    {
-        if (selectedFoodClass == _foodClass)
-        {
-            // 선택된 음식을 드래그한 경우
-
-            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-
-            selectedFoodClass.transform.position = _dragPos;
-            selectPointingTrf.position = _dragPos;
-        }
-        else if(upgradeFoodClass == _foodClass)
-        {
-            // 재료 음식을 드래그한 경우
-
-            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-
-            upgradeFoodClass.transform.position = _dragPos;
-        }
-        else
-        {
-            Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
-        }
-    }
-
-    public void DragEnd_Func(Food_Script _foodClass)
-    {
-        
+        upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
     }
     #endregion
 }

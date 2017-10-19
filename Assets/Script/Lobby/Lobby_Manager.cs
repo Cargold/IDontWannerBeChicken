@@ -76,17 +76,15 @@ public class Lobby_Manager : MonoBehaviour
     {
         Enter_Func(LobbyState.MainLobby);
     }
-    public void Enter_Func(LobbyState _lobbyState)
-    {
-        Enter_Func((int)_lobbyState);
-    }
     public void Enter_Func(string _loobyTypeText)
     {
         LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
         Enter_Func(_lobbyState);
     }
-    public void Enter_Func(int _lobbyTypeID)
+    public void Enter_Func(LobbyState _lobbyState)
     {
+        int _lobbyTypeID = (int)_lobbyState;
+        
         lobbyUIParentClassArr[_lobbyTypeID].Enter_Func();
     }
     public void Exit_Func(LobbyState _lobbyState)

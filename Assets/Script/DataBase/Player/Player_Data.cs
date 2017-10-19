@@ -15,8 +15,9 @@ public class Player_Data : MonoBehaviour
     [SerializeField]
     public PlayerUnit_Data[] playerUnitDataArr;
 
-    [SerializeField]
-    public PlayerFood_Data[] playerFoodDataArr;
+    public PlayerFood_DataTemp[] test_InventoryDataArr;
+
+    public List<PlayerFood_Data> inventoryFoodDataList;
 
     [SerializeField]
     private PlayerWealth_Script playerWealthClass;
@@ -28,8 +29,29 @@ public class Player_Data : MonoBehaviour
         SetWealth_Func(WealthType.Gold, goldValue);
         SetWealth_Func(WealthType.Mineral, mineralValue);
 
+        Test_InventoryFood_Func();
+
         yield break;
     }
+    void Test_InventoryFood_Func()
+    {
+        inventoryFoodDataList = new List<PlayerFood_Data>();
+
+        for (int i = 0; i < 14; i++)
+        {
+            PlayerFood_Data _playerFoodData = new PlayerFood_Data();
+            //_playerFoodData.level = 1;
+            _playerFoodData.level = Random.Range(1, 4);
+            int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
+            //_playerFoodData.haveFoodID = 0;
+            _playerFoodData.haveFoodID = Random.Range(0, _foodIDMax);
+            //_playerFoodData.foodExp = 0f;
+            _playerFoodData.foodExp = Random.Range(0f, 99f);
+
+            inventoryFoodDataList.Add(_playerFoodData);
+        }
+    }
+
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         partyUnitIdArr[_partySlotId] = _unitId;
@@ -46,6 +68,7 @@ public class Player_Data : MonoBehaviour
         }
     }
 
+    #region Wealth Group
     public bool SetWealth_Func(WealthType _wealthType, int _value)
     {
         if(_wealthType == WealthType.Gold)
@@ -110,4 +133,61 @@ public class Player_Data : MonoBehaviour
             return false;
         }
     }
+    public void ActiveWealthUI_Func()
+    {
+        playerWealthClass.Active_Func();
+    }
+    public void DeactiveWealthUI_Func()
+    {
+        playerWealthClass.Deactive_Func();
+    }
+    #endregion
+
+    #region Food Group
+    public void AddFood_Func(Food_Script _foodClass)
+    {
+        PlayerFood_Data _playerFoodData = new PlayerFood_Data();
+        _playerFoodData.SetData_Func(_foodClass);
+
+        inventoryFoodDataList.Add(_playerFoodData);
+    }
+    public void RemoveFood_Func(Food_Script _foodClass, bool _isInventoryFood, int _haveFoodUnitID = -1)
+    {
+        if(_isInventoryFood == true)
+        {
+            // 인벤토리의 음식이 삭제되는 경우
+
+            int _inventoryFoodID = -1;
+
+            for (int i = 0; i < inventoryFoodDataList.Count; i++)
+            {
+                if (_foodClass == inventoryFoodDataList[i].foodClass)
+                {
+                    _inventoryFoodID = i;
+                    break;
+                }
+            }
+
+            if (_inventoryFoodID == -1)
+                Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
+
+            Destroy(inventoryFoodDataList[_inventoryFoodID].foodClass.gameObject); // 풀링으로 복귀...
+            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
+        }
+        else
+        {
+            // 유닛이 가진 음식이 삭제되는 경우
+
+            
+        }
+    }
+    public PlayerFood_Data GetPlayerFoodData_Func(int _inventoryFoodID)
+    {
+        return inventoryFoodDataList[_inventoryFoodID];
+    }
+    public int GetInventoryFoodNum_Func()
+    {
+        return inventoryFoodDataList.Count;
+    }
+    #endregion
 }
