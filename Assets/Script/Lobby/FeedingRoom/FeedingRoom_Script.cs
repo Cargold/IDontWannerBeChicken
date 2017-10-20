@@ -12,6 +12,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public Text subEffectText;
     public GameObject guideSelectObj;
     public GameObject guideDragObj;
+    public Text upgradeCostText;
     public Image expMainImage;
     public Image expProgressImage;
 
@@ -84,7 +85,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
             }
             else if(isUpgradeReady == true)
             {
-                Upgrade_Func();
+                int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
+                if (Player_Data.Instance.SetWealth_Func(WealthType.Gold, -_upgradeCost) == true)
+                    Upgrade_Func();
+                else
+                    UpgradeEnd_Func();
             }
         }
         else
@@ -253,6 +258,17 @@ public class FeedingRoom_Script : LobbyUI_Parent
             foodText.text = foodText.text + "  <color=#3ed525>+" + _calcFoodExpData.level_UpCount + "</color>";
             mainEffectText.text = mainEffectText.text + " <color=#3ed525>+" + _calcFoodExpData.effectValue_UpValue + "%</color>";
         }
+
+        int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
+        upgradeCostText.text = _upgradeCost.ToString();
+        if (Player_Data.Instance.SetWealth_Func(WealthType.Gold, -_upgradeCost, true) == false)
+        {
+            upgradeCostText.color = Color.red;
+        }
+        else
+        {
+            upgradeCostText.color = Game_Manager.Instance.textColor;
+        }
     }
     private void UpgradeBegin_Func(Food_Script _foodClass)
     {
@@ -309,6 +325,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     private void Upgrade_Func()
     {
+
+
         isUpgradeReady = false;
 
         float _materialExp = materialFoodClass.GetMaterialExp_Func();

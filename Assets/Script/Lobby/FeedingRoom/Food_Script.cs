@@ -139,6 +139,13 @@ public class Food_Script : MonoBehaviour
 
         return remainExp / GetMaxExp_Func();
     }
+    public int GetUpgradeCost_Func(int _level = -1)
+    {
+        if (_level == -1)
+            _level = level;
+
+        return 1000;
+    }
 
     #region Event Group
     public void PointDown_Func()

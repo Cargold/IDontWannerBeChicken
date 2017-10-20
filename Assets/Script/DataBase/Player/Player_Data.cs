@@ -69,7 +69,7 @@ public class Player_Data : MonoBehaviour
     }
 
     #region Wealth Group
-    public bool SetWealth_Func(WealthType _wealthType, int _value)
+    public bool SetWealth_Func(WealthType _wealthType, int _value, bool _isJustCheck = false)
     {
         if(_wealthType == WealthType.Gold)
         {
@@ -77,10 +77,14 @@ public class Player_Data : MonoBehaviour
             {
                 // 지불
 
-                if (_value <= goldValue)
+                if (-_value <= goldValue)
                 {
-                    goldValue -= _value;
-                    playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+                    if(_isJustCheck == false)
+                    {
+                        goldValue += _value;
+                        playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+                    }
+
                     return true;
                 }
                 else
@@ -105,10 +109,14 @@ public class Player_Data : MonoBehaviour
             {
                 // 지불
 
-                if (_value <= mineralValue)
+                if (-_value <= mineralValue)
                 {
-                    mineralValue -= _value;
-                    playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+                    if (_isJustCheck == false)
+                    {
+                        mineralValue += _value;
+                        playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+                    }
+
                     return true;
                 }
                 else
