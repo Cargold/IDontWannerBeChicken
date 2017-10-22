@@ -10,7 +10,7 @@ public class ObjectPoolManager : MonoBehaviour
     public static ObjectPoolManager Instance;
 
     public int defaultAmount = 10;
-    public GameObject[] poolArr;
+    public List<GameObject> poolList;
     public int[] poolAmount;
 
     Dictionary<string, ObjectPool> objectPoolList = new Dictionary<string, ObjectPool>();
@@ -31,35 +31,51 @@ public class ObjectPoolManager : MonoBehaviour
         _sampleFolderObj.name = "SampleFolder";
         _sampleFolderObj.SetActive(false);
 
+        poolList = new List<GameObject>();
+
+        int _poolListCount = poolList.Count;
         int _charDataNum = DataBase_Manager.Instance.charDataArr.Length;
-        poolArr = new GameObject[_charDataNum];
-        for (int i = 0; i < _charDataNum; i++)
+        for (int i = 0; i < _charDataNum; i++, _poolListCount++)
         {
-            poolArr[i] = Instantiate(Game_Manager.Instance.unitObj);
-            poolArr[i].transform.parent = _sampleFolderObj.transform;
+            poolList.Add(Instantiate(Game_Manager.Instance.unitObj));
+            poolList[_poolListCount].transform.parent = _sampleFolderObj.transform;
 
             Character_Data _charData = DataBase_Manager.Instance.charDataArr[i];
 
-            Unit_Script _unitClass = poolArr[i].GetComponent<Unit_Script>();
+            Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_charData);
 
-            poolArr[i].name = _unitClass.charName;
+            poolList[_poolListCount].name = _unitClass.charName;
 
             Player_Data.Instance.playerUnitDataArr[i].unitClass = _unitClass;
+        }
+        
+        int _foodDataNum = DataBase_Manager.Instance.foodDataArr.Length;
+        for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
+        {
+            poolList.Add(Instantiate(Game_Manager.Instance.foodObj));
+            poolList[_poolListCount].transform.parent = _sampleFolderObj.transform;
+
+            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
+
+            Food_Script _foodClass = poolList[_poolListCount].GetComponent<Food_Script>();
+            _foodClass.SetData_Func(_foodData);
+
+            poolList[_poolListCount].name = _foodClass.foodName;
         }
     }
 
     IEnumerator InitObjectPool_Cor()
     {
-        for (int i = 0; i < poolArr.Length; i++)
+        for (int i = 0; i < poolList.Count; i++)
         {
             ObjectPool objectPool = new ObjectPool();
-            objectPool.source = poolArr[i];
-            objectPoolList[poolArr[i].name] = objectPool;
+            objectPool.source = poolList[i];
+            objectPoolList[poolList[i].name] = objectPool;
 
             // 하이라키에 추가한다 
             GameObject folder = new GameObject();
-            folder.name = poolArr[i].name;
+            folder.name = poolList[i].name;
             folder.transform.parent = this.transform;
             objectPool.folder = folder;
 
@@ -70,13 +86,13 @@ public class ObjectPoolManager : MonoBehaviour
             for (int j = 0; j < amount; j++)
             {
                 GameObject inst = Instantiate(objectPool.source);
-                inst.name = poolArr[i].name;
+                inst.name = poolList[i].name;
                 inst.SetActive(false);
                 inst.transform.parent = folder.transform;
                 objectPool.unusedList.Add(inst);
 
                 // 한번에 풀을 생성할때의 부하를 줄이기 위해서 코루틴을 사용한다
-                yield return null;
+                //yield return null;
             }
 
             objectPool.maxAmount = amount;

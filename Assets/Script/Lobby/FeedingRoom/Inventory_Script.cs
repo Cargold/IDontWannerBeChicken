@@ -5,6 +5,8 @@ using UnityEngine;
 public class Inventory_Script : MonoBehaviour
 {
     public FeedingRoom_Script feedingRoomClass;
+    public UpgradePlate_Script upgradePlateClass;
+    public ReplaceCol_Script replaceColClass;
     [SerializeField]
     private List<Food_Script> foodClassList;
 
@@ -17,15 +19,18 @@ public class Inventory_Script : MonoBehaviour
     {
         feedingRoomClass = _feedingRoomClass;
 
+        upgradePlateClass.Init_Func(_feedingRoomClass);
+        replaceColClass.Init_Func(_feedingRoomClass);
+
         int _haveFoodNum = Player_Data.Instance.GetInventoryFoodNum_Func();
         foodClassList = new List<Food_Script>();
         for (int i = 0; i < _haveFoodNum; i++)
         {
-            GameObject _foodObj = Instantiate(Game_Manager.Instance.foodObj);
-            Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
             PlayerFood_Data _playerFoodData = Player_Data.Instance.GetPlayerFoodData_Func(i);
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.haveFoodID];
-            _foodClass.Init_Func(_feedingRoomClass, _foodData, _playerFoodData.level, _playerFoodData.foodExp);
+            GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
+            Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
+            _foodClass.Init_Func(_feedingRoomClass, _playerFoodData.level, _playerFoodData.foodExp);
             foodClassList.Add(_foodClass);
             Player_Data.Instance.inventoryFoodDataList[i].foodClass = _foodClass;
 
@@ -68,9 +73,12 @@ public class Inventory_Script : MonoBehaviour
 
     }
 
-    public void SetRegroupTrf_Func(Transform _regroupTrf)
+    public void SetRegroupTrf_Func(Transform _regroupTrf, bool _isReplacePos = false)
     {
         _regroupTrf.parent = bagGroupTrf;
+
+        if(_isReplacePos == true)
+            _regroupTrf.localPosition = sortInitPos.localPosition;
     }
 
     public Food_Script GetFood_Func(int _inventoryID)

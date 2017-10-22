@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class FeedingRoom_Script : LobbyUI_Parent
 {
     public Inventory_Script inventoryClass;
+    public Stomach_Script stomachClass;
 
     public Text foodText;
     public Text mainEffectText;
@@ -19,6 +20,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public Transform selectPointingTrf;
     public Food_Script selectedFoodClass;
     public Food_Script materialFoodClass;
+    public Food_Script replaceFoodClass;
     public bool isUpgradeReady;
     private Vector3 touchOffsetPos;
     public Image upgradeFocusImage;
@@ -36,6 +38,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     protected override void InitUI_Func()
     {
         inventoryClass.Init_Func(this);
+
+        stomachClass.Init_Func(this);
 
         this.gameObject.SetActive(false);
     }
@@ -86,7 +90,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
             else if(isUpgradeReady == true)
             {
                 int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
-                if (Player_Data.Instance.SetWealth_Func(WealthType.Gold, -_upgradeCost) == true)
+                if (Player_Data.Instance.PayWealth_Func(WealthType.Gold, _upgradeCost) == true)
                     Upgrade_Func();
                 else
                     UpgradeEnd_Func();
@@ -110,10 +114,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
         SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
-        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        selectPointingTrf.position = _dragPos;
-        selectPointingTrf.SetAsLastSibling();
+        selectPointingTrf.parent = selectedFoodClass.transform;
+        selectPointingTrf.localPosition = Vector3.zero;
+        //touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
+        //Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+        //selectPointingTrf.position = _dragPos;
+        //selectPointingTrf.SetAsLastSibling();
 
         guideSelectObj.SetActive(true);
         guideDragObj.SetActive(false);
@@ -142,10 +148,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     void DragBeginSelectFood_Func()
     {
-        touchOffsetPos = Input.mousePosition - selectedFoodClass.transform.position;
-        Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        selectPointingTrf.position = _dragPos;
-        selectPointingTrf.SetAsLastSibling();
+        //touchOffsetPos = Input.mousePosition - selectedFoodClass.transform.position;
+        //Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+        //selectPointingTrf. position = _dragPos;
+        //selectPointingTrf.SetAsLastSibling();
     }
     
     void SetTopDepthTrf_Func(Transform _trf)
@@ -155,32 +161,75 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public void Dragging_Func(Food_Script _foodClass)
     {
-        if (selectedFoodClass == _foodClass)
+        if(_foodClass.isStomach == false)
         {
-            // 선택된 음식을 드래그한 경우
+            if (selectedFoodClass == _foodClass)
+            {
+                // 선택된 음식을 드래그한 경우
 
+                Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+                selectedFoodClass.transform.position = _dragPos;
+                //selectPointingTrf.position = _dragPos;
+            }
+            else if (materialFoodClass == _foodClass)
+            {
+                // 재료 음식을 드래그한 경우
+
+                Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+                materialFoodClass.transform.position = _dragPos;
+            }
+            else
+            {
+                Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
+            }
+        }
+        else if (_foodClass.isStomach == true)
+        {
+            if(_foodClass.isDragState == false)
+                StartCoroutine("DraggingPhysics_Cor", _foodClass);
+        }
+    }
+    IEnumerator DraggingPhysics_Cor(Food_Script _foodClass)
+    {
+        _foodClass.SetDragState_Func();
+
+        while (_foodClass.isStomach == true)
+        {
             Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+            _foodClass.SetAddforce_Func(_dragPos);
 
-            selectedFoodClass.transform.position = _dragPos;
-            selectPointingTrf.position = _dragPos;
-        }
-        else if(materialFoodClass == _foodClass)
-        {
-            // 재료 음식을 드래그한 경우
+            //if (_foodClass == selectedFoodClass)
+            //    selectPointingTrf.position = _foodClass.transform.position;
 
-            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+            yield return null;
+        }
 
-            materialFoodClass.transform.position = _dragPos;
-        }
-        else
-        {
-            Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
-        }
+        yield break;
     }
 
     public void DragEnd_Func(Food_Script _foodClass)
     {
-        
+        ReplaceFood_Func();
+
+        if(_foodClass.isStomach == true)
+        {
+            _foodClass.IntoStomach_Func(true);
+            _foodClass.DragFinishState_Func();
+
+            StopCoroutine("DraggingPhysics_Cor");
+        }
+    }
+    void ReplaceFood_Func()
+    {
+        if(replaceFoodClass != null)
+        {
+            inventoryClass.SetRegroupTrf_Func(replaceFoodClass.transform, true);
+
+            //if (replaceFoodClass == selectedFoodClass)
+            //    selectPointingTrf.position = selectedFoodClass.transform.position;
+
+            replaceFoodClass = null;
+        }
     }
     #endregion
 
@@ -242,6 +291,16 @@ public class FeedingRoom_Script : LobbyUI_Parent
         inventoryClass.RemoveFood_Func(_foodClass);
     }
 
+    public void ReplaceFood_Func(Food_Script _foodClass, bool _isImmediately = false)
+    {
+        replaceFoodClass = _foodClass;
+        
+        if (_isImmediately == true)
+        {
+            ReplaceFood_Func();
+        }
+    }
+
     #region Upgrade Group
     private void PrintUpgradeInfo_Func()
     {
@@ -261,7 +320,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
         upgradeCostText.text = _upgradeCost.ToString();
-        if (Player_Data.Instance.SetWealth_Func(WealthType.Gold, -_upgradeCost, true) == false)
+        if (Player_Data.Instance.PayWealth_Func(WealthType.Gold, _upgradeCost, true) == false)
         {
             upgradeCostText.color = Color.red;
         }
@@ -288,7 +347,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        selectPointingTrf.SetAsLastSibling();
+        //selectPointingTrf.SetAsLastSibling();
 
         SetTopDepthTrf_Func(materialFoodClass.transform);
         materialFoodClass.transform.SetAsLastSibling();
@@ -322,10 +381,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
 
         PrintFoodInfo_Func(selectedFoodClass);
+
+        SetTopDepthTrf_Func(selectPointingTrf);
     }
     private void Upgrade_Func()
     {
-
+        Debug.Log("Test, Upgrade");
 
         isUpgradeReady = false;
 

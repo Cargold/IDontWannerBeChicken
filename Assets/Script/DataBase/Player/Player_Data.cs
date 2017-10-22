@@ -26,8 +26,8 @@ public class Player_Data : MonoBehaviour
     {
         Instance = this;
 
-        SetWealth_Func(WealthType.Gold, goldValue);
-        SetWealth_Func(WealthType.Mineral, mineralValue);
+        playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+        playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
 
         Test_InventoryFood_Func();
 
@@ -69,70 +69,59 @@ public class Player_Data : MonoBehaviour
     }
 
     #region Wealth Group
-    public bool SetWealth_Func(WealthType _wealthType, int _value, bool _isJustCheck = false)
+    public void AddWealth_Func(WealthType _wealthType, int _value)
     {
-        if(_wealthType == WealthType.Gold)
+        if (_wealthType == WealthType.Gold)
         {
-            if (_value < 0)
+            goldValue += _value;
+            playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+        }
+        else if (_wealthType == WealthType.Mineral)
+        {
+            mineralValue += _value;
+            playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+        }
+    }
+    public bool PayWealth_Func(WealthType _wealthType, int _value, bool _isJustCheck = false)
+    {
+        if (_wealthType == WealthType.Gold)
+        {
+            // 지불
+
+            if (_value <= goldValue)
             {
-                // 지불
-
-                if (-_value <= goldValue)
+                if (_isJustCheck == false)
                 {
-                    if(_isJustCheck == false)
-                    {
-                        goldValue += _value;
-                        playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
-                    }
-
-                    return true;
+                    goldValue -= _value;
+                    playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
                 }
-                else
-                {
-                    // 재화가 부족함
 
-                    return false;
-                }
+                return true;
             }
             else
             {
-                // 획득
+                // 재화가 부족함
 
-                goldValue += _value;
-                playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
-                return true;
+                return false;
             }
         }
-        else if(_wealthType == WealthType.Mineral)
+        else if (_wealthType == WealthType.Mineral)
         {
-            if (_value < 0)
+            if (_value <= mineralValue)
             {
-                // 지불
-
-                if (-_value <= mineralValue)
+                if (_isJustCheck == false)
                 {
-                    if (_isJustCheck == false)
-                    {
-                        mineralValue += _value;
-                        playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
-                    }
-
-                    return true;
+                    mineralValue -= _value;
+                    playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
                 }
-                else
-                {
-                    // 재화가 부족함
 
-                    return false;
-                }
+                return true;
             }
             else
             {
-                // 획득
+                // 재화가 부족함
 
-                mineralValue += _value;
-                playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
-                return true;
+                return false;
             }
         }
         else

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class Food_Script : MonoBehaviour
 {
     public FeedingRoom_Script feedingRoomClass;
-
+    
     public int foodId;
     public string foodName;
     public FoodGrade foodGrade;
@@ -16,6 +16,11 @@ public class Food_Script : MonoBehaviour
     private float mainEffectValue;
     public float subEffectValue;
     public Image foodImage;
+    [SerializeField]
+    private Rigidbody2D thisRigid;
+    private SpriteRenderer spriteRend;
+    [SerializeField]
+    private PolygonCollider2D thisCol;
 
     public int level;
     [SerializeField]
@@ -24,12 +29,11 @@ public class Food_Script : MonoBehaviour
     [SerializeField]
     private float materialExp;
 
-    public void Init_Func(FeedingRoom_Script _feedingRoomClass, Food_Data _foodData, int _level, float _exp = 0f)
+    public bool isStomach;
+    public bool isDragState;
+
+    public void SetData_Func(Food_Data _foodData)
     {
-        feedingRoomClass = _feedingRoomClass;
-
-        level = _level;
-
         foodId = _foodData.foodId;
         foodName = _foodData.foodName;
         foodGrade = _foodData.foodGrade;
@@ -41,12 +45,26 @@ public class Food_Script : MonoBehaviour
         foodImage.sprite = _foodData.foodSprite;
         foodImage.SetNativeSize();
         foodImage.alphaHitTestMinimumThreshold = 0.5f;
+
+        thisRigid = this.GetComponent<Rigidbody2D>();
+        spriteRend= this.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        spriteRend.sprite = _foodData.foodSprite;
+        //PolygonCollider2D _col = Resources.Load<GameObject>("Prefab/Food/" + foodName).transform.GetChild(0).GetComponent<PolygonCollider2D>();
+        thisCol = this.transform.GetChild(0).gameObject.AddComponent<PolygonCollider2D>();
+        thisCol.isTrigger = true;
+        //thisCol = _col;
+        this.transform.GetChild(0).transform.localScale = Vector3.one * 85f;
+    }
+    public void Init_Func(FeedingRoom_Script _feedingRoomClass, int _level, float _exp = 0f)
+    {
+        feedingRoomClass = _feedingRoomClass;
+
+        level = _level;
         
         remainExp = _exp;
         materialExp = GetMaterialExp_Func(_level);
         maxExp = GetMaxExp_Func(_level);
     }
-    
     public void GetExp_Func(float _expValue)
     {
         CalcFoodExpData _calcExpData = GetCalcExpData_Func(_expValue);
@@ -169,6 +187,62 @@ public class Food_Script : MonoBehaviour
         feedingRoomClass.DragEnd_Func(this);
     }
     #endregion
+
+    public void IntoStomach_Func(bool _isOn)
+    {
+        if(_isOn == true)
+        {
+            isStomach = true;
+
+            thisCol.isTrigger = false;
+
+            thisRigid.gravityScale = 100f;
+        }
+        else if(_isOn == false)
+        {
+            isStomach = false;
+
+            thisCol.isTrigger = true;
+
+            thisRigid.velocity = Vector2.zero;
+            thisRigid.angularVelocity = 0f;
+            thisRigid.gravityScale = 0f;
+        }
+    }
+    public void SetDragState_Func()
+    {
+        if(isDragState == false)
+        {
+            isDragState = true;
+
+            thisRigid.velocity = Vector2.zero;
+            thisRigid.angularVelocity = 0f;
+            thisRigid.gravityScale = 0f;
+        }
+    }
+    public void DragFinishState_Func()
+    {
+        isDragState = false;
+    }
+
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Food")
+        {
+            //thisRigid.AddForce((this.transform.position - collision.transform.position) * 10f);
+        }
+    }
+
+    public bool GetTrigger_Func()
+    {
+        return thisCol.isTrigger;
+    }
+    public void SetAddforce_Func(Vector3 _forcePos)
+    {
+        thisRigid.velocity = (_forcePos - this.transform.position) * 5f;
+    }
 }
 
 public struct CalcFoodExpData

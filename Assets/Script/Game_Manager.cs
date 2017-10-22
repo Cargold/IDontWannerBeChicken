@@ -43,9 +43,9 @@ public class Game_Manager : MonoBehaviour
         yield return InitMain_Cor();
         yield return databaseClass.Init_Cor();
         yield return playerDataClass.Init_Cor();
-        yield return battleClass.Init_Cor();
-        yield return lobbyClass.Init_Cor();
         yield return objectPoolManager.Init_Cor();
+        yield return lobbyClass.Init_Cor();
+        yield return battleClass.Init_Cor();
 
         yield return LoadingOver_Cor();
     }
