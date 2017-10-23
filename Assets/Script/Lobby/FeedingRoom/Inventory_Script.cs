@@ -30,12 +30,12 @@ public class Inventory_Script : MonoBehaviour
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.haveFoodID];
             GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
-            _foodClass.Init_Func(_feedingRoomClass, _playerFoodData.level, _playerFoodData.foodExp);
+            _foodClass.Init_Func(_feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.foodExp);
             foodClassList.Add(_foodClass);
             Player_Data.Instance.inventoryFoodDataList[i].foodClass = _foodClass;
 
             _foodObj.transform.parent = bagGroupTrf;
-            _foodObj.transform.localScale = Vector3.one;
+            _foodObj.transform.localScale = Vector3.one * 1.2f;
         }
 
         SortInventory_Func();
@@ -67,7 +67,6 @@ public class Inventory_Script : MonoBehaviour
     {
         SortInventory_Func();
     }
-
     public void Deactive_Func()
     {
 

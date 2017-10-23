@@ -54,7 +54,9 @@ public class ObjectPoolManager : MonoBehaviour
         for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
         {
             poolList.Add(Instantiate(Game_Manager.Instance.foodObj));
+            _sampleFolderObj.transform.localScale = Vector3.one * 1.1f;
             poolList[_poolListCount].transform.parent = _sampleFolderObj.transform;
+
 
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
 

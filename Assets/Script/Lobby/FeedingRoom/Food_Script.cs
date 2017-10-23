@@ -28,9 +28,13 @@ public class Food_Script : MonoBehaviour
     public float remainExp;
     [SerializeField]
     private float materialExp;
-
-    public bool isStomach;
+    
     public bool isDragState;
+
+    public FoodPlaceState foodPlaceState;
+    public FoodState foodState;
+
+    public Unit_Script feederUnitClass;
 
     public void SetData_Func(Food_Data _foodData)
     {
@@ -49,15 +53,15 @@ public class Food_Script : MonoBehaviour
         thisRigid = this.GetComponent<Rigidbody2D>();
         spriteRend= this.transform.GetChild(0).GetComponent<SpriteRenderer>();
         spriteRend.sprite = _foodData.foodSprite;
-        //PolygonCollider2D _col = Resources.Load<GameObject>("Prefab/Food/" + foodName).transform.GetChild(0).GetComponent<PolygonCollider2D>();
         thisCol = this.transform.GetChild(0).gameObject.AddComponent<PolygonCollider2D>();
         thisCol.isTrigger = true;
-        //thisCol = _col;
         this.transform.GetChild(0).transform.localScale = Vector3.one * 85f;
     }
-    public void Init_Func(FeedingRoom_Script _feedingRoomClass, int _level, float _exp = 0f)
+    public void Init_Func(FeedingRoom_Script _feedingRoomClass, FoodState _foodFeedState, int _level, float _exp = 0f)
     {
         feedingRoomClass = _feedingRoomClass;
+
+        foodState = _foodFeedState;
 
         level = _level;
         
@@ -187,61 +191,99 @@ public class Food_Script : MonoBehaviour
         feedingRoomClass.DragEnd_Func(this);
     }
     #endregion
-
-    public void IntoStomach_Func(bool _isOn)
+    #region Stomach Group
+    public void SetState_Func(FoodPlaceState _foodPlaceState)
     {
-        if(_isOn == true)
+        if(_foodPlaceState == FoodPlaceState.Stomach)
         {
-            isStomach = true;
+            foodPlaceState = FoodPlaceState.Stomach;
 
             thisCol.isTrigger = false;
 
-            thisRigid.gravityScale = 100f;
+            thisRigid.gravityScale = 500f;
         }
-        else if(_isOn == false)
+        else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
-            isStomach = false;
+            foodPlaceState = FoodPlaceState.Inventory;
+
+            isDragState = false;
 
             thisCol.isTrigger = true;
 
             thisRigid.velocity = Vector2.zero;
             thisRigid.angularVelocity = 0f;
             thisRigid.gravityScale = 0f;
+
+            this.transform.rotation = Quaternion.identity;
         }
     }
-    public void SetDragState_Func()
+    public void SetDragState_Func(bool _isState)
     {
-        if(isDragState == false)
+        if(_isState == true)
         {
-            isDragState = true;
+            if (isDragState == false)
+            {
+                isDragState = true;
 
-            thisRigid.velocity = Vector2.zero;
-            thisRigid.angularVelocity = 0f;
-            thisRigid.gravityScale = 0f;
+                thisRigid.velocity = Vector2.zero;
+                thisRigid.angularVelocity = 0f;
+                thisRigid.gravityScale = 0f;
+            }
+        }
+        else if(_isState == false)
+        {
+            isDragState = false;
         }
     }
-    public void DragFinishState_Func()
+    public void SetVelocity_Func(Vector3 _forcePos)
     {
-        isDragState = false;
+        thisRigid.velocity = (_forcePos - this.transform.position) * 10f;
     }
-
-
-
-    private void OnCollisionStay2D(Collision2D collision)
+    public void FeedingByInner_Func()
+    {
+        foodState = FoodState.FeedingByInner;
+        foodImage.color = Color.red;
+    }
+    public void FeedingByChain_Func()
+    {
+        foodState = FoodState.FeedingByChain;
+        foodImage.color = Color.yellow;
+    }
+    public void OutFood_Func()
+    {
+        foodState = FoodState.Inventory;
+        foodImage.color = Color.white;
+    }
+    #endregion
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "Food")
         {
-            //thisRigid.AddForce((this.transform.position - collision.transform.position) * 10f);
+            if(0 < (int)this.foodState)
+            {
+                Food_Script _foodClass = collision.transform.GetComponent<Food_Script>();
+
+                if (_foodClass.foodState == FoodState.Stomach)
+                {
+                    feedingRoomClass.SetFeedFoodByChain_Func(_foodClass);
+                }
+            }
         }
     }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Food")
+        {
+            if (0 < (int)this.foodState)
+            {
+                Food_Script _foodClass = collision.transform.GetComponent<Food_Script>();
 
-    public bool GetTrigger_Func()
-    {
-        return thisCol.isTrigger;
-    }
-    public void SetAddforce_Func(Vector3 _forcePos)
-    {
-        thisRigid.velocity = (_forcePos - this.transform.position) * 5f;
+                if (_foodClass.foodState == FoodState.FeedingByChain)
+                {
+                    feedingRoomClass.SetFoodOutByChain_Func(_foodClass);
+                }
+            }
+        }
     }
 }
 

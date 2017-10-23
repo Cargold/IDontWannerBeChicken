@@ -161,7 +161,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public void Dragging_Func(Food_Script _foodClass)
     {
-        if(_foodClass.isStomach == false)
+        if(_foodClass.foodPlaceState == FoodPlaceState.Inventory)
         {
             if (selectedFoodClass == _foodClass)
             {
@@ -183,7 +183,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
             }
         }
-        else if (_foodClass.isStomach == true)
+        else if (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
             if(_foodClass.isDragState == false)
                 StartCoroutine("DraggingPhysics_Cor", _foodClass);
@@ -191,15 +191,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     IEnumerator DraggingPhysics_Cor(Food_Script _foodClass)
     {
-        _foodClass.SetDragState_Func();
+        _foodClass.SetDragState_Func(true);
 
-        while (_foodClass.isStomach == true)
+        while (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
             Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-            _foodClass.SetAddforce_Func(_dragPos);
-
-            //if (_foodClass == selectedFoodClass)
-            //    selectPointingTrf.position = _foodClass.transform.position;
+            _foodClass.SetVelocity_Func(_dragPos);
 
             yield return null;
         }
@@ -211,10 +208,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         ReplaceFood_Func();
 
-        if(_foodClass.isStomach == true)
+        if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
-            _foodClass.IntoStomach_Func(true);
-            _foodClass.DragFinishState_Func();
+            _foodClass.SetState_Func(FoodPlaceState.Stomach);
+            _foodClass.SetDragState_Func(false);
 
             StopCoroutine("DraggingPhysics_Cor");
         }
@@ -290,7 +287,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         inventoryClass.RemoveFood_Func(_foodClass);
     }
-
     public void ReplaceFood_Func(Food_Script _foodClass, bool _isImmediately = false)
     {
         replaceFoodClass = _foodClass;
@@ -300,6 +296,31 @@ public class FeedingRoom_Script : LobbyUI_Parent
             ReplaceFood_Func();
         }
     }
+
+    #region Stomach Group
+    public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
+    {
+        if(_foodPlaceState == FoodPlaceState.Stomach)
+        {
+            _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
+        }
+        else if(_foodPlaceState == FoodPlaceState.Inventory)
+        {
+            _setterFoodClass.SetDragState_Func(false);
+            _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
+
+            ReplaceFood_Func(_setterFoodClass, true);
+        }
+    }
+    public void SetFeedFoodByChain_Func(Food_Script _foodClass)
+    {
+        stomachClass.FeedFoodByChain_Func(_foodClass);
+    }
+    public void SetFoodOutByChain_Func(Food_Script _foodClass)
+    {
+        stomachClass.OutFood_Func(_foodClass);
+    }
+    #endregion
 
     #region Upgrade Group
     private void PrintUpgradeInfo_Func()

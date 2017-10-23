@@ -63,3 +63,18 @@ public enum FoodEffect_Sub
     Bonus_Apple,
     Bounus_Fish,
 }
+
+public enum FoodPlaceState
+{
+    None = -1,
+    Stomach,
+    Inventory,
+}
+
+public enum FoodState
+{
+    Inventory = -1,
+    Stomach = 0,
+    FeedingByChain = 1,
+    FeedingByInner = 2,
+}
