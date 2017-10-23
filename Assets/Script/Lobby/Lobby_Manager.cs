@@ -96,6 +96,14 @@ public class Lobby_Manager : MonoBehaviour
         lobbyUIParentClassArr[_lobbyTypeID].Exit_Func();
     }
     #endregion
+    #region FeedingRoom Group
+    public void OnFeedingRoom_Func(int _selectUnitID)
+    {
+        // 999 = Hero, Other = Unit
+
+        feedingRoomClass.Enter_Func(_selectUnitID);
+    }
+    #endregion
     #region Stage Select Group
     public void BattleEnter_Func()
     {

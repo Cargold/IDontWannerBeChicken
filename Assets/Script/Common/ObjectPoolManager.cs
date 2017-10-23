@@ -46,16 +46,14 @@ public class ObjectPoolManager : MonoBehaviour
             _unitClass.SetData_Func(_charData);
 
             poolList[_poolListCount].name = _unitClass.charName;
-
-            Player_Data.Instance.playerUnitDataArr[i].unitClass = _unitClass;
         }
         
         int _foodDataNum = DataBase_Manager.Instance.foodDataArr.Length;
         for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
         {
             poolList.Add(Instantiate(Game_Manager.Instance.foodObj));
-            _sampleFolderObj.transform.localScale = Vector3.one * 1.1f;
-            poolList[_poolListCount].transform.parent = _sampleFolderObj.transform;
+            //_sampleFolderObj.transform.localScale = Vector3.one * 1.1f;
+            poolList[_poolListCount].transform.SetParent(_sampleFolderObj.transform);
 
 
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
@@ -90,7 +88,7 @@ public class ObjectPoolManager : MonoBehaviour
                 GameObject inst = Instantiate(objectPool.source);
                 inst.name = poolList[i].name;
                 inst.SetActive(false);
-                inst.transform.parent = folder.transform;
+                inst.transform.SetParent(folder.transform);
                 objectPool.unusedList.Add(inst);
 
                 // 한번에 풀을 생성할때의 부하를 줄이기 위해서 코루틴을 사용한다

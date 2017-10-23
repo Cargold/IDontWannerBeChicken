@@ -34,8 +34,7 @@ public class Inventory_Script : MonoBehaviour
             foodClassList.Add(_foodClass);
             Player_Data.Instance.inventoryFoodDataList[i].foodClass = _foodClass;
 
-            _foodObj.transform.parent = bagGroupTrf;
-            _foodObj.transform.localScale = Vector3.one * 1.2f;
+            _foodObj.transform.SetParent(bagGroupTrf);
         }
 
         SortInventory_Func();
@@ -63,8 +62,21 @@ public class Inventory_Script : MonoBehaviour
         }
     }
 
-    public void Active_Func()
+    public void Active_Func(int _selectUnitID)
     {
+        if(_selectUnitID == 999)
+        {
+            // Hero
+
+
+        }
+        else
+        {
+            // Unit
+
+
+        }
+
         SortInventory_Func();
     }
     public void Deactive_Func()
@@ -74,7 +86,7 @@ public class Inventory_Script : MonoBehaviour
 
     public void SetRegroupTrf_Func(Transform _regroupTrf, bool _isReplacePos = false)
     {
-        _regroupTrf.parent = bagGroupTrf;
+        _regroupTrf.SetParent(bagGroupTrf);
 
         if(_isReplacePos == true)
             _regroupTrf.localPosition = sortInitPos.localPosition;

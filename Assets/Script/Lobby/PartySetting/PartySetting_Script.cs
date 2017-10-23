@@ -11,6 +11,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public UnitCard_Script[] unitCardClassArr;
     public Vector2[] unitCardPosInitArr;
     public UnitCard_Script selectCardClass;
+    public int selectUnitID;
 
     public PartySlot_Script[] partySlotClassArr;
     public PartySlot_Script contactCardClass;
@@ -65,7 +66,7 @@ public class PartySetting_Script : LobbyUI_Parent
                         );
 
                     GameObject _unitCardObj = Instantiate(unitCardObj);
-                    _unitCardObj.transform.parent = unitCardGroupTrf;
+                    _unitCardObj.transform.SetParent(unitCardGroupTrf);
 
                     unitCardClassArr[_cardCount] = _unitCardObj.GetComponent<UnitCard_Script>();
                     unitCardClassArr[_cardCount].Init_Func
@@ -110,14 +111,13 @@ public class PartySetting_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
-
     #region Unit Slot Group
     public void SelectUnit_Func(UnitCard_Script _unitCardClass)
     {
         selectCardClass = _unitCardClass;
 
-        int _unitId = selectCardClass.cardId;
-        Character_Data _charData = DataBase_Manager.Instance.charDataArr[_unitId];
+        selectUnitID = selectCardClass.cardId;
+        Character_Data _charData = DataBase_Manager.Instance.charDataArr[selectUnitID];
 
         unitInfoTextArr[0].text = ((int)_charData.attackValue).ToString();
         unitInfoTextArr[1].text = ((int)_charData.healthPoint).ToString();
@@ -272,6 +272,17 @@ public class PartySetting_Script : LobbyUI_Parent
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         Player_Data.Instance.JoinParty_Func(_partySlotId, _unitId);
+    }
+    #endregion
+    #region Feeding Group
+    public void OnFeeding_Func()
+    {
+        RotateUnitImage_Func();
+        lobbyManager.OnFeedingRoom_Func(selectUnitID);
+    }
+    void RotateUnitImage_Func()
+    {
+
     }
     #endregion
 }

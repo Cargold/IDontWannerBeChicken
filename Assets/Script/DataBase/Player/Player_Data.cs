@@ -6,30 +6,63 @@ public class Player_Data : MonoBehaviour
 {
     public static Player_Data Instance;
 
+    // Wealth
     [SerializeField]
     private int goldValue;
     [SerializeField]
     private int mineralValue;
+    [SerializeField]
+    private PlayerWealth_Script playerWealthClass;
 
+    // Party
     public int[] partyUnitIdArr;
+
+    // Unit
     [SerializeField]
     public PlayerUnit_Data[] playerUnitDataArr;
 
-    public PlayerFood_DataTemp[] test_InventoryDataArr;
+    // Hero
+    public int levelHero;
+    public List<PlayerFood_Data> heroFoodDataList;
 
+    // Inventory
     public List<PlayerFood_Data> inventoryFoodDataList;
 
-    [SerializeField]
-    private PlayerWealth_Script playerWealthClass;
+    // Trophy
+
+    // Skill
+
+    // Test
+    public PlayerFood_DataTemp[] test_InventoryDataArr;
 
     public IEnumerator Init_Cor()
     {
         Instance = this;
 
+        yield return InitWealth_Cor();
+        yield return InitCharacter_Cor();
+
+        yield break;
+    }
+    IEnumerator InitWealth_Cor()
+    {
+        // 골드, 미네랄 데이터 불러오기
+
         playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
         playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
 
         Test_InventoryFood_Func();
+
+        yield break;
+    }
+    IEnumerator InitCharacter_Cor()
+    {
+        // 캐릭터 정보 불러오기
+
+        for (int i = 0; i < playerUnitDataArr.Length; i++)
+        {
+            //playerUnitDataArr[i].unitClass
+        }
 
         yield break;
     }
@@ -52,6 +85,7 @@ public class Player_Data : MonoBehaviour
         }
     }
 
+    #region Party Group
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         partyUnitIdArr[_partySlotId] = _unitId;
@@ -67,7 +101,7 @@ public class Player_Data : MonoBehaviour
             Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
         }
     }
-
+    #endregion
     #region Wealth Group
     public void AddWealth_Func(WealthType _wealthType, int _value)
     {
@@ -139,7 +173,6 @@ public class Player_Data : MonoBehaviour
         playerWealthClass.Deactive_Func();
     }
     #endregion
-
     #region Food Group
     public void AddFood_Func(Food_Script _foodClass)
     {

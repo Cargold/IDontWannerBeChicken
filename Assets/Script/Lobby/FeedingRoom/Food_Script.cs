@@ -204,6 +204,11 @@ public class Food_Script : MonoBehaviour
         {
             foodPlaceState = FoodPlaceState.Stomach;
 
+            if(foodState == FoodState.Inventory)
+            {
+                OutFood_Func();
+            }
+
             thisCol.isTrigger = false;
 
             thisRigid.gravityScale = 500f;
@@ -211,6 +216,7 @@ public class Food_Script : MonoBehaviour
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
             foodPlaceState = FoodPlaceState.Inventory;
+            OnInventory_Func();
 
             isDragState = false;
 
@@ -257,6 +263,45 @@ public class Food_Script : MonoBehaviour
     }
     public void OutFood_Func()
     {
+        if (foodState != FoodState.Inventory)
+        {
+            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
+        }
+        Debug.Log("Test, Out, State : " + foodState);
+
+        foodState = FoodState.Stomach;
+        foodImage.color = Color.green;
+    }
+    public void OutFoodByInner_Func()
+    {
+        if (foodState != FoodState.FeedingByInner)
+        {
+            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
+        }
+        Debug.Log("Test, Inner, State : " + foodState);
+
+        foodState = FoodState.Stomach;
+        foodImage.color = Color.green;
+    }
+    public void OutFoodByChain_Func()
+    {
+        if (foodState != FoodState.FeedingByChain)
+        {
+            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
+        }
+        Debug.Log("Test, Chain, State : " + foodState);
+
+        foodState = FoodState.Stomach;
+        foodImage.color = Color.green;
+    }
+    void OnInventory_Func()
+    {
+        if(foodState != FoodState.Stomach)
+        {
+            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
+        }
+        Debug.Log("Test, Inven, State : " + foodState);
+
         foodState = FoodState.Inventory;
         foodImage.color = Color.white;
     }
@@ -280,7 +325,7 @@ public class Food_Script : MonoBehaviour
     {
         if (collision.gameObject.tag == "Food")
         {
-            if (0 < (int)this.foodState)
+            if (this.foodState == FoodState.FeedingByChain || this.foodState == FoodState.FeedingByInner)
             {
                 Food_Script _foodClass = collision.transform.GetComponent<Food_Script>();
 

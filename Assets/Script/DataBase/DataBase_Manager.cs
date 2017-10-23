@@ -32,4 +32,13 @@ public class DataBase_Manager : MonoBehaviour
 
         yield break;
     }
+
+    public string GetUnitName_Func(int _unitID)
+    {
+        return m_CharDataArr[_unitID].charName;
+    }
+    public string GetFoodName_Func(int _foodID)
+    {
+        return m_FoodDataArr[_foodID].foodName;
+    }
 }

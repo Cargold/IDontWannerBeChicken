@@ -41,10 +41,10 @@ public class Game_Manager : MonoBehaviour
     IEnumerator Init_Cor()
     {
         yield return InitMain_Cor();
-        yield return databaseClass.Init_Cor();
-        yield return playerDataClass.Init_Cor();
-        yield return objectPoolManager.Init_Cor();
-        yield return lobbyClass.Init_Cor();
+        yield return databaseClass.Init_Cor();      // 1. DB에서 고정 데이터 불러오기
+        yield return objectPoolManager.Init_Cor();  // 2. DB 정보를 바탕으로 풀링 생성
+        yield return playerDataClass.Init_Cor();    // 3. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
+        yield return lobbyClass.Init_Cor();         // 4. 플레이어 데이터를 바탕으로 로비 구성
         yield return battleClass.Init_Cor();
 
         yield return LoadingOver_Cor();

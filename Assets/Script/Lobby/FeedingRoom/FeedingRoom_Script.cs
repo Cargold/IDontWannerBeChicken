@@ -43,16 +43,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         this.gameObject.SetActive(false);
     }
-
     protected override void EnterUI_Func()
     {
-        this.gameObject.SetActive(true);
-
-        inventoryClass.Active_Func();
-
-        PointUp_Func(inventoryClass.GetFoodRand_Func());
+        
     }
-    
     public override void Exit_Func()
     {
         inventoryClass.Deactive_Func();
@@ -60,6 +54,14 @@ public class FeedingRoom_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
+    public void Enter_Func(int _selectUnitID)
+    {
+        this.gameObject.SetActive(true);
+
+        inventoryClass.Active_Func(_selectUnitID);
+
+        PointUp_Func(inventoryClass.GetFoodRand_Func());
+    }
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
     {
@@ -114,7 +116,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        selectPointingTrf.parent = selectedFoodClass.transform;
+        selectPointingTrf.SetParent(selectedFoodClass.transform);
         selectPointingTrf.localPosition = Vector3.zero;
         //touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
         //Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
@@ -156,7 +158,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     
     void SetTopDepthTrf_Func(Transform _trf)
     {
-        _trf.parent = upgradeGroupTrf;
+        _trf.SetParent(upgradeGroupTrf);
     }
 
     public void Dragging_Func(Food_Script _foodClass)
@@ -297,31 +299,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         }
     }
 
-    #region Stomach Group
-    public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
-    {
-        if(_foodPlaceState == FoodPlaceState.Stomach)
-        {
-            _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
-        }
-        else if(_foodPlaceState == FoodPlaceState.Inventory)
-        {
-            _setterFoodClass.SetDragState_Func(false);
-            _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
-
-            ReplaceFood_Func(_setterFoodClass, true);
-        }
-    }
-    public void SetFeedFoodByChain_Func(Food_Script _foodClass)
-    {
-        stomachClass.FeedFoodByChain_Func(_foodClass);
-    }
-    public void SetFoodOutByChain_Func(Food_Script _foodClass)
-    {
-        stomachClass.OutFood_Func(_foodClass);
-    }
-    #endregion
-
     #region Upgrade Group
     private void PrintUpgradeInfo_Func()
     {
@@ -419,6 +396,35 @@ public class FeedingRoom_Script : LobbyUI_Parent
         PrintFoodInfo_Func(selectedFoodClass);
 
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
+    }
+    #endregion
+    #region Stomach Group
+    public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
+    {
+        if(_foodPlaceState == FoodPlaceState.Stomach)
+        {
+            if(_setterFoodClass.foodState == FoodState.Inventory)
+            {
+                _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
+            }
+
+            //stomachClass.ReplaceStomach_Func(_setterFoodClass.transform);
+        }
+        else if(_foodPlaceState == FoodPlaceState.Inventory)
+        {
+            _setterFoodClass.SetDragState_Func(false);
+            _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
+
+            ReplaceFood_Func(_setterFoodClass, true);
+        }
+    }
+    public void SetFeedFoodByChain_Func(Food_Script _foodClass)
+    {
+        stomachClass.FeedFoodByChain_Func(_foodClass);
+    }
+    public void SetFoodOutByChain_Func(Food_Script _foodClass)
+    {
+        stomachClass.OutFoodByChain_Func(_foodClass);
     }
     #endregion
 }

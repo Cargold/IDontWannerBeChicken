@@ -78,3 +78,14 @@ public enum FoodState
     FeedingByChain = 1,
     FeedingByInner = 2,
 }
+
+public enum UnitInfoUIType
+{
+    None = -1,
+    AttackValue,
+    HealthPoint,
+    DefenceValue,
+    CriticalPercent,
+    SpawnNum,
+    SpawnInterval,
+}

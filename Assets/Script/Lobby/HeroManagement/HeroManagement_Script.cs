@@ -20,4 +20,9 @@ public class HeroManagement_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
+
+    public void OnFeedingRoom_Func()
+    {
+        lobbyManager.OnFeedingRoom_Func(999);
+    }
 }

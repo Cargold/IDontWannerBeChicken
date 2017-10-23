@@ -9,6 +9,8 @@ public class Stomach_Script : MonoBehaviour
     private StomachInner_Script innerClass;
     [SerializeField]
     private List<Food_Script> foodClassList;
+    [SerializeField]
+    private Transform foodGroupTrf;
 
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
@@ -38,37 +40,75 @@ public class Stomach_Script : MonoBehaviour
     }
     public void FeedFoodByInner_Func(Food_Script _foodClass)
     {
-        if (foodClassList.Contains(_foodClass) == false)
+        if(_foodClass.foodState == FoodState.Stomach)
+        {
+            if (foodClassList.Contains(_foodClass) == false)
+            {
+                _foodClass.FeedingByInner_Func();
+                foodClassList.Add(_foodClass);
+            }
+        }
+        else if(_foodClass.foodState == FoodState.FeedingByChain)
         {
             _foodClass.FeedingByInner_Func();
-            foodClassList.Add(_foodClass);
         }
     }
     public void FeedFoodByChain_Func(Food_Script _foodClass)
     {
-        if (foodClassList.Contains(_foodClass) == false)
+        if (_foodClass.foodState == FoodState.Stomach)
         {
-            _foodClass.FeedingByChain_Func();
-            foodClassList.Add(_foodClass);
+            if (foodClassList.Contains(_foodClass) == false)
+            {
+                _foodClass.FeedingByChain_Func();
+                foodClassList.Add(_foodClass);
+            }
         }
     }
-
-    public void OutFood_Func(Food_Script _foodClass)
+    public void OutFoodByInner_Func(Food_Script _foodClass)
     {
-        if (foodClassList.Contains(_foodClass) == true)
+        if(_foodClass.foodState == FoodState.FeedingByInner)
         {
-            _foodClass.OutFood_Func();
-            foodClassList.Remove(_foodClass);
+            if (foodClassList.Contains(_foodClass) == true)
+            {
+                _foodClass.OutFoodByInner_Func();
+                foodClassList.Remove(_foodClass);
+            }
+            else
+            {
+                Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
+                Debug.LogError("음식 이름 : " + _foodClass.foodName);
+            }
         }
         else
         {
-            Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
+            Debug.LogError("Bug : 뱃속 상태가 아닙니다.");
+            Debug.LogError("음식 이름 : " + _foodClass.foodName);
+        }
+    }
+    public void OutFoodByChain_Func(Food_Script _foodClass)
+    {
+        if (_foodClass.foodState == FoodState.FeedingByChain)
+        {
+            if (foodClassList.Contains(_foodClass) == true)
+            {
+                _foodClass.OutFoodByChain_Func();
+                foodClassList.Remove(_foodClass);
+            }
+            else
+            {
+                Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
+                Debug.LogError("음식 이름 : " + _foodClass.foodName);
+            }
+        }
+        else
+        {
+            Debug.LogError("Bug : 연쇄 상태가 아닙니다.");
             Debug.LogError("음식 이름 : " + _foodClass.foodName);
         }
     }
 
-    public bool CheckFeedingFood_Func(Food_Script _foodClass)
+    public void ReplaceStomach_Func(Transform _trf)
     {
-        return foodClassList.Contains(_foodClass);
+        _trf.SetParent(foodGroupTrf);
     }
 }

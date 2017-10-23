@@ -25,7 +25,7 @@ public class StomachInner_Script : MonoBehaviour
         if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            stomachClass.OutFood_Func(_foodClass);
+            stomachClass.OutFoodByInner_Func(_foodClass);
         }
     }
 }
