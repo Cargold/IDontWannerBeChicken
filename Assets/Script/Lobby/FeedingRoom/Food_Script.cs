@@ -62,6 +62,12 @@ public class Food_Script : MonoBehaviour
         feedingRoomClass = _feedingRoomClass;
 
         foodState = _foodFeedState;
+        if (foodState == FoodState.Inventory)
+        {
+            foodPlaceState = FoodPlaceState.Inventory;
+        }
+        else
+            foodPlaceState = FoodPlaceState.Stomach;
 
         level = _level;
         
