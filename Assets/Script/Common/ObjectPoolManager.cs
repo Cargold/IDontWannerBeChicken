@@ -38,8 +38,8 @@ public class ObjectPoolManager : MonoBehaviour
         int _charDataNum = DataBase_Manager.Instance.charDataArr.Length;
         for (int i = 0; i < _charDataNum; i++, _poolListCount++)
         {
-            poolList.Add(Instantiate(Game_Manager.Instance.unitObj));
-            poolList[_poolListCount].transform.parent = _sampleFolderObj.transform;
+            poolList.Add(Instantiate(DataBase_Manager.Instance.unitDataObjArr[i]));
+            poolList[_poolListCount].transform.SetParent(_sampleFolderObj.transform);
 
             Character_Data _charData = DataBase_Manager.Instance.charDataArr[i];
 
@@ -54,7 +54,7 @@ public class ObjectPoolManager : MonoBehaviour
         int _foodDataNum = DataBase_Manager.Instance.foodDataArr.Length;
         for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
         {
-            poolList.Add(Instantiate(Game_Manager.Instance.foodObj));
+            poolList.Add(Instantiate(DataBase_Manager.Instance.foodDataObjArr[i]));
             poolList[_poolListCount].transform.SetParent(_sampleFolderObj.transform);
             Food_Script _foodClass = poolList[_poolListCount].GetComponent<Food_Script>();
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];

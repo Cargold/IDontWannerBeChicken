@@ -15,6 +15,7 @@ public class Food_Script : MonoBehaviour
     public FoodEffect_Sub effectSub;
     [SerializeField]
     private float mainEffectValue;
+    [SerializeField]
     private float subEffectValue;
     public Image foodImage;
     [SerializeField]
@@ -54,7 +55,7 @@ public class Food_Script : MonoBehaviour
         thisRigid = this.GetComponent<Rigidbody2D>();
         spriteRend= this.transform.GetChild(0).GetComponent<SpriteRenderer>();
         spriteRend.sprite = _foodData.foodSprite;
-        thisCol = this.transform.GetChild(0).gameObject.AddComponent<PolygonCollider2D>();
+        thisCol = this.transform.GetChild(0).gameObject.GetComponent<PolygonCollider2D>();
         thisCol.isTrigger = true;
         this.transform.GetChild(0).transform.localScale = Vector3.one * 85f;
     }
@@ -171,7 +172,7 @@ public class Food_Script : MonoBehaviour
     }
     public float GetSubEffectValue_Func()
     {
-        return subEffectValue * level;
+        return subEffectValue;
     }
     public float GetExpPer_Func(int _level = -1)
     {

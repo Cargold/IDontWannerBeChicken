@@ -8,6 +8,7 @@ public class BattleSpawn_Script : MonoBehaviour
     public GroupType spawnGroupType;
     public ArrayList spawnUnitList = new ArrayList();
     private bool isActive = false;
+    [SerializeField]
     private Unit_Script unitClass;
 
     public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType)
@@ -41,7 +42,10 @@ public class BattleSpawn_Script : MonoBehaviour
             else
             {
                 _spawnCalcTime = 0f;
-                OnSpawning_Func();
+                for (int i = 0; i < unitClass.spawnNum; i++)
+                {
+                    OnSpawning_Func();
+                }
                 yield return null;
             }
         }

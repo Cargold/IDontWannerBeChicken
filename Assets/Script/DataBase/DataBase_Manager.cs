@@ -6,6 +6,9 @@ public class DataBase_Manager : MonoBehaviour
 {
     public static DataBase_Manager Instance;
 
+    public GameObject[] unitDataObjArr;
+    public GameObject[] foodDataObjArr;
+
     public Character_Data[] charDataArr
     {
         get
@@ -29,6 +32,22 @@ public class DataBase_Manager : MonoBehaviour
     public IEnumerator Init_Cor()
     {
         Instance = this;
+
+        int _unitDataObjNum = unitDataObjArr.Length;
+        m_CharDataArr = new Character_Data[_unitDataObjNum];
+        for (int i = 0; i < _unitDataObjNum; i++)
+        {
+            Unit_Script _unitClass = unitDataObjArr[i].GetComponent<Unit_Script>();
+            m_CharDataArr[i].SetData_Func(_unitClass);
+        }
+
+        int _foodDataObjNum = foodDataObjArr.Length;
+        m_FoodDataArr = new Food_Data[_foodDataObjNum];
+        for (int i = 0; i < _foodDataObjNum; i++)
+        {
+            Food_Script _foodClass = foodDataObjArr[i].GetComponent<Food_Script>();
+            m_FoodDataArr[i].SetData_Func(_foodClass);
+        }
 
         yield break;
     }

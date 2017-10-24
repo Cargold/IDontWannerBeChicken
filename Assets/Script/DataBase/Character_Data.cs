@@ -31,4 +31,32 @@ public struct Character_Data
 
     // Rendering Data
     public Sprite charSprite;
+
+    public void SetData_Func(Unit_Script _unitClass)
+    {
+        charId          = _unitClass.charId;
+        charName        = _unitClass.charName;
+        charDesc        = _unitClass.charDesc;
+
+        healthPoint     = _unitClass.healthPoint_Max;
+        defenceValue    = _unitClass.defenceValue;
+        attackValue     = _unitClass.attackValue;
+        attackRate      = _unitClass.attackRate_Max;
+        attackRange     = _unitClass.attackRange;
+        moveSpeed       = _unitClass.moveSpeed;
+        criticalPercent = _unitClass.criticalPercent;
+        criticalBonus   = _unitClass.criticalBonus;
+        shootType       = _unitClass.shootType;
+        shootSpeed      = _unitClass.shootSpeed;
+        shootHeight     = _unitClass.shootHeight;
+        attackType      = _unitClass.attackType;
+
+        spawnNum        = _unitClass.spawnNum;
+        spawnInterval   = _unitClass.spawnInterval;
+        populationValue = _unitClass.populationValue;
+
+        groupType       = _unitClass.groupType;
+
+        charSprite      = _unitClass.charSprite;
+    }
 }

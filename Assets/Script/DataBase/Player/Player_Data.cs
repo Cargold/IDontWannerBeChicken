@@ -60,9 +60,14 @@ public class Player_Data : MonoBehaviour
     {
         // 캐릭터 정보 불러오기
 
+        int _unitDataNum = DataBase_Manager.Instance.unitDataObjArr.Length;
+        playerUnitDataArr = new PlayerUnit_ClassData[_unitDataNum];
+
         for (int i = 0; i < playerUnitDataArr.Length; i++)
         {
             Unit_Script _unitClass = ObjectPoolManager.Instance.GetUnitClass_Func(i);
+
+            playerUnitDataArr[i] = new PlayerUnit_ClassData();
 
             yield return playerUnitDataArr[i].Init_Cor(_unitClass);
         }
