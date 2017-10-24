@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Lobby_Manager : MonoBehaviour
 {
+    public static Lobby_Manager Instance;
+
     public Transform menuGroupTrf;
     [System.NonSerialized]
     public LobbyUI_Parent[] lobbyUIParentClassArr;
@@ -48,6 +50,8 @@ public class Lobby_Manager : MonoBehaviour
 
     public IEnumerator Init_Cor()
     {
+        Instance = this;
+
         int _menuNum = menuGroupTrf.childCount;
         lobbyUIParentClassArr = new LobbyUI_Parent[_menuNum];
 

@@ -26,6 +26,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public Image upgradeFocusImage;
     public Transform upgradeGroupTrf;
 
+    public int selectUnitID;
+
     public enum FeedingRoomState
     {
         None = -1,
@@ -50,6 +52,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public override void Exit_Func()
     {
         inventoryClass.Deactive_Func();
+        stomachClass.Deactive_Func();
 
         this.gameObject.SetActive(false);
     }
@@ -58,7 +61,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         this.gameObject.SetActive(true);
 
+        selectUnitID = _selectUnitID;
+
         inventoryClass.Active_Func(_selectUnitID);
+        stomachClass.Active_Func(_selectUnitID);
 
         PointUp_Func(inventoryClass.GetFoodRand_Func());
     }
@@ -118,10 +124,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         selectPointingTrf.SetParent(selectedFoodClass.transform);
         selectPointingTrf.localPosition = Vector3.zero;
-        //touchOffsetPos = Input.mousePosition - _foodClass.transform.position;
-        //Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        //selectPointingTrf.position = _dragPos;
-        //selectPointingTrf.SetAsLastSibling();
 
         guideSelectObj.SetActive(true);
         guideDragObj.SetActive(false);
@@ -150,10 +152,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     void DragBeginSelectFood_Func()
     {
-        //touchOffsetPos = Input.mousePosition - selectedFoodClass.transform.position;
-        //Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-        //selectPointingTrf. position = _dragPos;
-        //selectPointingTrf.SetAsLastSibling();
+
     }
     
     void SetTopDepthTrf_Func(Transform _trf)
@@ -171,7 +170,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
                 Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
                 selectedFoodClass.transform.position = _dragPos;
-                //selectPointingTrf.position = _dragPos;
             }
             else if (materialFoodClass == _foodClass)
             {
@@ -224,9 +222,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             inventoryClass.SetRegroupTrf_Func(replaceFoodClass.transform, true);
 
-            //if (replaceFoodClass == selectedFoodClass)
-            //    selectPointingTrf.position = selectedFoodClass.transform.position;
-
             replaceFoodClass = null;
         }
     }
@@ -252,25 +247,25 @@ public class FeedingRoom_Script : LobbyUI_Parent
         switch (_foodClass.effectSub)
         {
             case FoodEffect_Sub.Critical:
-                subEffectText.text = "Crit +" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Crit +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.SpawnInterval:
-                subEffectText.text = "Spawn Timer -" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Spawn Timer -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DecreaseHP:
-                subEffectText.text = "HP -" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "HP -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DefenceValue:
-                subEffectText.text = "Defence +" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Defence +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DecreaseAttack:
-                subEffectText.text = "Atk -" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Atk -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.Bounus_Fish:
-                subEffectText.text = "Fish Food +" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Fish Food +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.Bonus_Apple:
-                subEffectText.text = "Fish Food +" + _foodClass.subEffectValue + "%";
+                subEffectText.text = "Fish Food +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
         }
 
@@ -285,9 +280,33 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         return inventoryClass.CheckInventoryFood_Func(_foodClass);
     }
+    public void AddFoodInInventroy_Func(Food_Script _foodClass)
+    {
+        inventoryClass.AddFood_Func(_foodClass);
+    }
+    public void RemoveFood_Func(Food_Script _foodClass)
+    {
+        bool _isInventoryFood = false;
+        _isInventoryFood = CheckInventoryFood_Func(_foodClass);
+
+        Player_Data.Instance.RemoveFood_Func(_foodClass, _isInventoryFood, selectUnitID);
+        if (_isInventoryFood == true)
+        {
+            RemoveFoodInInventory_Func(_foodClass);
+            
+        }
+        else
+        {
+            RemoveFoodInStomach_Func(_foodClass);
+        }
+    }
     public void RemoveFoodInInventory_Func(Food_Script _foodClass)
     {
         inventoryClass.RemoveFood_Func(_foodClass);
+    }
+    void RemoveFoodInStomach_Func(Food_Script _foodClass)
+    {
+
     }
     public void ReplaceFood_Func(Food_Script _foodClass, bool _isImmediately = false)
     {
@@ -345,8 +364,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        //selectPointingTrf.SetAsLastSibling();
-
         SetTopDepthTrf_Func(materialFoodClass.transform);
         materialFoodClass.transform.SetAsLastSibling();
     }
@@ -367,9 +384,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     private void UpgradeEnd_Func()
     {
         isUpgradeReady = false;
-
+        
         inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
-        inventoryClass.SetRegroupTrf_Func(materialFoodClass.transform);
 
         materialFoodClass = null;
 
@@ -379,14 +395,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
 
         PrintFoodInfo_Func(selectedFoodClass);
-
-        SetTopDepthTrf_Func(selectPointingTrf);
     }
     private void Upgrade_Func()
     {
-        Debug.Log("Test, Upgrade");
-
         isUpgradeReady = false;
+
+        Player_Data.Instance.SetUnitDataByFood_Func(selectUnitID, selectedFoodClass, false);
 
         float _materialExp = materialFoodClass.GetMaterialExp_Func();
         materialFoodClass.Destroy_Func();
@@ -396,6 +410,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
         PrintFoodInfo_Func(selectedFoodClass);
 
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
+
+        bool _isInventoryFood = CheckInventoryFood_Func(selectedFoodClass);
+        Player_Data.Instance.SetFoodData_Func(selectedFoodClass, _isInventoryFood, selectUnitID);
+        Player_Data.Instance.SetUnitDataByFood_Func(selectUnitID, selectedFoodClass, true);
     }
     #endregion
     #region Stomach Group
@@ -407,24 +425,25 @@ public class FeedingRoom_Script : LobbyUI_Parent
             {
                 _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
             }
-
-            //stomachClass.ReplaceStomach_Func(_setterFoodClass.transform);
         }
         else if(_foodPlaceState == FoodPlaceState.Inventory)
         {
+            // 드래그 상태 취소
             _setterFoodClass.SetDragState_Func(false);
+            
+            // 뱃속에서 음식을 꺼냄
+            stomachClass.OutFoodByStomachRange_Func(_setterFoodClass);
+
+            // 음식을 인벤토리 상태로...
             _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
 
+            // 음식을 인벤토리로 이동
             ReplaceFood_Func(_setterFoodClass, true);
         }
     }
     public void SetFeedFoodByChain_Func(Food_Script _foodClass)
     {
         stomachClass.FeedFoodByChain_Func(_foodClass);
-    }
-    public void SetFoodOutByChain_Func(Food_Script _foodClass)
-    {
-        stomachClass.OutFoodByChain_Func(_foodClass);
     }
     #endregion
 }

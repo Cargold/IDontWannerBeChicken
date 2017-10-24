@@ -23,7 +23,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public int populationValue_Recent;
 
     public Text[] unitInfoTextArr;
-    public Image unitInfoImage;
+    public Image unitImage;
 
     private Vector3 touchOffsetPos;
 
@@ -117,19 +117,9 @@ public class PartySetting_Script : LobbyUI_Parent
         selectCardClass = _unitCardClass;
 
         selectUnitID = selectCardClass.cardId;
-        Character_Data _charData = DataBase_Manager.Instance.charDataArr[selectUnitID];
 
-        unitInfoTextArr[0].text = ((int)_charData.attackValue).ToString();
-        unitInfoTextArr[1].text = ((int)_charData.healthPoint).ToString();
-        unitInfoTextArr[2].text = _charData.defenceValue.ToString() + "%";
-        unitInfoTextArr[3].text = _charData.criticalPercent.ToString() + "%";
-        unitInfoTextArr[4].text = _charData.spawnNum.ToString();
-        unitInfoTextArr[5].text = _charData.spawnInterval.ToString() + "s";
-        unitInfoTextArr[6].text = _charData.charName;
-        unitInfoTextArr[7].text = _charData.charDesc;
-
-        unitInfoImage.sprite = _charData.charSprite;
-        unitInfoImage.SetNativeSize();
+        PrintInfoUI_Func();
+        PrintUnitImage_Func();
     }
     public void DragBegin_Func(UnitCard_Script _unitCardClass)
     {
@@ -283,6 +273,28 @@ public class PartySetting_Script : LobbyUI_Parent
     void RotateUnitImage_Func()
     {
 
+    }
+    #endregion
+    #region Print Group
+    public void PrintInfoUI_Func()
+    {
+        Unit_Script _unitClass = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitClass;
+
+        unitInfoTextArr[0].text = ((int)_unitClass.attackValue).ToString();
+        unitInfoTextArr[1].text = ((int)_unitClass.healthPoint_Max).ToString();
+        unitInfoTextArr[2].text = _unitClass.defenceValue.ToString() + "%";
+        unitInfoTextArr[3].text = _unitClass.criticalPercent.ToString() + "%";
+        unitInfoTextArr[4].text = _unitClass.spawnNum.ToString();
+        unitInfoTextArr[5].text = _unitClass.spawnInterval.ToString() + "s";
+        unitInfoTextArr[6].text = _unitClass.charName;
+        unitInfoTextArr[7].text = _unitClass.charDesc;
+    }
+    public void PrintUnitImage_Func()
+    {
+        Unit_Script _unitClass = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitClass;
+
+        unitImage.sprite = _unitClass.charSprite;
+        unitImage.SetNativeSize();
     }
     #endregion
 }

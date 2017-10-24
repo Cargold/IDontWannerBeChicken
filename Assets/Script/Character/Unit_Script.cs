@@ -49,6 +49,19 @@ public class Unit_Script : Character_Script
 
         InitMove_Func();
     }
+    public void SetDataByPlayerUnit_Func(Unit_Script _unitClass)
+    {
+        healthPoint_Max = _unitClass.healthPoint_Max;
+        healthPoint_Recent = _unitClass.healthPoint_Recent;
+        defenceValue = _unitClass.defenceValue;
+        attackValue = _unitClass.attackValue;
+        attackRate_Max = _unitClass.attackRate_Max;
+        attackRange = _unitClass.attackRange;
+        moveSpeed = _unitClass.moveSpeed;
+        criticalPercent = _unitClass.criticalPercent;
+        
+        spawnInterval = _unitClass.spawnInterval;
+    }
 
     void InitMove_Func()
     {

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Food_Script : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Food_Script : MonoBehaviour
     public FoodEffect_Sub effectSub;
     [SerializeField]
     private float mainEffectValue;
-    public float subEffectValue;
+    private float subEffectValue;
     public Image foodImage;
     [SerializeField]
     private Rigidbody2D thisRigid;
@@ -62,12 +63,26 @@ public class Food_Script : MonoBehaviour
         feedingRoomClass = _feedingRoomClass;
 
         foodState = _foodFeedState;
-        if (foodState == FoodState.Inventory)
+        switch (foodState)
         {
-            foodPlaceState = FoodPlaceState.Inventory;
+            case FoodState.Inventory:
+                foodPlaceState = FoodPlaceState.Inventory;
+                OnInventory_Func();
+                break;
+            case FoodState.Stomach:
+                foodPlaceState = FoodPlaceState.Stomach;
+                OnStomach_Func();
+                break;
+            case FoodState.FeedingByChain:
+                foodPlaceState = FoodPlaceState.Stomach;
+                FeedingByChain_Func();
+                break;
+            case FoodState.FeedingByInner:
+                foodPlaceState = FoodPlaceState.Stomach;
+                FeedingByInner_Func();
+                break;
         }
-        else
-            foodPlaceState = FoodPlaceState.Stomach;
+            
 
         level = _level;
         
@@ -97,17 +112,11 @@ public class Food_Script : MonoBehaviour
     }
     public void Destroy_Func()
     {
+        // Call : 음식강화 시 재료로 사용됨
+
         // 제거 연출
 
-        bool _isInventoryFood = false;
-        _isInventoryFood = feedingRoomClass.CheckInventoryFood_Func(this);
-
-        if(_isInventoryFood == true)
-        {
-            feedingRoomClass.RemoveFoodInInventory_Func(this);
-        }
-
-        Player_Data.Instance.RemoveFood_Func(this, _isInventoryFood);
+        feedingRoomClass.RemoveFood_Func(this);
     }
 
     public CalcFoodExpData GetCalcExpData_Func(float _getExp)
@@ -160,6 +169,10 @@ public class Food_Script : MonoBehaviour
     {
         return mainEffectValue * level;
     }
+    public float GetSubEffectValue_Func()
+    {
+        return subEffectValue * level;
+    }
     public float GetExpPer_Func(int _level = -1)
     {
         if (_level == -1)
@@ -206,7 +219,7 @@ public class Food_Script : MonoBehaviour
 
             if(foodState == FoodState.Inventory)
             {
-                OutFood_Func();
+                OnStomach_Func();
             }
 
             thisCol.isTrigger = false;
@@ -261,47 +274,18 @@ public class Food_Script : MonoBehaviour
         foodState = FoodState.FeedingByChain;
         foodImage.color = Color.yellow;
     }
-    public void OutFood_Func()
+    public void OnStomach_Func()
     {
-        if (foodState != FoodState.Inventory)
-        {
-            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
-        }
-        Debug.Log("Test, Out, State : " + foodState);
-
         foodState = FoodState.Stomach;
         foodImage.color = Color.green;
     }
     public void OutFoodByInner_Func()
     {
-        if (foodState != FoodState.FeedingByInner)
-        {
-            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
-        }
-        Debug.Log("Test, Inner, State : " + foodState);
-
-        foodState = FoodState.Stomach;
-        foodImage.color = Color.green;
-    }
-    public void OutFoodByChain_Func()
-    {
-        if (foodState != FoodState.FeedingByChain)
-        {
-            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
-        }
-        Debug.Log("Test, Chain, State : " + foodState);
-
         foodState = FoodState.Stomach;
         foodImage.color = Color.green;
     }
     void OnInventory_Func()
     {
-        if(foodState != FoodState.Stomach)
-        {
-            Debug.LogError("Bug Obj Name : " + this.gameObject.name);
-        }
-        Debug.Log("Test, Inven, State : " + foodState);
-
         foodState = FoodState.Inventory;
         foodImage.color = Color.white;
     }
@@ -317,21 +301,6 @@ public class Food_Script : MonoBehaviour
                 if (_foodClass.foodState == FoodState.Stomach)
                 {
                     feedingRoomClass.SetFeedFoodByChain_Func(_foodClass);
-                }
-            }
-        }
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Food")
-        {
-            if (this.foodState == FoodState.FeedingByChain || this.foodState == FoodState.FeedingByInner)
-            {
-                Food_Script _foodClass = collision.transform.GetComponent<Food_Script>();
-
-                if (_foodClass.foodState == FoodState.FeedingByChain)
-                {
-                    feedingRoomClass.SetFoodOutByChain_Func(_foodClass);
                 }
             }
         }

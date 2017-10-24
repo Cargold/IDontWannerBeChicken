@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class BattleSpawn_Script : MonoBehaviour
 {
+    public Battle_Manager battleManagerClass;
     public GroupType spawnGroupType;
     public ArrayList spawnUnitList = new ArrayList();
     private bool isActive = false;
     private Unit_Script unitClass;
 
-    public void Init_Func(GroupType _groupType)
+    public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType)
     {
+        battleManagerClass = _battleManagerClass;
+
         spawnGroupType = _groupType;
     }
 
@@ -60,6 +63,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);
+        _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
 
         spawnUnitList.Add(_spawnUnitClass);
     }
@@ -71,8 +75,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
         StopCoroutine("CheckSpawnTimer_Cor");
     }
-
-    public Unit_Script[] GetSpawnUnitClassArr_Func()
+    public Unit_Script[] GetUnitClassArr_Func()
     {
         return spawnUnitList.ToArray() as Unit_Script[];
     }

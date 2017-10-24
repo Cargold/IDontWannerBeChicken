@@ -13,6 +13,7 @@ public class ObjectPoolManager : MonoBehaviour
     public List<GameObject> poolList;
     public int[] poolAmount;
 
+    Dictionary<int, Unit_Script> unitDic = new Dictionary<int, Unit_Script>();
     Dictionary<string, ObjectPool> objectPoolList = new Dictionary<string, ObjectPool>();
 
     public IEnumerator Init_Cor()
@@ -46,19 +47,17 @@ public class ObjectPoolManager : MonoBehaviour
             _unitClass.SetData_Func(_charData);
 
             poolList[_poolListCount].name = _unitClass.charName;
+
+            unitDic.Add(i, _unitClass);
         }
         
         int _foodDataNum = DataBase_Manager.Instance.foodDataArr.Length;
         for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
         {
             poolList.Add(Instantiate(Game_Manager.Instance.foodObj));
-            //_sampleFolderObj.transform.localScale = Vector3.one * 1.1f;
             poolList[_poolListCount].transform.SetParent(_sampleFolderObj.transform);
-
-
-            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
-
             Food_Script _foodClass = poolList[_poolListCount].GetComponent<Food_Script>();
+            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
             _foodClass.SetData_Func(_foodData);
 
             poolList[_poolListCount].name = _foodClass.foodName;
@@ -92,6 +91,7 @@ public class ObjectPoolManager : MonoBehaviour
                 objectPool.unusedList.Add(inst);
 
                 // 한번에 풀을 생성할때의 부하를 줄이기 위해서 코루틴을 사용한다
+                // 꺼져, 느려
                 //yield return null;
             }
 
@@ -119,12 +119,11 @@ public class ObjectPoolManager : MonoBehaviour
         else // 사용 가능한 오브젝트가 없을때
         {
             GameObject obj = Instantiate(pool.source);            
-            obj.transform.parent = pool.folder.transform;
+            obj.transform.SetParent(pool.folder.transform);
             obj.name = pool.source.name;
             return obj;
         }        
     }
-
     public void Free_Func(GameObject obj)
     {
         string keyName = obj.name;
@@ -138,7 +137,19 @@ public class ObjectPoolManager : MonoBehaviour
             ObjectPool pool = objectPoolList[keyName];
             obj.SetActive(false);
             pool.unusedList.Add(obj);
+            obj.transform.SetParent(pool.folder.transform);
         }
+    }
+    public Unit_Script GetUnitClass_Func(int _unitID)
+    {
+        Unit_Script _unitClass = null;
+
+        if (unitDic.TryGetValue(_unitID, out _unitClass) == false)
+        {
+            Debug.LogError("Bug : 유닛 ID가 설정치를 벗어났슴다");
+        }
+
+        return _unitClass;
     }
 }
 

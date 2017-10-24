@@ -95,7 +95,6 @@ public class Character_Script : MonoBehaviour
     {
         charState = CharacterState.Idle;
     }
-
     protected virtual void Move_Func()
     {
         charState = CharacterState.Move;
@@ -105,7 +104,6 @@ public class Character_Script : MonoBehaviour
     {
         OnContact_Func(col);
     }
-
     void OnTriggerExit(Collider col)
     {
         OnRunAway_Func(col);
@@ -123,7 +121,6 @@ public class Character_Script : MonoBehaviour
             }
         }
     }
-
     void OnContact_Func(Collider col)
     {
         if (col.tag == "Character")
@@ -145,7 +142,6 @@ public class Character_Script : MonoBehaviour
         if (charState != CharacterState.Attack)
             charState = CharacterState.Attack;
     }
-
     IEnumerator CheckAttack_Cor()
     {
         while(isAlive == true)
@@ -183,7 +179,6 @@ public class Character_Script : MonoBehaviour
             yield return null;
         }
     }
-
     IEnumerator CheckAttackRate_Cor()
     {
         isAttackOn = true;

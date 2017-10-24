@@ -8,7 +8,7 @@ public class Inventory_Script : MonoBehaviour
     public UpgradePlate_Script upgradePlateClass;
     public ReplaceCol_Script replaceColClass;
     [SerializeField]
-    private List<Food_Script> foodClassList;
+    private List<Food_Script> inventoryFoodClassList;
 
     public Transform bagGroupTrf;
     public Transform sortInitPos;
@@ -21,18 +21,43 @@ public class Inventory_Script : MonoBehaviour
 
         upgradePlateClass.Init_Func(_feedingRoomClass);
         replaceColClass.Init_Func(_feedingRoomClass);
+    }
 
+    public void Active_Func(int _selectUnitID)
+    {
+        InitInventoryFood_Func();
+
+        if (_selectUnitID == 999)
+        {
+            // Hero
+
+            SetStomachFood_Func();
+        }
+        else
+        {
+            // Unit
+
+            SetStomachFood_Func();
+        }
+
+        replaceColClass.Active_Func();
+    }
+    void InitInventoryFood_Func()
+    {
         int _haveFoodNum = Player_Data.Instance.GetInventoryFoodNum_Func();
-        foodClassList = new List<Food_Script>();
+        inventoryFoodClassList = new List<Food_Script>();
         for (int i = 0; i < _haveFoodNum; i++)
         {
-            PlayerFood_Data _playerFoodData = Player_Data.Instance.GetPlayerFoodData_Func(i);
-            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.haveFoodID];
+            PlayerFood_ClassData _playerFoodData = Player_Data.Instance.GetPlayerFoodData_Func(i);
+            
+            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.foodID];
+
             GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
-            _foodClass.Init_Func(_feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.foodExp);
-            foodClassList.Add(_foodClass);
-            Player_Data.Instance.inventoryFoodDataList[i].foodClass = _foodClass;
+            _foodClass.Init_Func(feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.remainExp);
+            _foodClass.SetState_Func(FoodPlaceState.Inventory);
+            inventoryFoodClassList.Add(_foodClass);
+            Player_Data.Instance.SetFoodClassInInventory_Func(_foodClass, i);
 
             _foodObj.transform.SetParent(bagGroupTrf);
         }
@@ -42,50 +67,48 @@ public class Inventory_Script : MonoBehaviour
     void SortInventory_Func()
     {
         Vector2 _sortPos = sortInitPos.localPosition;
-        for (int i = 0, count = -1; count < foodClassList.Count; i++)
+        for (int i = 0, count = -1; count < inventoryFoodClassList.Count; i++)
         {
             for (int j = 0; j < axisXNum; j++)
             {
                 count++;
-                if (foodClassList.Count <= count)
+                if (inventoryFoodClassList.Count <= count)
                 {
                     break;
                 }
-                _sortPos = 
+                _sortPos =
                     new Vector2
                     (
                         sortInitPos.localPosition.x + (sortGapPos.x * j),
                         sortInitPos.localPosition.y + (sortGapPos.y * i)
                     );
-                foodClassList[count].transform.localPosition = _sortPos;
+                inventoryFoodClassList[count].transform.localPosition = _sortPos;
             }
         }
     }
-
-    public void Active_Func(int _selectUnitID)
+    void SetStomachFood_Func()
     {
-        if(_selectUnitID == 999)
-        {
-            // Hero
 
-
-        }
-        else
-        {
-            // Unit
-
-
-        }
-
-        SortInventory_Func();
     }
+
     public void Deactive_Func()
     {
+        for (int i = 0; i < inventoryFoodClassList.Count; i++)
+        {
+            Player_Data.Instance.SetFoodData_Func(inventoryFoodClassList[i], true);
 
+            ObjectPoolManager.Instance.Free_Func(inventoryFoodClassList[i].gameObject);
+        }
+
+        inventoryFoodClassList.Clear();
+
+        replaceColClass.Deactive_Func();
     }
 
     public void SetRegroupTrf_Func(Transform _regroupTrf, bool _isReplacePos = false)
     {
+        if (_regroupTrf.gameObject.activeInHierarchy == false) return;
+
         _regroupTrf.SetParent(bagGroupTrf);
 
         if(_isReplacePos == true)
@@ -94,26 +117,39 @@ public class Inventory_Script : MonoBehaviour
 
     public Food_Script GetFood_Func(int _inventoryID)
     {
-        return foodClassList[_inventoryID];
+        return inventoryFoodClassList[_inventoryID];
     }
-
     public Food_Script GetFoodRand_Func()
     {
-        return foodClassList[Random.Range(0, foodClassList.Count)];
+        return inventoryFoodClassList[Random.Range(0, inventoryFoodClassList.Count)];
     }
 
     public bool CheckInventoryFood_Func(Food_Script _foodClass)
     {
-        for (int i = 0; i < foodClassList.Count; i++)
+        return inventoryFoodClassList.Contains(_foodClass);
+    }
+    public void AddFood_Func(Food_Script _foodClass)
+    {
+        if(inventoryFoodClassList.Contains(_foodClass) == false)
         {
-            if (_foodClass == foodClassList[i])
-                return true;
+            inventoryFoodClassList.Add(_foodClass);
         }
-
-        return false;
+        else
+        {
+            Debug.LogError("Bug : 이미 가방에 있는 음식이 추가되었습니다.");
+            Debug.LogError("Name : " + _foodClass.foodName);
+        }
     }
     public void RemoveFood_Func(Food_Script _foodClass)
     {
-        foodClassList.Remove(_foodClass);
+        if (inventoryFoodClassList.Contains(_foodClass) == true)
+        {
+            inventoryFoodClassList.Remove(_foodClass);
+        }
+        else
+        {
+            Debug.LogError("Bug : 가방에 없는 음식을 제거하였습니다.");
+            Debug.LogError("Name : " + _foodClass.foodName);
+        }
     }
 }

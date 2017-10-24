@@ -19,14 +19,15 @@ public class Player_Data : MonoBehaviour
 
     // Unit
     [SerializeField]
-    public PlayerUnit_Data[] playerUnitDataArr;
+    public PlayerUnit_ClassData[] playerUnitDataArr;
 
     // Hero
     public int levelHero;
-    public List<PlayerFood_Data> heroFoodDataList;
+    public Player_Script playerClass;
+    public List<PlayerFood_ClassData> heroFoodDataList;
 
     // Inventory
-    public List<PlayerFood_Data> inventoryFoodDataList;
+    public List<PlayerFood_ClassData> inventoryFoodDataList;
 
     // Trophy
 
@@ -61,28 +62,37 @@ public class Player_Data : MonoBehaviour
 
         for (int i = 0; i < playerUnitDataArr.Length; i++)
         {
-            //playerUnitDataArr[i].unitClass
+            Unit_Script _unitClass = ObjectPoolManager.Instance.GetUnitClass_Func(i);
+
+            yield return playerUnitDataArr[i].Init_Cor(_unitClass);
         }
 
         yield break;
     }
     void Test_InventoryFood_Func()
     {
-        inventoryFoodDataList = new List<PlayerFood_Data>();
+        inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
-        for (int i = 0; i < 14; i++)
+        for (int i = 0; i < 15; i++)
         {
-            PlayerFood_Data _playerFoodData = new PlayerFood_Data();
-            //_playerFoodData.level = 1;
+            PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+
             _playerFoodData.level = Random.Range(1, 4);
             int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
-            //_playerFoodData.haveFoodID = 0;
-            _playerFoodData.haveFoodID = Random.Range(0, _foodIDMax);
-            //_playerFoodData.foodExp = 0f;
-            _playerFoodData.foodExp = Random.Range(0f, 99f);
+            _playerFoodData.foodID = Random.Range(0, _foodIDMax);
+            _playerFoodData.remainExp = Random.Range(0f, 99f);
+
+            //_playerFoodData.level = 1;
+            //_playerFoodData.foodID = 0;
+            //_playerFoodData.remainExp = 0f;
 
             inventoryFoodDataList.Add(_playerFoodData);
         }
+    }
+
+    private void Update()
+    {
+        //Debug.Log("Test, Food Class : " + inventoryFoodDataList[0].foodClass);
     }
 
     #region Party Group
@@ -176,32 +186,26 @@ public class Player_Data : MonoBehaviour
     #region Food Group
     public void AddFood_Func(Food_Script _foodClass)
     {
-        PlayerFood_Data _playerFoodData = new PlayerFood_Data();
+        // 보상 또는 구매를 통해 인벤토리로...
+        // 유닛 위장에서 인벤토리로...
+
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
         _playerFoodData.SetData_Func(_foodClass);
 
         inventoryFoodDataList.Add(_playerFoodData);
     }
-    public void RemoveFood_Func(Food_Script _foodClass, bool _isInventoryFood, int _haveFoodUnitID = -1)
+    public void RemoveFood_Func(Food_Script _foodClass, bool _isInventoryFood, int _haveFoodUnitID)
     {
         if(_isInventoryFood == true)
         {
             // 인벤토리의 음식이 삭제되는 경우
 
-            int _inventoryFoodID = -1;
-
-            for (int i = 0; i < inventoryFoodDataList.Count; i++)
-            {
-                if (_foodClass == inventoryFoodDataList[i].foodClass)
-                {
-                    _inventoryFoodID = i;
-                    break;
-                }
-            }
+            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
 
             if (_inventoryFoodID == -1)
                 Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
 
-            Destroy(inventoryFoodDataList[_inventoryFoodID].foodClass.gameObject); // 풀링으로 복귀...
+            ObjectPoolManager.Instance.Free_Func(inventoryFoodDataList[_inventoryFoodID].GetFoodClass_Func().gameObject);
             inventoryFoodDataList.RemoveAt(_inventoryFoodID);
         }
         else
@@ -211,13 +215,155 @@ public class Player_Data : MonoBehaviour
             
         }
     }
-    public PlayerFood_Data GetPlayerFoodData_Func(int _inventoryFoodID)
+    public void FeedFood_Func(int _unitID, Food_Script _foodClass)
+    {
+        if (_unitID == 999)
+        {
+            // Hero
+
+            PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+            _playerFoodData.SetData_Func(_foodClass);
+            heroFoodDataList.Add(_playerFoodData);
+        }
+        else
+        {
+            // Unit
+
+            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
+
+            playerUnitDataArr[_unitID].FeedFood_Func(_foodClass);
+        }
+    }
+    public void OutFood_Func(Food_Script _foodClass, int _unitID)
+    {
+        playerUnitDataArr[_unitID].OutFood_Func(_foodClass);
+
+    }
+
+    public void SetFoodData_Func(Food_Script _foodClass, bool _isInventoryFood, int _unitID = -1)
+    {
+        if(_isInventoryFood == true)
+        {
+            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            inventoryFoodDataList[_inventoryFoodID].SetData_Func(_foodClass);
+        }
+        else if(_isInventoryFood == false)
+        {
+            playerUnitDataArr[_unitID].SetFoodData_Func(_foodClass);
+        }
+    }
+    public void SetFoodClassInInventory_Func(Food_Script _foodClass, int _inventoryID)
+    {
+        inventoryFoodDataList[_inventoryID].SetData_Func(_foodClass);
+    }
+    public void SetFoodClassInUnit_Func(Food_Script _foodClass, int _unitID, int _haveFoodID)
+    {
+        playerUnitDataArr[_unitID].SetFoodData_Func(_foodClass, _haveFoodID);
+    }
+
+    public int GetInventoryFoodID_Func(Food_Script _foodClass)
+    {
+        int _inventoryFoodID = -1;
+
+        for (int i = 0; i < inventoryFoodDataList.Count; i++)
+        {
+            if (_foodClass == inventoryFoodDataList[i].GetFoodClass_Func())
+            {
+                _inventoryFoodID = i;
+                break;
+            }
+        }
+
+        if (_inventoryFoodID == -1)
+            Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
+
+        return _inventoryFoodID;
+    }
+    public PlayerFood_ClassData GetPlayerFoodData_Func(int _inventoryFoodID)
     {
         return inventoryFoodDataList[_inventoryFoodID];
     }
     public int GetInventoryFoodNum_Func()
     {
         return inventoryFoodDataList.Count;
+    }
+
+    public void SetUnitDataByFood_Func(int _unitID, Food_Script _foodClass, bool _isFeed)
+    {
+        SetUnitDataByFood_Func(playerUnitDataArr[_unitID].unitClass, _foodClass, _isFeed);
+    }
+    public void SetUnitDataByFood_Func(Unit_Script _unitClass, Food_Script _foodClass, bool _isFeed)
+    {
+        float _feedingCalc = 0f;
+        if (_isFeed == true)
+            _feedingCalc = 0.01f;
+        else if (_isFeed == false)
+            _feedingCalc = -0.01f;
+
+        if(_foodClass.effectMain == FoodEffect_Main.AttackPower || _foodClass.effectMain == FoodEffect_Main.HealthPoint)
+            SetUnitDataByFoodMainEffect_Func(_unitClass, _foodClass, _feedingCalc);
+
+        if(FoodEffect_Sub.None < _foodClass.effectSub)
+            SetUnitDataByFoodSubEffect_Func(_unitClass, _foodClass, _feedingCalc);
+
+        Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+    }
+    void SetUnitDataByFoodMainEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
+    {
+        int _charID = _unitClass.charId;
+
+        switch (_foodClass.effectMain)
+        {
+            case FoodEffect_Main.AttackPower:
+                float _attackValue = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
+                _attackValue = _attackValue * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
+                _unitClass.attackValue += _attackValue;
+                break;
+
+            case FoodEffect_Main.HealthPoint:
+                float _healthPoint = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
+                _healthPoint = _healthPoint * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
+                _unitClass.healthPoint_Max += _healthPoint;
+                break;
+        }
+    }
+    void SetUnitDataByFoodSubEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
+    {
+        int _charID = _unitClass.charId;
+
+        switch (_foodClass.effectSub)
+        {
+            case FoodEffect_Sub.Critical:
+                float _criticalPercent = DataBase_Manager.Instance.charDataArr[_charID].criticalPercent;
+                _criticalPercent = _criticalPercent * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.criticalPercent += _criticalPercent;
+                break;
+
+            case FoodEffect_Sub.SpawnInterval:
+                float _spawnInterval = DataBase_Manager.Instance.charDataArr[_charID].spawnInterval;
+                _spawnInterval = _spawnInterval * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.spawnInterval += _spawnInterval;
+                break;
+
+            case FoodEffect_Sub.DecreaseHP:
+                float _healthPoint = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
+                _healthPoint = _healthPoint * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.healthPoint_Max -= _healthPoint;
+                break;
+
+            case FoodEffect_Sub.DefenceValue:
+                float _defenceValue = DataBase_Manager.Instance.charDataArr[_charID].defenceValue;
+                _defenceValue = _defenceValue * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.defenceValue += _defenceValue;
+                break;
+
+            case FoodEffect_Sub.DecreaseAttack:
+                float _attackValue = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
+                _attackValue = _attackValue * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.attackValue -= _attackValue;
+                break;
+        }
     }
     #endregion
 }

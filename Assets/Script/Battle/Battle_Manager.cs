@@ -13,6 +13,9 @@ public class Battle_Manager : MonoBehaviour
     public BattleSpawn_Script[] spawnClassArr_Ally;
     public BattleSpawn_Script[] spawnClassArr_Enemy;
 
+    public ArrayList spawnUnitList_Ally = new ArrayList();
+    public ArrayList spawnUnitList_Enemy = new ArrayList();
+
     public enum BattleState
     {
         None = -1,
@@ -42,7 +45,7 @@ public class Battle_Manager : MonoBehaviour
             _spawnAllyObj.name = "SpawnObjAlly_" + i;
 
             spawnClassArr_Ally[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
-            spawnClassArr_Ally[i].Init_Func(GroupType.Ally);
+            spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally);
         }
 
         yield break;
@@ -129,7 +132,7 @@ public class Battle_Manager : MonoBehaviour
             int _partyUnitId = Player_Data.Instance.partyUnitIdArr[i];
             if (0 <= _partyUnitId)
             {
-                PlayerUnit_Data _playerUnitData = Player_Data.Instance.playerUnitDataArr[_partyUnitId];
+                PlayerUnit_ClassData _playerUnitData = Player_Data.Instance.playerUnitDataArr[_partyUnitId];
                 spawnClassArr_Ally[i].ActiveSpawn_Func(_playerUnitData.unitClass);
             }
         }
@@ -153,7 +156,6 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
-
     public void OnMoveRight_Func(bool _isDown)
     {
         if (m_BattleState == BattleState.Play)
@@ -167,6 +169,11 @@ public class Battle_Manager : MonoBehaviour
                 playerClass.MoveOver_Func();
             }
         }
+    }
+
+    public void SetSpawnAllyUnit_Func(Unit_Script _unitClass)
+    {
+        spawnUnitList_Ally.Add(_unitClass);
     }
     #endregion
     #region Result Group

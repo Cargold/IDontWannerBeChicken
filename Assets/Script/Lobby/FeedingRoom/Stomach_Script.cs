@@ -8,17 +8,70 @@ public class Stomach_Script : MonoBehaviour
     [SerializeField]
     private StomachInner_Script innerClass;
     [SerializeField]
-    private List<Food_Script> foodClassList;
+    private List<Food_Script> feedFoodClassList;
     [SerializeField]
     private Transform foodGroupTrf;
+    [SerializeField]
+    private Transform bottomPos;
+    [SerializeField]
+    private int stomachUnitID;
+    public bool isActive;
 
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
         feedingRoomClass = _feedingRoomClass;
 
         innerClass.Init_Func(this);
+    }
+    public void Active_Func(int _selectUnitID)
+    {
+        isActive = true;
+        stomachUnitID = _selectUnitID;
 
-        foodClassList = new List<Food_Script>();
+        SpawnFood_Func();
+    }
+    void SpawnFood_Func()
+    {
+        PlayerFood_ClassData[] _playerFoodDataArr =
+            Player_Data.Instance.playerUnitDataArr[stomachUnitID].GetPlayerFoodDataArr_Func();
+
+        feedFoodClassList = new List<Food_Script>();
+
+        for (int i = 0; i < _playerFoodDataArr.Length; i++)
+        {
+            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodDataArr[i].foodID];
+
+            GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
+
+            _foodObj.transform.position = _playerFoodDataArr[i].pos;
+            _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
+            ReplaceStomach_Func(_foodObj.transform);
+
+            Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
+            _foodClass.Init_Func
+                (
+                    feedingRoomClass, 
+                    FoodState.FeedingByInner, 
+                    _playerFoodDataArr[i].level, 
+                    _playerFoodDataArr[i].remainExp
+                );
+            _foodClass.SetState_Func(FoodPlaceState.Stomach);
+            feedFoodClassList.Add(_foodClass);
+
+            _playerFoodDataArr[i].SetData_Func(_foodClass);
+        }
+    }
+    public void Deactive_Func()
+    {
+        isActive = false;
+
+        for (int i = 0; i < feedFoodClassList.Count; i++)
+        {
+            Player_Data.Instance.SetFoodData_Func(feedFoodClassList[i], false, stomachUnitID);
+            ObjectPoolManager.Instance.Free_Func(feedFoodClassList[i].gameObject);
+        }
+
+        stomachUnitID = -999;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -29,9 +82,10 @@ public class Stomach_Script : MonoBehaviour
             feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Stomach);
         }
     }
-
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (isActive == false) return;
+
         if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
@@ -42,10 +96,10 @@ public class Stomach_Script : MonoBehaviour
     {
         if(_foodClass.foodState == FoodState.Stomach)
         {
-            if (foodClassList.Contains(_foodClass) == false)
+            if (feedFoodClassList.Contains(_foodClass) == false)
             {
                 _foodClass.FeedingByInner_Func();
-                foodClassList.Add(_foodClass);
+                FeedFood_Func(_foodClass);
             }
         }
         else if(_foodClass.foodState == FoodState.FeedingByChain)
@@ -57,21 +111,33 @@ public class Stomach_Script : MonoBehaviour
     {
         if (_foodClass.foodState == FoodState.Stomach)
         {
-            if (foodClassList.Contains(_foodClass) == false)
+            if (feedFoodClassList.Contains(_foodClass) == false)
             {
                 _foodClass.FeedingByChain_Func();
-                foodClassList.Add(_foodClass);
+                FeedFood_Func(_foodClass);
             }
         }
     }
+    void FeedFood_Func(Food_Script _foodClass)
+    {
+        feedingRoomClass.RemoveFoodInInventory_Func(_foodClass);
+
+        feedFoodClassList.Add(_foodClass);
+        ReplaceStomach_Func(_foodClass.transform);
+        Player_Data.Instance.FeedFood_Func(stomachUnitID, _foodClass);
+    }
     public void OutFoodByInner_Func(Food_Script _foodClass)
     {
+        if (isActive == false) return;
+
         if(_foodClass.foodState == FoodState.FeedingByInner)
         {
-            if (foodClassList.Contains(_foodClass) == true)
+            if (feedFoodClassList.Contains(_foodClass) == true)
             {
+                feedingRoomClass.AddFoodInInventroy_Func(_foodClass);
+
                 _foodClass.OutFoodByInner_Func();
-                foodClassList.Remove(_foodClass);
+                OutFood_Func(_foodClass);
             }
             else
             {
@@ -85,14 +151,15 @@ public class Stomach_Script : MonoBehaviour
             Debug.LogError("음식 이름 : " + _foodClass.foodName);
         }
     }
-    public void OutFoodByChain_Func(Food_Script _foodClass)
+    public void OutFoodByStomachRange_Func(Food_Script _foodClass)
     {
-        if (_foodClass.foodState == FoodState.FeedingByChain)
+        if (isActive == false) return;
+
+        if (0 < (int)_foodClass.foodState)
         {
-            if (foodClassList.Contains(_foodClass) == true)
+            if (feedFoodClassList.Contains(_foodClass) == true)
             {
-                _foodClass.OutFoodByChain_Func();
-                foodClassList.Remove(_foodClass);
+                OutFood_Func(_foodClass);
             }
             else
             {
@@ -100,11 +167,12 @@ public class Stomach_Script : MonoBehaviour
                 Debug.LogError("음식 이름 : " + _foodClass.foodName);
             }
         }
-        else
-        {
-            Debug.LogError("Bug : 연쇄 상태가 아닙니다.");
-            Debug.LogError("음식 이름 : " + _foodClass.foodName);
-        }
+    }
+    void OutFood_Func(Food_Script _foodClass)
+    {
+        feedFoodClassList.Remove(_foodClass);
+        Player_Data.Instance.OutFood_Func(_foodClass, stomachUnitID);
+        Player_Data.Instance.AddFood_Func(_foodClass);
     }
 
     public void ReplaceStomach_Func(Transform _trf)
