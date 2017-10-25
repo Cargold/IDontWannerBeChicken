@@ -89,3 +89,10 @@ public enum UnitInfoUIType
     SpawnNum,
     SpawnInterval,
 }
+
+public enum BattleType
+{
+    None = -1,
+    Normal,
+    Special,
+}

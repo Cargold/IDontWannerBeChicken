@@ -35,7 +35,7 @@ public class UnitCard_Script : MonoBehaviour
         populationImage.sprite = _populationSprite;
         populationImage.SetNativeSize();
 
-        Sprite _unitSprite = DataBase_Manager.Instance.charDataArr[_cardId].charSprite;
+        Sprite _unitSprite = DataBase_Manager.Instance.charDataArr[_cardId].unitSprite;
         unitImage.sprite = _unitSprite;
         unitImage.SetNativeSize();
     }

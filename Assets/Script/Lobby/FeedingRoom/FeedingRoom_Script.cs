@@ -28,6 +28,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public int selectUnitID;
 
+    public Animation anim;
+    public bool isActive = false;
+
     public enum FeedingRoomState
     {
         None = -1,
@@ -51,10 +54,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
-        inventoryClass.Deactive_Func();
         stomachClass.Deactive_Func();
 
-        this.gameObject.SetActive(false);
+        anim["FeedingRoom"].time = anim["FeedingRoom"].length;
+        anim["FeedingRoom"].speed = -1f;
+        anim.Play("FeedingRoom");
     }
     #endregion
     public void Enter_Func(int _selectUnitID)
@@ -64,9 +68,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
         selectUnitID = _selectUnitID;
 
         inventoryClass.Active_Func(_selectUnitID);
-        stomachClass.Active_Func(_selectUnitID);
-
+        
         PointUp_Func(inventoryClass.GetFoodRand_Func());
+
+        anim.Play("FeedingRoom");
     }
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
@@ -233,6 +238,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         switch (_foodClass.effectMain)
         {
+            case FoodEffect_Main.None:
+                mainEffectText.text = "Just Material. Enjoy Yourself";
+                break;
             case FoodEffect_Main.AttackPower:
                 mainEffectText.text = "Atk +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
@@ -246,6 +254,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         switch (_foodClass.effectSub)
         {
+            case FoodEffect_Sub.None:
+                subEffectText.text = "";
+                break;
             case FoodEffect_Sub.Critical:
                 subEffectText.text = "Crit +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
@@ -283,30 +294,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public void AddFoodInInventroy_Func(Food_Script _foodClass)
     {
         inventoryClass.AddFood_Func(_foodClass);
-    }
-    public void RemoveFood_Func(Food_Script _foodClass)
-    {
-        bool _isInventoryFood = false;
-        _isInventoryFood = CheckInventoryFood_Func(_foodClass);
-
-        Player_Data.Instance.RemoveFood_Func(_foodClass, _isInventoryFood, selectUnitID);
-        if (_isInventoryFood == true)
-        {
-            RemoveFoodInInventory_Func(_foodClass);
-            
-        }
-        else
-        {
-            RemoveFoodInStomach_Func(_foodClass);
-        }
-    }
-    public void RemoveFoodInInventory_Func(Food_Script _foodClass)
-    {
-        inventoryClass.RemoveFood_Func(_foodClass);
-    }
-    void RemoveFoodInStomach_Func(Food_Script _foodClass)
-    {
-
     }
     public void ReplaceFood_Func(Food_Script _foodClass, bool _isImmediately = false)
     {
@@ -415,6 +402,29 @@ public class FeedingRoom_Script : LobbyUI_Parent
         Player_Data.Instance.SetFoodData_Func(selectedFoodClass, _isInventoryFood, selectUnitID);
         Player_Data.Instance.SetUnitDataByFood_Func(selectUnitID, selectedFoodClass, true);
     }
+    public void RemoveFood_Func(Food_Script _foodClass)
+    {
+        bool _isInventoryFood = false;
+        _isInventoryFood = CheckInventoryFood_Func(_foodClass);
+
+        Player_Data.Instance.RemoveFood_Func(_foodClass, _isInventoryFood, selectUnitID);
+        if (_isInventoryFood == true)
+        {
+            RemoveFoodInInventory_Func(_foodClass);
+        }
+        else
+        {
+            RemoveFoodInStomach_Func(_foodClass);
+        }
+    }
+    public void RemoveFoodInInventory_Func(Food_Script _foodClass)
+    {
+        inventoryClass.RemoveFood_Func(_foodClass);
+    }
+    void RemoveFoodInStomach_Func(Food_Script _foodClass)
+    {
+
+    }
     #endregion
     #region Stomach Group
     public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
@@ -423,6 +433,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             if(_setterFoodClass.foodState == FoodState.Inventory)
             {
+                Debug.Log("Test, 1 : " + _setterFoodClass.foodName);
+
                 _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
             }
         }
@@ -444,6 +456,29 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public void SetFeedFoodByChain_Func(Food_Script _foodClass)
     {
         stomachClass.FeedFoodByChain_Func(_foodClass);
+    }
+    #endregion
+
+    #region Animation Group
+    public void AnimationStart_Func()
+    {
+        if(isActive == true)
+        {
+            isActive = false;
+
+            inventoryClass.Deactive_Func();
+
+            this.gameObject.SetActive(false);
+        }
+    }
+    public void AnimationFinish_Func()
+    {
+        if(isActive == false)
+        {
+            isActive = true;
+
+            stomachClass.Active_Func(selectUnitID);
+        }
     }
     #endregion
 }

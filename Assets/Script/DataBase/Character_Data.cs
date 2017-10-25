@@ -30,11 +30,13 @@ public struct Character_Data
     public GroupType groupType;
 
     // Rendering Data
-    public Sprite charSprite;
+    public Sprite unitSprite;
+    public float imagePivotAxisY;
+    public Vector2 shadowSize;
 
-    public void SetData_Func(Unit_Script _unitClass)
+    public void SetData_Func(Unit_Script _unitClass, int _unitID)
     {
-        charId          = _unitClass.charId;
+        charId          = _unitID;
         charName        = _unitClass.charName;
         charDesc        = _unitClass.charDesc;
 
@@ -57,6 +59,13 @@ public struct Character_Data
 
         groupType       = _unitClass.groupType;
 
-        charSprite      = _unitClass.charSprite;
+        unitSprite      = _unitClass.unitSprite;
+
+        if (_unitClass.imagePivotAxisY == 0f)
+            imagePivotAxisY = _unitClass.transform.Find("Image").transform.localPosition.y;
+        else
+            imagePivotAxisY = _unitClass.imagePivotAxisY;
+
+        shadowSize = _unitClass.transform.Find("Shadow").localScale;
     }
 }

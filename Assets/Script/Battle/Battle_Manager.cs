@@ -19,7 +19,7 @@ public class Battle_Manager : MonoBehaviour
     public enum BattleState
     {
         None = -1,
-        Setting,
+        Start,
         Play,
         Result,
         Pause,
@@ -32,6 +32,8 @@ public class Battle_Manager : MonoBehaviour
         }
     }
     private BattleState m_BattleState;
+
+    public BattleType battleType;
 
     public IEnumerator Init_Cor()
     {
@@ -50,22 +52,23 @@ public class Battle_Manager : MonoBehaviour
 
         yield break;
     }
-    #region Setting Group
-    public void BattleEnter_Func()
+
+    #region Start State
+    public void BattleEnter_Func(BattleType _battleType)
     {
-        m_BattleState = BattleState.Setting;
+        m_BattleState = BattleState.Start;
+
+        battleType = _battleType;
 
         StartCoroutine(BattleEnter_Cor());
     }
     IEnumerator BattleEnter_Cor()
     {
         yield return DirectingStart_Cor();
-        yield return SetData_Cor();
         BattleStart_Func();
 
         yield break;
     }
-    #region Directing Start Group
     IEnumerator DirectingStart_Cor()
     {
         // 전투 시작 연출
@@ -76,51 +79,12 @@ public class Battle_Manager : MonoBehaviour
         yield break;
     }
     #endregion
-    #region Set Data
-    IEnumerator SetData_Cor()
-    {
-        // 전투 데이터 세팅
-
-        playerClass.BattleEnter_Func();
-        EnemySpawn_Func();
-
-        yield break;
-    }
-
-    void EnemySpawn_Func()
-    {
-        for (int i = 0; i < enemyUnitClassArr.Length; i++)
-        {
-            StartCoroutine(CheckSpawn_Cor(enemyUnitClassArr[i]));
-        }
-    }
-
-    IEnumerator CheckSpawn_Cor(Unit_Script _unitClass)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(_unitClass.spawnInterval);
-
-            for (int i = 0; i < _unitClass.spawnNum; i++)
-            {
-                GameObject _charObj = ObjectPoolManager.Instance.Get_Func(_unitClass.charName);
-
-                Vector3 _spawnPos = new Vector3(spawnPos_Enemy.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
-
-                _charObj.transform.position = _spawnPos;
-                _charObj.transform.localScale = Vector3.one;
-
-                Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
-                _spawnUnitClass.Init_Func(GroupType.Enemy);
-            }
-        }
-    }
-    #endregion
-    #endregion
-    #region Play Group
+    #region Play State
     void BattleStart_Func()
     {
         m_BattleState = BattleState.Play;
+
+        playerClass.BattleEnter_Func();
 
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
@@ -139,7 +103,7 @@ public class Battle_Manager : MonoBehaviour
     }
     void OnSpawnEnemyUnit_Func()
     {
-
+        
     }
 
     public void OnMoveLeft_Func(bool _isDown)
@@ -176,7 +140,7 @@ public class Battle_Manager : MonoBehaviour
         spawnUnitList_Ally.Add(_unitClass);
     }
     #endregion
-    #region Result Group
+    #region Result State
     public void GameClear_Func()
     {
         m_BattleState = BattleState.Result;

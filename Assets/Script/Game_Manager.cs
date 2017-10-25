@@ -60,11 +60,11 @@ public class Game_Manager : MonoBehaviour
         yield break;
     }
 
-    public void BattleEnter_Func()
+    public void BattleEnter_Func(BattleType _battleType)
     {
         gameState = GameState.Battle;
 
-        battleClass.BattleEnter_Func();
+        battleClass.BattleEnter_Func(_battleType);
     }
 
     public void LobbyEnter_Func()

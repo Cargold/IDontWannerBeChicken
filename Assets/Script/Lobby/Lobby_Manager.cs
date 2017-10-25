@@ -109,12 +109,12 @@ public class Lobby_Manager : MonoBehaviour
     }
     #endregion
     #region Stage Select Group
-    public void BattleEnter_Func()
+    public void BattleEnter_Func(BattleType _battleType)
     {
         stageSelectClass.Exit_Func();
         mainLobbyClass.Exit_Func();
 
-        Game_Manager.Instance.BattleEnter_Func();
+        Game_Manager.Instance.BattleEnter_Func(_battleType);
     }
     #endregion
 }

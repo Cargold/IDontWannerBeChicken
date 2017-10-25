@@ -23,9 +23,15 @@ public class PartySetting_Script : LobbyUI_Parent
     public int populationValue_Recent;
 
     public Text[] unitInfoTextArr;
+    public Animation anim;
     public Image unitImage;
+    public Image unitShadowImage;
+    private Sprite changeUnitSprite;
+    private float unitImagePivotAxisY;
+    private Vector2 unitShadowSize;
 
     private Vector3 touchOffsetPos;
+    public bool isActive;
 
     #region Override Group
     protected override void InitUI_Func()
@@ -104,6 +110,11 @@ public class PartySetting_Script : LobbyUI_Parent
     protected override void EnterUI_Func()
     {
         this.gameObject.SetActive(true);
+
+        unitImage.SetNaturalAlphaColor_Func(0f);
+        unitShadowImage.SetNaturalAlphaColor_Func(0f);
+
+        unitCardClassArr[0].OnSelect_Func();
     }
 
     public override void Exit_Func()
@@ -119,7 +130,7 @@ public class PartySetting_Script : LobbyUI_Parent
         selectUnitID = selectCardClass.cardId;
 
         PrintInfoUI_Func();
-        PrintUnitImage_Func();
+        ReadyUnitImage_Func();
     }
     public void DragBegin_Func(UnitCard_Script _unitCardClass)
     {
@@ -272,7 +283,13 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     void RotateUnitImage_Func()
     {
-
+        anim.Play("Rotate");
+    }
+    public void ReturnUI_Func()
+    {
+        anim["Rotate"].time = anim["Rotate"].length;
+        anim["Rotate"].speed = -1f;
+        anim.Play("Rotate");
     }
     #endregion
     #region Print Group
@@ -289,12 +306,25 @@ public class PartySetting_Script : LobbyUI_Parent
         unitInfoTextArr[6].text = _unitClass.charName;
         unitInfoTextArr[7].text = _unitClass.charDesc;
     }
-    public void PrintUnitImage_Func()
+    public void ReadyUnitImage_Func()
     {
         Unit_Script _unitClass = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitClass;
+        changeUnitSprite = _unitClass.cardSprite;
+        unitImagePivotAxisY = _unitClass.imagePivotAxisY * 100f;
+        unitShadowSize = _unitClass.shadowSize;
 
-        unitImage.sprite = _unitClass.charSprite;
+        anim.Play("Display");
+    }
+    public void PrintUnitImage_Func()
+    {
+        unitImage.transform.localPosition = Vector2.up * unitImagePivotAxisY;
+
+        unitImage.sprite = changeUnitSprite;
         unitImage.SetNativeSize();
+        unitImage.SetNaturalAlphaColor_Func(1f);
+
+        unitShadowImage.SetNaturalAlphaColor_Func(1f);
+        unitShadowImage.transform.localScale = unitShadowSize;
     }
     #endregion
 }

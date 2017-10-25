@@ -336,37 +336,39 @@ public class Player_Data : MonoBehaviour
     void SetUnitDataByFoodSubEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
     {
         int _charID = _unitClass.charId;
+        float _value = 0f;
 
         switch (_foodClass.effectSub)
         {
             case FoodEffect_Sub.Critical:
-                float _criticalPercent = DataBase_Manager.Instance.charDataArr[_charID].criticalPercent;
-                _criticalPercent = _criticalPercent * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.criticalPercent += _criticalPercent;
+                _value = _foodClass.GetSubEffectValue_Func() * _feedingCalc * 100f;
+                _unitClass.criticalPercent += _value;
                 break;
 
             case FoodEffect_Sub.SpawnInterval:
-                float _spawnInterval = DataBase_Manager.Instance.charDataArr[_charID].spawnInterval;
-                _spawnInterval = _spawnInterval * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.spawnInterval += _spawnInterval;
+                _value = DataBase_Manager.Instance.charDataArr[_charID].spawnInterval;
+                if (_value == 0f) _value = 1f;
+                _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.spawnInterval -= _value;
                 break;
 
             case FoodEffect_Sub.DecreaseHP:
-                float _healthPoint = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
-                _healthPoint = _healthPoint * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.healthPoint_Max -= _healthPoint;
+                _value = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
+                if (_value == 0f) _value = 1f;
+                _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.healthPoint_Max -= _value;
                 break;
 
             case FoodEffect_Sub.DefenceValue:
-                float _defenceValue = DataBase_Manager.Instance.charDataArr[_charID].defenceValue;
-                _defenceValue = _defenceValue * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.defenceValue += _defenceValue;
+                _value = _foodClass.GetSubEffectValue_Func() * _feedingCalc * 100f;
+                _unitClass.defenceValue += _value;
                 break;
 
             case FoodEffect_Sub.DecreaseAttack:
-                float _attackValue = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
-                _attackValue = _attackValue * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.attackValue -= _attackValue;
+                _value = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
+                if (_value == 0f) _value = 1f;
+                _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                _unitClass.attackValue -= _value;
                 break;
         }
     }

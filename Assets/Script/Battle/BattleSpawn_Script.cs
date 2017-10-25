@@ -6,7 +6,9 @@ public class BattleSpawn_Script : MonoBehaviour
 {
     public Battle_Manager battleManagerClass;
     public GroupType spawnGroupType;
-    public ArrayList spawnUnitList = new ArrayList();
+    [SerializeField]
+    private ArrayList spawnUnitList = new ArrayList();
+    [SerializeField]
     private bool isActive = false;
     [SerializeField]
     private Unit_Script unitClass;
@@ -37,7 +39,6 @@ public class BattleSpawn_Script : MonoBehaviour
             {
                 _spawnCalcTime += 0.02f;
                 yield return new WaitForFixedUpdate();
-
             }
             else
             {

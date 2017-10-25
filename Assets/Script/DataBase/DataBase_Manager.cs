@@ -38,7 +38,7 @@ public class DataBase_Manager : MonoBehaviour
         for (int i = 0; i < _unitDataObjNum; i++)
         {
             Unit_Script _unitClass = unitDataObjArr[i].GetComponent<Unit_Script>();
-            m_CharDataArr[i].SetData_Func(_unitClass);
+            m_CharDataArr[i].SetData_Func(_unitClass, i);
         }
 
         int _foodDataObjNum = foodDataObjArr.Length;
@@ -46,6 +46,7 @@ public class DataBase_Manager : MonoBehaviour
         for (int i = 0; i < _foodDataObjNum; i++)
         {
             Food_Script _foodClass = foodDataObjArr[i].GetComponent<Food_Script>();
+            _foodClass.foodId = i;
             m_FoodDataArr[i].SetData_Func(_foodClass);
         }
 

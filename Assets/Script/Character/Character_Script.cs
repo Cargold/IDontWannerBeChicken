@@ -48,8 +48,16 @@ public class Character_Script : MonoBehaviour
     public GroupType groupType;
 
     // Rendering Data
-    public Image hpImage;
-    public Text charNameText;
+    public SpriteRenderer unitRend;
+    public SpriteRenderer hpRend;
+    public Transform hpTrf;
+    public Sprite unitSprite;
+    public Sprite cardSprite;
+    public Vector2 cardPortraitPos;
+    public float cardImageSize;
+    public float feedImageSize;
+    public float imagePivotAxisY;
+    public Vector2 shadowSize;
 
     protected void Init_Func(GroupType _groupType)
     {
@@ -57,19 +65,23 @@ public class Character_Script : MonoBehaviour
 
         isAlive = true;
 
+        // Init Renderer
+        
+        unitRend.sprite = unitSprite;
+        if (cardSprite == null)
+            cardSprite = unitSprite;
+        hpTrf = this.transform.Find("HP_Group").Find("Gauge");
+        hpRend = hpTrf.GetComponent<SpriteRenderer>();
+        SetState_Func(CharacterState.Move);
+
         // Init HP
         healthPoint_Recent = healthPoint_Max;
-        hpImage.fillAmount = 1f;
+        CalcHP_Func();
 
         // Init Attack
         StartCoroutine(CheckAttackRate_Cor());
         StartCoroutine(CheckAttack_Cor());
         defenceValue_Calc = 1f - (defenceValue * 0.01f);
-
-        // Init Renderer
-        charNameText.text = charName;
-
-        SetState_Func(CharacterState.Move);
     }
 
     protected void SetState_Func(CharacterState _charState)
@@ -265,7 +277,7 @@ public class Character_Script : MonoBehaviour
 
         if (0 < healthPoint_Recent)
         {
-            hpImage.fillAmount = healthPoint_Recent / healthPoint_Max;
+            CalcHP_Func();
         }
         else
         {
@@ -281,5 +293,14 @@ public class Character_Script : MonoBehaviour
         // 사망 연출
 
         ObjectPoolManager.Instance.Free_Func(this.gameObject);
+    }
+
+    private void CalcHP_Func()
+    {
+        float _remainPer = healthPoint_Recent / healthPoint_Max;
+        float _remainPos = 0.35f * (_remainPer - 1f);
+
+        hpTrf.localPosition = new Vector2(_remainPos * -1f, hpTrf.localPosition.y);
+        hpTrf.localScale = new Vector2(_remainPer, hpTrf.localScale.y);
     }
 }

@@ -216,6 +216,8 @@ public class Food_Script : MonoBehaviour
     {
         if(_foodPlaceState == FoodPlaceState.Stomach)
         {
+            Debug.Log("Test, 2 : " + foodName);
+
             foodPlaceState = FoodPlaceState.Stomach;
 
             if(foodState == FoodState.Inventory)
@@ -277,6 +279,8 @@ public class Food_Script : MonoBehaviour
     }
     public void OnStomach_Func()
     {
+        Debug.Log("Test, 3 : " + foodName);
+
         foodState = FoodState.Stomach;
         foodImage.color = Color.green;
     }

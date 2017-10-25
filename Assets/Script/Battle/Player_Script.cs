@@ -35,7 +35,6 @@ public class Player_Script : Character_Script
     {
         moveDir = MoveDir.Left;
     }
-
     public void MoveRight_Func()
     {
         moveDir = MoveDir.Right;
@@ -44,7 +43,6 @@ public class Player_Script : Character_Script
     {
         moveDir = MoveDir.None;
     }
-
     void MovePlayer_Func()
     {
         if (moveDir == MoveDir.Left)
@@ -71,6 +69,10 @@ public class Player_Script : Character_Script
                 SetState_Func(CharacterState.Idle);
         }
     }
+    protected override void Move_Func()
+    {
+        charState = CharacterState.Move;
+    }
 
     void Update()
     {
@@ -88,10 +90,5 @@ public class Player_Script : Character_Script
         }
 
         MovePlayer_Func();
-    }
-
-    protected override void Move_Func()
-    {
-        charState = CharacterState.Move;
     }
 }

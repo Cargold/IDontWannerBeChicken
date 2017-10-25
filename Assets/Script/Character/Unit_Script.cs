@@ -7,12 +7,10 @@ public class Unit_Script : Character_Script
     [SerializeField]
     private Vector3 moveDir;
 
-    public SpriteRenderer spriteRend;
-
     public int spawnNum;
     public float spawnInterval;
     public int populationValue;
-    public Sprite charSprite;
+    public int unlockLevel;
 
     public void SetData_Func(Character_Data _charData)
     {
@@ -39,8 +37,12 @@ public class Unit_Script : Character_Script
         populationValue = _charData.populationValue;
 
         groupType = _charData.groupType;
-        charSprite = _charData.charSprite;
-        spriteRend.sprite = _charData.charSprite;
+        unitSprite = _charData.unitSprite;
+
+        unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
+        unitRend.sprite = _charData.unitSprite;
+        imagePivotAxisY = _charData.imagePivotAxisY;
+        shadowSize = _charData.shadowSize;
     }
 
     public void Init_Func(GroupType _groupType)

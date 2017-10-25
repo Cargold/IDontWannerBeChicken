@@ -26,8 +26,13 @@ public class StageSelect_Script : LobbyUI_Parent
     }
     #endregion
 
-    public void BattleEnter_Func()
+    public void BattleEnterNormal_Func()
     {
-        lobbyManager.BattleEnter_Func();
+        lobbyManager.BattleEnter_Func(BattleType.Normal);
+    }
+
+    public void BattleEnterSpecial_Func()
+    {
+        lobbyManager.BattleEnter_Func(BattleType.Special);
     }
 }
