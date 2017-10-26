@@ -28,11 +28,15 @@ public class StageSelect_Script : LobbyUI_Parent
 
     public void BattleEnterNormal_Func()
     {
+        // Call : Btn Event
+
         lobbyManager.BattleEnter_Func(BattleType.Normal);
     }
 
     public void BattleEnterSpecial_Func()
     {
+        // Call : Btn Event
+
         lobbyManager.BattleEnter_Func(BattleType.Special);
     }
 }

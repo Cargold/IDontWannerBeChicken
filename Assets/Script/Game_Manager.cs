@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Game_Manager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Game_Manager : MonoBehaviour
     public Lobby_Manager lobbyClass;
     public ObjectPoolManager objectPoolManager;
     public SmoothFollow_Script mainCameraSmoothClass;
+    public BattleStartDirection_Script directionClass;
 
     #region Reference Variable
     public Sprite[] populationSpriteArr;
@@ -21,15 +23,9 @@ public class Game_Manager : MonoBehaviour
 
     public float[] foodGradePenaltyValue;
     #endregion
-
-
-    public enum GameState
-    {
-        None = -1,
-        Battle,
-        Lobby,
-    }
+    
     public GameState gameState;
+    public Image loadingImage;
 
     void Awake()
     {
@@ -43,9 +39,12 @@ public class Game_Manager : MonoBehaviour
         yield return objectPoolManager.Init_Cor();  // 2. DB 정보를 바탕으로 풀링 생성
         yield return playerDataClass.Init_Cor();    // 3. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
         yield return lobbyClass.Init_Cor();         // 4. 플레이어 데이터를 바탕으로 로비 구성
-        yield return battleClass.Init_Cor();
+        yield return directionClass.Init_Cor();     // 5. 메인로비의 Idle 애니메이션 연출 시작
+        yield return battleClass.Init_Cor();        // 6. 스폰매니저 등 전투 관련 데이터 활성화
 
-        yield return LoadingOver_Cor();
+        yield return Loading_Cor();
+
+        LobbyEnter_Func();
     }
 
     IEnumerator InitMain_Cor()
@@ -55,7 +54,7 @@ public class Game_Manager : MonoBehaviour
         yield break;
     }
     
-    IEnumerator LoadingOver_Cor()
+    IEnumerator Loading_Cor(bool _isOn)
     {
         yield break;
     }
@@ -63,14 +62,25 @@ public class Game_Manager : MonoBehaviour
     public void BattleEnter_Func(BattleType _battleType)
     {
         gameState = GameState.Battle;
-
+        
         battleClass.BattleEnter_Func(_battleType);
+        directionClass.EnterUI_Func(GameState.Battle);
     }
 
     public void LobbyEnter_Func()
     {
         gameState = GameState.Lobby;
 
-        lobbyClass.LobbyEnter_Func();
+        lobbyClass.Enter_Func(LobbyState.MainLobby);
+        directionClass.EnterUI_Func(GameState.Lobby);
+    }
+
+    public void Loading_Func()
+    {
+
+    }
+    public void LoadingOver_Func()
+    {
+        StartCoroutine(Loading_Cor());
     }
 }

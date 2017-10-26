@@ -59,9 +59,9 @@ public class BattleSpawn_Script : MonoBehaviour
 
         Vector3 _spawnPos = Vector3.zero;
         if (spawnGroupType == GroupType.Ally)
-            _spawnPos = new Vector3(Player_Script.Instance.spawnPos.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
+            _spawnPos = new Vector3(Player_Script.Instance.spawnPos.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));
         else if(spawnGroupType == GroupType.Enemy)
-            _spawnPos = new Vector3(Battle_Manager.Instance.spawnPos_Enemy.position.x + Random.Range(-0.5f, 0.5f), 0f, Random.Range(-1f, 1f));
+            _spawnPos = new Vector3(Battle_Manager.Instance.spawnPos_Enemy.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));
 
         _charObj.transform.position = _spawnPos;
         _charObj.transform.localScale = Vector3.one;
@@ -69,6 +69,7 @@ public class BattleSpawn_Script : MonoBehaviour
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);
         _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
+        _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
 
         spawnUnitList.Add(_spawnUnitClass);
     }

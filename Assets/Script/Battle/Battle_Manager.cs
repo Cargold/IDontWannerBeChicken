@@ -16,6 +16,8 @@ public class Battle_Manager : MonoBehaviour
     public ArrayList spawnUnitList_Ally = new ArrayList();
     public ArrayList spawnUnitList_Enemy = new ArrayList();
 
+    public Pause_Script pauseClass;
+
     public enum BattleState
     {
         None = -1,
@@ -50,6 +52,8 @@ public class Battle_Manager : MonoBehaviour
             spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally);
         }
 
+        pauseClass.Init_Func();
+
         yield break;
     }
 
@@ -74,7 +78,6 @@ public class Battle_Manager : MonoBehaviour
         // 전투 시작 연출
 
         battleUITrf.sizeDelta = Vector2.zero;
-        battleUITrf.anchoredPosition = Vector2.zero;
 
         yield break;
     }
@@ -139,6 +142,16 @@ public class Battle_Manager : MonoBehaviour
     {
         spawnUnitList_Ally.Add(_unitClass);
     }
+
+    public void Pause_Func()
+    {
+        pauseClass.Active_Func();
+        Time.timeScale = 0f;
+    }
+    public void Resume_Func()
+    {
+        Time.timeScale = 1f;
+    }
     #endregion
     #region Result State
     public void GameClear_Func()
@@ -148,7 +161,7 @@ public class Battle_Manager : MonoBehaviour
         OnResult_Func();
     }
 
-    public void GameOver_Func()
+    public void GameOver_Func(bool _isPause)
     {
         m_BattleState = BattleState.Result;
 
@@ -157,8 +170,7 @@ public class Battle_Manager : MonoBehaviour
 
     void OnResult_Func()
     {
-        battleUITrf.sizeDelta = new Vector2(0f, 300f);
-        battleUITrf.anchoredPosition = new Vector2(0f, -150f);
+        battleUITrf.sizeDelta = new Vector2(0f, 600f);
     }
     #endregion
     #region Test Group

@@ -96,3 +96,24 @@ public enum BattleType
     Normal,
     Special,
 }
+
+public enum GameState
+{
+    None = -1,
+    Battle,
+    Lobby,
+}
+
+public enum LobbyState
+{
+    None = -1,
+    MainLobby,
+    StageSelect,
+    HeroManagement,
+    PartySetting,
+    StoreRoom,
+    QuestRoom,
+    TrophyRoom,
+
+    FeedingRoom,
+}

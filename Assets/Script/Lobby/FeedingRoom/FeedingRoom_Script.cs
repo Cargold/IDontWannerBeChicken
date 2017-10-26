@@ -54,11 +54,16 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
-        stomachClass.Deactive_Func();
+        if(isActive == true)
+        {
+            stomachClass.Deactive_Func();
 
-        anim["FeedingRoom"].time = anim["FeedingRoom"].length;
-        anim["FeedingRoom"].speed = -1f;
-        anim.Play("FeedingRoom");
+            anim["FeedingRoom"].time = anim["FeedingRoom"].length;
+            anim["FeedingRoom"].speed = -1f;
+            anim.Play("FeedingRoom");
+
+            lobbyManager.OffFeedingRoom_Func(selectUnitID);
+        }
     }
     #endregion
     public void Enter_Func(int _selectUnitID)
@@ -71,6 +76,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         
         PointUp_Func(inventoryClass.GetFoodRand_Func());
 
+        anim["FeedingRoom"].speed = 1f;
         anim.Play("FeedingRoom");
     }
     #region Food Control Group
@@ -462,7 +468,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
     #region Animation Group
     public void AnimationStart_Func()
     {
-        if(isActive == true)
+        // Call : Ani Event
+
+        if (isActive == true)
         {
             isActive = false;
 
@@ -473,7 +481,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public void AnimationFinish_Func()
     {
-        if(isActive == false)
+        // Call : Ani Event
+
+        if (isActive == false)
         {
             isActive = true;
 

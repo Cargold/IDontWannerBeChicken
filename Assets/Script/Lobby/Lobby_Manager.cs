@@ -26,27 +26,7 @@ public class Lobby_Manager : MonoBehaviour
     [System.NonSerialized]
     public QuestRoom_Script questRoomClass;
 
-    public enum LobbyState
-    {
-        None = -1,
-        MainLobby,
-        StageSelect,
-        HeroManagement,
-        PartySetting,
-        StoreRoom,
-        QuestRoom,
-        TrophyRoom,
-
-        FeedingRoom,
-    }
-    //public LobbyState lobbyState
-    //{
-    //    get
-    //    {
-    //        return m_LobbyState;
-    //    }
-    //}
-    //private LobbyState m_LobbyState;
+    
 
     public IEnumerator Init_Cor()
     {
@@ -106,6 +86,17 @@ public class Lobby_Manager : MonoBehaviour
         // 999 = Hero, Other = Unit
 
         feedingRoomClass.Enter_Func(_selectUnitID);
+    }
+    public void OffFeedingRoom_Func(int _selectUnitID)
+    {
+        if(_selectUnitID == 999)
+        {
+
+        }
+        else
+        {
+            partySettingClass.ReturnUI_Func();
+        }
     }
     #endregion
     #region Stage Select Group

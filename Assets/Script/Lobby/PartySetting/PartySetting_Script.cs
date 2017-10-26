@@ -111,6 +111,8 @@ public class PartySetting_Script : LobbyUI_Parent
     {
         this.gameObject.SetActive(true);
 
+        isActive = true;
+
         unitImage.SetNaturalAlphaColor_Func(0f);
         unitShadowImage.SetNaturalAlphaColor_Func(0f);
 
@@ -278,11 +280,25 @@ public class PartySetting_Script : LobbyUI_Parent
     #region Feeding Group
     public void OnFeeding_Func()
     {
+        // Call : Btn Event
+
+        StopCoroutine("DisplayAni_Cor");
+        StartCoroutine("DisplayAni_Cor");
+    }
+    IEnumerator DisplayAni_Cor()
+    {
+        while(anim.IsPlaying("Display") == true)
+        {
+            anim["Display"].time = anim["Display"].length;
+            yield return null;
+        }
+
         RotateUnitImage_Func();
         lobbyManager.OnFeedingRoom_Func(selectUnitID);
     }
     void RotateUnitImage_Func()
     {
+        anim["Rotate"].speed = 1f;
         anim.Play("Rotate");
     }
     public void ReturnUI_Func()
@@ -317,6 +333,8 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public void PrintUnitImage_Func()
     {
+        // Call : Ani Event
+
         unitImage.transform.localPosition = Vector2.up * unitImagePivotAxisY;
 
         unitImage.sprite = changeUnitSprite;
