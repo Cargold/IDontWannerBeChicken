@@ -48,6 +48,8 @@ public class Food_Script : MonoBehaviour
         effectSub = _foodData.effectSub;
         mainEffectValue = _foodData.mainEffectValue;
         subEffectValue = _foodData.subEffectValue;
+        if (foodImage == null)
+            foodImage = this.GetComponent<Image>();
         foodImage.sprite = _foodData.foodSprite;
         foodImage.SetNativeSize();
         foodImage.alphaHitTestMinimumThreshold = 0.5f;

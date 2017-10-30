@@ -29,13 +29,13 @@ public class UnitCard_Script : MonoBehaviour
 
         SetState_Func(_cardState);
 
-        populValue = DataBase_Manager.Instance.charDataArr[_cardId].populationValue;
+        populValue = DataBase_Manager.Instance.unitDataArr[_cardId].populationValue;
 
         Sprite _populationSprite = Game_Manager.Instance.populationSpriteArr[populValue];
         populationImage.sprite = _populationSprite;
         populationImage.SetNativeSize();
 
-        Sprite _unitSprite = DataBase_Manager.Instance.charDataArr[_cardId].unitSprite;
+        Sprite _unitSprite = DataBase_Manager.Instance.unitDataArr[_cardId].unitSprite;
         unitImage.sprite = _unitSprite;
         unitImage.SetNativeSize();
     }

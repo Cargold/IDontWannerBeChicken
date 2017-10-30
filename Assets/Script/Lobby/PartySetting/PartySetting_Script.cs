@@ -46,7 +46,7 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     void InitUnitCardSlot_Func()
     {
-        int _cardNum = DataBase_Manager.Instance.charDataArr.Length;
+        int _cardNum = DataBase_Manager.Instance.unitDataArr.Length;
 
         unitCardPosInitArr = new Vector2[_cardNum];
         unitCardClassArr = new UnitCard_Script[_cardNum];

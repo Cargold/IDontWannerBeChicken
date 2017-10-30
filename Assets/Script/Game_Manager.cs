@@ -42,7 +42,7 @@ public class Game_Manager : MonoBehaviour
         yield return directionClass.Init_Cor();     // 5. 메인로비의 Idle 애니메이션 연출 시작
         yield return battleClass.Init_Cor();        // 6. 스폰매니저 등 전투 관련 데이터 활성화
 
-        yield return Loading_Cor();
+        yield return Loading_Cor(true);
 
         LobbyEnter_Func();
     }
@@ -54,16 +54,39 @@ public class Game_Manager : MonoBehaviour
         yield break;
     }
     
-    IEnumerator Loading_Cor(bool _isOn)
+    IEnumerator Loading_Cor(bool _isLoadingClear)
     {
+        if (_isLoadingClear == false)
+        {
+            loadingImage.SetNaturalAlphaColor_Func(1f);
+            loadingImage.raycastTarget = true;
+        }
+        else if(_isLoadingClear == true)
+        {
+            loadingImage.SetNaturalAlphaColor_Func(0f);
+            loadingImage.raycastTarget = false;
+        }
+
         yield break;
     }
 
-    public void BattleEnter_Func(BattleType _battleType)
+    public void BattleEnter_Func(BattleType _battleType, int _stageID_Next = -1)
     {
         gameState = GameState.Battle;
-        
-        battleClass.BattleEnter_Func(_battleType);
+
+        if (_stageID_Next == -1)
+        {
+            if (_battleType == BattleType.Normal)
+            {
+                _stageID_Next = Player_Data.Instance.stageID_Normal;
+            }
+            else if (_battleType == BattleType.Special)
+            {
+                _stageID_Next = Player_Data.Instance.stageID_Special;
+            }
+        }
+
+        battleClass.BattleEnter_Func(_battleType, _stageID_Next);
         directionClass.EnterUI_Func(GameState.Battle);
     }
 
@@ -71,16 +94,20 @@ public class Game_Manager : MonoBehaviour
     {
         gameState = GameState.Lobby;
 
+        Loading_Func();
+
         lobbyClass.Enter_Func(LobbyState.MainLobby);
         directionClass.EnterUI_Func(GameState.Lobby);
+
+        LoadingClear_Func();
     }
 
     public void Loading_Func()
     {
-
+        StartCoroutine(Loading_Cor(false));
     }
-    public void LoadingOver_Func()
+    public void LoadingClear_Func()
     {
-        StartCoroutine(Loading_Cor());
+        StartCoroutine(Loading_Cor(true));
     }
 }

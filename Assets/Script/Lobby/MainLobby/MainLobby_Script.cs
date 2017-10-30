@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MainLobby_Script : LobbyUI_Parent
 {
-    public BattleStartDirection_Script directionClass;
+    
 
     #region Override Group
     protected override void InitUI_Func()

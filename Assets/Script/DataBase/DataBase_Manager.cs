@@ -9,15 +9,15 @@ public class DataBase_Manager : MonoBehaviour
     public GameObject[] unitDataObjArr;
     public GameObject[] foodDataObjArr;
 
-    public Character_Data[] charDataArr
+    public Unit_Data[] unitDataArr
     {
         get
         {
-            return m_CharDataArr;
+            return m_UnitDataArr;
         }
     }
     [SerializeField]
-    private Character_Data[] m_CharDataArr;
+    private Unit_Data[] m_UnitDataArr;
 
     public Food_Data[] foodDataArr
     {
@@ -29,16 +29,29 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Food_Data[] m_FoodDataArr;
 
+    public Skill_Data[] skillDataArr
+    {
+        get
+        {
+            return m_SkillDataArr;
+        }
+    }
+    [SerializeField]
+    private Skill_Data[] m_SkillDataArr;
+    
+    public Sprite populationPointSprite;
+    public Sprite[] wealthSpriteArr;
+
     public IEnumerator Init_Cor()
     {
         Instance = this;
 
         int _unitDataObjNum = unitDataObjArr.Length;
-        m_CharDataArr = new Character_Data[_unitDataObjNum];
+        m_UnitDataArr = new Unit_Data[_unitDataObjNum];
         for (int i = 0; i < _unitDataObjNum; i++)
         {
             Unit_Script _unitClass = unitDataObjArr[i].GetComponent<Unit_Script>();
-            m_CharDataArr[i].SetData_Func(_unitClass, i);
+            m_UnitDataArr[i].SetData_Func(_unitClass, i);
         }
 
         int _foodDataObjNum = foodDataObjArr.Length;
@@ -55,7 +68,7 @@ public class DataBase_Manager : MonoBehaviour
 
     public string GetUnitName_Func(int _unitID)
     {
-        return m_CharDataArr[_unitID].charName;
+        return m_UnitDataArr[_unitID].charName;
     }
     public string GetFoodName_Func(int _foodID)
     {

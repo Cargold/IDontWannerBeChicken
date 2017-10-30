@@ -12,7 +12,7 @@ public class Unit_Script : Character_Script
     public int populationValue;
     public int unlockLevel;
 
-    public void SetData_Func(Character_Data _charData)
+    public void SetData_Func(Unit_Data _charData)
     {
         charId = _charData.charId;
         charName = _charData.charName;

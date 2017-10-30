@@ -28,10 +28,15 @@ public class Player_Data : MonoBehaviour
 
     // Inventory
     public List<PlayerFood_ClassData> inventoryFoodDataList;
+    public int playerBoxLevel;
 
     // Trophy
 
     // Skill
+
+    // Stage
+    public int stageID_Normal;
+    public int stageID_Special;
 
     // Test
     public PlayerFood_DataTemp[] test_InventoryDataArr;
@@ -78,7 +83,7 @@ public class Player_Data : MonoBehaviour
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 5; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
@@ -189,6 +194,18 @@ public class Player_Data : MonoBehaviour
     }
     #endregion
     #region Food Group
+    public void AddFood_Func(int _foodID, int _foodLevel = -1)
+    {
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+
+        if (_foodLevel == -1)
+            _foodLevel = playerBoxLevel;
+        _playerFoodData.level = _foodLevel;
+        _playerFoodData.foodID = _foodID;
+        _playerFoodData.remainExp = 0f;
+
+        inventoryFoodDataList.Add(_playerFoodData);
+    }
     public void AddFood_Func(Food_Script _foodClass)
     {
         // 보상 또는 구매를 통해 인벤토리로...
@@ -196,7 +213,7 @@ public class Player_Data : MonoBehaviour
 
         PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
         _playerFoodData.SetData_Func(_foodClass);
-
+        
         inventoryFoodDataList.Add(_playerFoodData);
     }
     public void RemoveFood_Func(Food_Script _foodClass, bool _isInventoryFood, int _haveFoodUnitID)
@@ -321,13 +338,13 @@ public class Player_Data : MonoBehaviour
         switch (_foodClass.effectMain)
         {
             case FoodEffect_Main.AttackPower:
-                float _attackValue = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
+                float _attackValue = DataBase_Manager.Instance.unitDataArr[_charID].attackValue;
                 _attackValue = _attackValue * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
                 _unitClass.attackValue += _attackValue;
                 break;
 
             case FoodEffect_Main.HealthPoint:
-                float _healthPoint = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
+                float _healthPoint = DataBase_Manager.Instance.unitDataArr[_charID].healthPoint;
                 _healthPoint = _healthPoint * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
                 _unitClass.healthPoint_Max += _healthPoint;
                 break;
@@ -346,14 +363,14 @@ public class Player_Data : MonoBehaviour
                 break;
 
             case FoodEffect_Sub.SpawnInterval:
-                _value = DataBase_Manager.Instance.charDataArr[_charID].spawnInterval;
+                _value = DataBase_Manager.Instance.unitDataArr[_charID].spawnInterval;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.spawnInterval -= _value;
                 break;
 
             case FoodEffect_Sub.DecreaseHP:
-                _value = DataBase_Manager.Instance.charDataArr[_charID].healthPoint;
+                _value = DataBase_Manager.Instance.unitDataArr[_charID].healthPoint;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.healthPoint_Max -= _value;
@@ -365,7 +382,7 @@ public class Player_Data : MonoBehaviour
                 break;
 
             case FoodEffect_Sub.DecreaseAttack:
-                _value = DataBase_Manager.Instance.charDataArr[_charID].attackValue;
+                _value = DataBase_Manager.Instance.unitDataArr[_charID].attackValue;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.attackValue -= _value;

@@ -117,3 +117,13 @@ public enum LobbyState
 
     FeedingRoom,
 }
+
+public enum RewardType
+{
+    None = -1,
+    Wealth,
+    Food,
+    Unit,
+    PopulationPoint,
+    Skill,
+}

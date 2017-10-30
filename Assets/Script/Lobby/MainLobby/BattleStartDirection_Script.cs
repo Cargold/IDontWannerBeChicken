@@ -10,9 +10,6 @@ public class BattleStartDirection_Script : MonoBehaviour
     public Animation entranceAni;
     public Animation partyAni;
 
-    public Player_Script playerClass;
-    public Transform[] partyMemberPosArr;
-
     public IEnumerator Init_Cor()
     {
         int _cageNum = cageGridGroupTrf.childCount;
@@ -54,10 +51,16 @@ public class BattleStartDirection_Script : MonoBehaviour
     {
         if (_directionState == GameState.Lobby)
         {
+            Debug.Log("Test, Lobby");
 
+            entranceAni["EntranceFallanim"].time = 0f;
+            entranceAni["EntranceFallanim"].speed = -1f;
+            entranceAni.Play();
         }
         else if (_directionState == GameState.Battle)
         {
+            entranceAni["EntranceFallanim"].time = 0f;
+            entranceAni["EntranceFallanim"].speed = 1f;
             entranceAni.Play();
         }
     }
@@ -65,10 +68,14 @@ public class BattleStartDirection_Script : MonoBehaviour
     {
         if (_directionState == GameState.Lobby)
         {
-
+            partyAni["Party"].time = 0f;
+            partyAni["Party"].speed = -1f;
+            partyAni.Play();
         }
         else if (_directionState == GameState.Battle)
         {
+            partyAni["Party"].time = 0f;
+            partyAni["Party"].speed = 1f;
             partyAni.Play();
         }
     }

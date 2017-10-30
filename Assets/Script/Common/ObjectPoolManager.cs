@@ -35,13 +35,13 @@ public class ObjectPoolManager : MonoBehaviour
         poolList = new List<GameObject>();
 
         int _poolListCount = poolList.Count;
-        int _charDataNum = DataBase_Manager.Instance.charDataArr.Length;
+        int _charDataNum = DataBase_Manager.Instance.unitDataArr.Length;
         for (int i = 0; i < _charDataNum; i++, _poolListCount++)
         {
             poolList.Add(Instantiate(DataBase_Manager.Instance.unitDataObjArr[i]));
             poolList[_poolListCount].transform.SetParent(_sampleFolderObj.transform);
 
-            Character_Data _charData = DataBase_Manager.Instance.charDataArr[i];
+            Unit_Data _charData = DataBase_Manager.Instance.unitDataArr[i];
 
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_charData);

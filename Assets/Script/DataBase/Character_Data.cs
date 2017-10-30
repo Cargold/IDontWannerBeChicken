@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Character_Data
+public struct Unit_Data
 {
     public int charId;
     public string charName;
