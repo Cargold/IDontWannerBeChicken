@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class PartySetting_Script : LobbyUI_Parent
 {
@@ -299,14 +300,22 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     void RotateUnitImage_Func()
     {
-        anim["Rotate"].speed = 1f;
-        anim.Play("Rotate");
+        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);
+
+        unitImage.rectTransform.DORotate(Vector3.up * 180f, 0.5f);
+        unitImage.DOColor(Color.black, 0.5f);
+        unitImage.rectTransform.DOLocalMove(_unitClass.feedImagePos, 0.5f);
+        unitImage.rectTransform.DOScale(_unitClass.feedImageSize, 0.5f);
     }
+    
     public void ReturnUI_Func()
     {
-        anim["Rotate"].time = anim["Rotate"].length;
-        anim["Rotate"].speed = -1f;
-        anim.Play("Rotate");
+        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);
+
+        unitImage.transform.DORotate(Vector3.zero, 0.5f);
+        unitImage.DOColor(Color.white, 0.5f);
+        unitImage.transform.DOLocalMove(Vector3.up * _unitClass.imagePivotAxisY * 100f, 0.5f);
+        unitImage.transform.DOScale(1f, 0.5f).SetEase(Ease.OutExpo);
     }
     #endregion
     #region Print Group

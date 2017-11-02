@@ -16,13 +16,16 @@ public class SmoothFollow_Script : MonoBehaviour
     private Transform thisTransform;
     private Vector3 velocity;
 
+    public float limitPos_Left;
+    public float limitPos_Right;
+
     private void Awake()
     {
-        thisTransform = transform;
+        thisTransform = this.transform;
         velocity = new Vector3(0.5f, 0.5f, 0.5f);
     }
 
-    void FixedUpdate()
+    void Update()
     {
         var newPos = Vector3.zero;
 
@@ -39,9 +42,14 @@ public class SmoothFollow_Script : MonoBehaviour
         }
         else
         {
-            newPos.x = target.position.x + offSetX;
-            newPos.y = target.position.y + offSetY;
-            newPos.z = target.position.z + offSetZ;
+            if (!isLockX)
+                newPos.x = target.position.x + offSetX;
+
+            if (!isLockY)
+                newPos.y = target.position.y + offSetY;
+
+            if (!isLockZ)
+                newPos.z = target.position.z + offSetZ;
         }
 
         if (isLockX)
@@ -59,6 +67,13 @@ public class SmoothFollow_Script : MonoBehaviour
             newPos.z = thisTransform.position.z;
         }
 
-        transform.position = Vector3.Slerp(thisTransform.position, newPos, Time.time);
+        Vector3 _calcMove = Vector3.Slerp(thisTransform.position, newPos, Time.time);
+
+        if (_calcMove.x < limitPos_Left)
+            _calcMove = new Vector3(limitPos_Left, _calcMove.y, _calcMove.z);
+        else if (limitPos_Right < _calcMove.x)
+            _calcMove = new Vector3(limitPos_Right, _calcMove.y, _calcMove.z);
+
+        this.transform.position = _calcMove;
     }
 }

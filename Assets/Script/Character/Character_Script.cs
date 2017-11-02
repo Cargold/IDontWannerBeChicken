@@ -51,7 +51,6 @@ public class Character_Script : MonoBehaviour
     public SpriteRenderer hpRend;
     public Transform hpTrf;
     public Sprite unitSprite;
-    public float feedImageSize;
     public float imagePivotAxisY;
     public Vector2 shadowSize;
 
@@ -107,7 +106,7 @@ public class Character_Script : MonoBehaviour
     {
         charState = CharacterState.Move;
     }
-
+    
     void OnTriggerEnter(Collider col)
     {
         OnContact_Func(col);
@@ -292,7 +291,6 @@ public class Character_Script : MonoBehaviour
     }
 
     #region Animation Group
-    public GameObject effectObj;
     public virtual void AniEvent_OnAttack_Func()
     {
         // Call : Ani Event
@@ -315,10 +313,8 @@ public class Character_Script : MonoBehaviour
                     {
                         _attackValue_Calc *= criticalBonus;
                     }
-
+                    
                     targetClassList[0].Damaged_Func(_attackValue_Calc);
-
-                    effectObj.SetActive(true);
                 }
             }
         }

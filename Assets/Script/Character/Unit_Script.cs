@@ -16,6 +16,9 @@ public class Unit_Script : Character_Script
     public Vector2 cardPortraitPos;
     public float cardImageSize;
 
+    public Vector2 feedImagePos;
+    public float feedImageSize;
+
     public void SetData_Func(Unit_Data _charData)
     {
         charId = _charData.charId;

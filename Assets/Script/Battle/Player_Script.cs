@@ -16,6 +16,9 @@ public class Player_Script : Character_Script
     [SerializeField]
     private MoveDir moveDir;
 
+    public float limitPos_Left;
+    public float limitPos_Right;
+
     public void BattleEnter_Func()
     {
         Instance = this;
@@ -69,7 +72,12 @@ public class Player_Script : Character_Script
                 SetState_Func(CharacterState.Move);
             }
 
-            this.transform.position += Vector3.left * moveSpeed * Time.deltaTime;
+            float _calcMove = this.transform.position.x + (-1f * moveSpeed * Time.deltaTime);
+
+            if (_calcMove < limitPos_Left)
+                _calcMove = limitPos_Left;
+
+            this.transform.position = Vector3.right * _calcMove;
         }
         else if (moveDir == MoveDir.Right)
         {
@@ -78,7 +86,12 @@ public class Player_Script : Character_Script
                 SetState_Func(CharacterState.Move);
             }
 
-            this.transform.position += Vector3.right * moveSpeed * Time.deltaTime;
+            float _calcMove = this.transform.position.x + (moveSpeed * Time.deltaTime);
+
+            if (limitPos_Right < _calcMove)
+                _calcMove = limitPos_Right;
+
+            this.transform.position = Vector3.right * _calcMove;
         }
         else
         {

@@ -26,6 +26,9 @@ public class BattleSpawn_Script : MonoBehaviour
 
         unitClass = _unitClass;
 
+        if (spawnGroupType == GroupType.Enemy)
+            OnSpawning_Func();
+
         StartCoroutine("CheckSpawnTimer_Cor");
     }
 
