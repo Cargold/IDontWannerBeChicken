@@ -9,7 +9,7 @@ public class ChickenHouse_Script : Character_Script
         base.Init_Func(_groupType);
     }
 
-    protected override void Die_Func()
+    public override void Die_Func()
     {
         isAlive = false;
         charState = CharacterState.Die;

@@ -10,8 +10,7 @@ public class BattleSpawn_Script : MonoBehaviour
     [SerializeField]
     private ArrayList spawnUnitList = new ArrayList();
     private int spawnCheckCount;
-    [SerializeField]
-    private bool isActive = false;
+    public bool isActive = false;
     [SerializeField]
     private Unit_Script unitClass;
     public int spawnID;
@@ -124,13 +123,19 @@ public class BattleSpawn_Script : MonoBehaviour
         spawnUnitList.Add(_spawnUnitClass);
     }
 
-    public void DeactiveSpawn_Func()
+    public IEnumerator DeactiveSpawn_Cor()
     {
         isActive = false;
 
         unitClass = null;
 
         StopCoroutine("CheckSpawnTimer_Cor");
+
+        for (int i = 0; i < spawnUnitList.Count; i++)
+        {
+            ((Unit_Script)spawnUnitList[i]).Die_Func();
+            yield return null;
+        }
     }
 
     public Unit_Script[] GetUnitClassArr_Func()

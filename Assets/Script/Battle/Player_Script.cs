@@ -19,6 +19,7 @@ public class Player_Script : Character_Script
     public float limitPos_Left;
     public float limitPos_Right;
 
+    public float attackRate_Init;
     public bool isAttackClear;
 
     public void BattleEnter_Func()
@@ -40,6 +41,7 @@ public class Player_Script : Character_Script
         SetState_Func(CharacterState.Move);
 
         // Set Attack
+        attackRate_Speed = attackRate_Init / attackRate_Max;
         StartCoroutine(base.CheckAttackRate_Cor());
         StartCoroutine(this.CheckAttack_Cor());
     }
@@ -50,6 +52,7 @@ public class Player_Script : Character_Script
 
         isAttackClear = true;
 
+        animator.speed = attackRate_Speed;
         animator.Play("Idle");
     }
 
@@ -132,6 +135,7 @@ public class Player_Script : Character_Script
         {
             charState = CharacterState.Move;
 
+            animator.speed = attackRate_Speed;
             animator.Play("Move");
         }
     }
@@ -140,9 +144,9 @@ public class Player_Script : Character_Script
     {
         charState = CharacterState.Attack;
 
+        animator.speed = attackRate_Speed;
         animator.Play("Attack");
     }
-
     protected override IEnumerator CheckAttack_Cor()
     {
         isAttackClear = true;
@@ -206,7 +210,7 @@ public class Player_Script : Character_Script
             SetState_Func(CharacterState.Idle);
     }
 
-    protected override void Die_Func()
+    public override void Die_Func()
     {
         isAlive = false;
         charState = CharacterState.Die;

@@ -73,7 +73,7 @@ public class Unit_Script : Character_Script
     public void SetDataByPlayerUnit_Func(Unit_Script _unitClass)
     {
         healthPoint_Max = _unitClass.healthPoint_Max;
-        healthPoint_Recent = _unitClass.healthPoint_Recent;
+        healthPoint_Recent = _unitClass.healthPoint_Max;
         defenceValue = _unitClass.defenceValue;
         attackValue = _unitClass.attackValue;
         attackRate_Max = _unitClass.attackRate_Max;
@@ -82,6 +82,8 @@ public class Unit_Script : Character_Script
         criticalPercent = _unitClass.criticalPercent;
         
         spawnInterval = _unitClass.spawnInterval;
+
+        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[charId].attackRate / _unitClass.attackRate_Max;
     }
 
     void InitMove_Func()
@@ -99,7 +101,7 @@ public class Unit_Script : Character_Script
 
     protected override void Move_Func()
     {
-        if(charState != CharacterState.Move)
+        if(charState != CharacterState.Move && isAlive == true)
         {
             StopCoroutine("Move_Cor");
             StartCoroutine("Move_Cor");

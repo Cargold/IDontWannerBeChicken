@@ -107,9 +107,30 @@ public class Enviroment_Manager : MonoBehaviour
     }
     public void NatureReset_Func()
     {
+        StartCoroutine(ResetTree_Cor());
+        StartCoroutine(ResetMountain_Cor());
+    }
+
+    IEnumerator ResetTree_Cor()
+    {
+        treeID_Check = 0;
+
         for (int i = 0; i < treeClassList.Count; i++)
         {
+            treeClassList[i].OnDevastated_Func();
 
+            yield return null;
+        }
+    }
+    IEnumerator ResetMountain_Cor()
+    {
+        mountainID_Check = 0;
+
+        for (int i = 0; i < mountainClassList.Count; i++)
+        {
+            mountainClassList[i].OnDevastated_Func();
+
+            yield return null;
         }
     }
 }

@@ -18,6 +18,7 @@ public class Character_Script : MonoBehaviour
     [SerializeField]
     protected float defenceValue_Calc;
     public float attackValue;
+    public float attackRate_Speed;
     public float attackRate_Max;
     [SerializeField]
     protected float attackRate_Recent;
@@ -73,23 +74,12 @@ public class Character_Script : MonoBehaviour
         
         // Init Attack
         defenceValue_Calc = 1f - (defenceValue * 0.01f);
-
-        RuntimeAnimatorController runtimeAni = animator.runtimeAnimatorController;
-        for (int i = 0; i < runtimeAni.animationClips.Length; i++)
-        {
-            if (runtimeAni.animationClips[i].name.Contains("Attack") == true)
-            {
-                Debug.Log("Test, Ani Clip : " + runtimeAni.animationClips[i].name);
-
-                Debug.Log("Test, Rate : " + runtimeAni.animationClips[i].frameRate);
-
-                runtimeAni.animationClips[i].frameRate = 60f;
-            }
-        }
     }
 
     public void OnLanding_Func()
     {
+        if (this.gameObject.activeSelf == false) return;
+
         // Set Renderer
         hpRend_Group.gameObject.SetActive(true);
         shadowRend.gameObject.SetActive(true);
@@ -99,7 +89,7 @@ public class Character_Script : MonoBehaviour
         // Set Status
         isAlive = true;
         SetState_Func(CharacterState.Move);
-        
+
         // Set Attack
         StartCoroutine(CheckAttackRate_Cor());
         StartCoroutine(CheckAttack_Cor());
@@ -126,10 +116,12 @@ public class Character_Script : MonoBehaviour
 
     protected virtual void Idle_Func()
     {
+        animator.speed = 1f;
         charState = CharacterState.Idle;
     }
     protected virtual void Move_Func()
     {
+        animator.speed = 1f;
         charState = CharacterState.Move;
     }
     
@@ -173,7 +165,10 @@ public class Character_Script : MonoBehaviour
     protected virtual void Attack_Func()
     {
         if (charState != CharacterState.Attack)
+        {
+            animator.speed = attackRate_Speed;
             charState = CharacterState.Attack;
+        }
     }
     protected virtual IEnumerator CheckAttack_Cor()
     {
@@ -305,11 +300,13 @@ public class Character_Script : MonoBehaviour
             SetState_Func(CharacterState.Die);
         }
     }
-    protected virtual void Die_Func()
+    public virtual void Die_Func()
     {
         isAlive = false;
         charState = CharacterState.Die;
         targetClassList.Clear();
+
+        StopCoroutine("Move_Cor");
 
         // 사망 연출
 

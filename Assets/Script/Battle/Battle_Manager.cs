@@ -76,8 +76,8 @@ public class Battle_Manager : MonoBehaviour
             spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally, i);
         }
 
-        spawnClassArr_Enemy = new BattleSpawn_Script[enemySpawnDataArr.Length];
-        for (int i = 0; i < enemySpawnDataArr.Length; i++)
+        spawnClassArr_Enemy = new BattleSpawn_Script[10];
+        for (int i = 0; i < 10; i++)
         {
             GameObject _spawnAllyObj = new GameObject();
             _spawnAllyObj.transform.parent = this.transform;
@@ -234,9 +234,7 @@ public class Battle_Manager : MonoBehaviour
     }
     IEnumerator NextStage_Cor()
     {
-        Game_Manager.Instance.Loading_Func();
         yield return ClearBattleData_Cor();
-        Game_Manager.Instance.LoadingClear_Func();
 
         Game_Manager.Instance.BattleEnter_Func(battleType);
     }
@@ -247,9 +245,7 @@ public class Battle_Manager : MonoBehaviour
     }
     IEnumerator Retry_Cor()
     {
-        Game_Manager.Instance.Loading_Func();
         yield return ClearBattleData_Cor();
-        Game_Manager.Instance.LoadingClear_Func();
 
         Game_Manager.Instance.BattleEnter_Func(battleType, stageID);
     }
@@ -262,9 +258,7 @@ public class Battle_Manager : MonoBehaviour
     }
     IEnumerator ExitBattle_Cor()
     {
-        Game_Manager.Instance.Loading_Func();
         yield return ClearBattleData_Cor();
-        Game_Manager.Instance.LoadingClear_Func();
 
         Game_Manager.Instance.LobbyEnter_Func();
 
@@ -288,11 +282,28 @@ public class Battle_Manager : MonoBehaviour
 
     IEnumerator ClearBattleData_Cor()
     {
+        Game_Manager.Instance.Loading_Func();
+
+        for (int i = 0; i < 5; i++)
+        {
+            StartCoroutine(spawnClassArr_Ally[i].DeactiveSpawn_Cor());
+        }
+
+        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+        {
+            if (spawnClassArr_Enemy[i].isActive == true)
+                StartCoroutine(spawnClassArr_Enemy[i].DeactiveSpawn_Cor());
+            else
+                break;
+        }
+
+        Enviroment_Manager.Instance.NatureReset_Func();
+
         GetRewardData_Func();
 
         yield return new WaitForSeconds(0.5f);
 
-        yield break;
+        Game_Manager.Instance.LoadingClear_Func();
     }
     void GetRewardData_Func()
     {
