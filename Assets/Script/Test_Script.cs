@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Test_Script : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Test : " + collision.gameObject.name);
-    }
+    public bool isTest;
+    public Animator aaa;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    void Update()
     {
-        Debug.Log("Test : " + collision.gameObject.name);
+        if (isTest == false) return;
+        isTest = false;
+
+
+        aaa.SetBool("OnContact", true);
     }
 }

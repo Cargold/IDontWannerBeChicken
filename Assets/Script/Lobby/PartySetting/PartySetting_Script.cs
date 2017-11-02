@@ -275,6 +275,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         Player_Data.Instance.JoinParty_Func(_partySlotId, _unitId);
+
     }
     #endregion
     #region Feeding Group

@@ -38,39 +38,37 @@ public class Player_Data : MonoBehaviour
     public int stageID_Normal;
     public int stageID_Special;
 
-    // Test
-    public PlayerFood_DataTemp[] test_InventoryDataArr;
-
     public IEnumerator Init_Cor()
     {
         Instance = this;
 
-        yield return InitWealth_Cor();
-        yield return InitCharacter_Cor();
+        yield return LoadWealth_Cor();
+        yield return LoadUnit_Cor();
+        yield return LoadStage_Cor();
+        yield return LoadParty_Cor();
+        yield return LoadInventory_Cor();
 
         yield break;
     }
-    IEnumerator InitWealth_Cor()
+    IEnumerator LoadWealth_Cor()
     {
-        // 골드, 미네랄 데이터 불러오기
+        // Cargold : 골드, 미네랄 데이터 불러오기
 
         playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
         playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
 
-        Test_InventoryFood_Func();
-
         yield break;
     }
-    IEnumerator InitCharacter_Cor()
+    IEnumerator LoadUnit_Cor()
     {
-        // 캐릭터 정보 불러오기
+        // Cargold : 캐릭터 정보 불러오기
 
         int _unitDataNum = DataBase_Manager.Instance.unitDataObjArr.Length;
         playerUnitDataArr = new PlayerUnit_ClassData[_unitDataNum];
 
         for (int i = 0; i < playerUnitDataArr.Length; i++)
         {
-            Unit_Script _unitClass = ObjectPoolManager.Instance.GetUnitClass_Func(i);
+            Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
 
             playerUnitDataArr[i] = new PlayerUnit_ClassData();
 
@@ -79,7 +77,20 @@ public class Player_Data : MonoBehaviour
 
         yield break;
     }
-    void Test_InventoryFood_Func()
+    IEnumerator LoadStage_Cor()
+    {
+        // Cargold : 스테이지 데이터 불러오기
+
+        stageID_Normal = 1;
+        stageID_Special = 1;
+
+        yield break;
+    }
+    IEnumerator LoadParty_Cor()
+    {
+        yield break;
+    }
+    IEnumerator LoadInventory_Cor()
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
@@ -98,13 +109,10 @@ public class Player_Data : MonoBehaviour
 
             inventoryFoodDataList.Add(_playerFoodData);
         }
-    }
 
-    private void Update()
-    {
-        //Debug.Log("Test, Food Class : " + inventoryFoodDataList[0].foodClass);
+        yield break;
     }
-
+    
     #region Party Group
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
@@ -227,7 +235,7 @@ public class Player_Data : MonoBehaviour
             if (_inventoryFoodID == -1)
                 Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
 
-            ObjectPoolManager.Instance.Free_Func(inventoryFoodDataList[_inventoryFoodID].GetFoodClass_Func().gameObject);
+            ObjectPool_Manager.Instance.Free_Func(inventoryFoodDataList[_inventoryFoodID].GetFoodClass_Func().gameObject);
             inventoryFoodDataList.RemoveAt(_inventoryFoodID);
         }
         else

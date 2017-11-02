@@ -41,7 +41,7 @@ public class Stomach_Script : MonoBehaviour
         {
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodDataArr[i].foodID];
 
-            GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.foodName);
 
             _foodObj.transform.position = _playerFoodDataArr[i].pos;
             _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
@@ -68,7 +68,7 @@ public class Stomach_Script : MonoBehaviour
         for (int i = 0; i < feedFoodClassList.Count; i++)
         {
             Player_Data.Instance.SetFoodData_Func(feedFoodClassList[i], false, stomachUnitID);
-            ObjectPoolManager.Instance.Free_Func(feedFoodClassList[i].gameObject);
+            ObjectPool_Manager.Instance.Free_Func(feedFoodClassList[i].gameObject);
         }
 
         stomachUnitID = -999;

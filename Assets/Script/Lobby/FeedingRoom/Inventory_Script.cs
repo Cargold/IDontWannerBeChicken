@@ -25,7 +25,7 @@ public class Inventory_Script : MonoBehaviour
 
     public void Active_Func(int _selectUnitID)
     {
-        InitInventoryFood_Func();
+        SettingInventoryFood_Func();
 
         if (_selectUnitID == 999)
         {
@@ -42,7 +42,7 @@ public class Inventory_Script : MonoBehaviour
 
         replaceColClass.Active_Func();
     }
-    void InitInventoryFood_Func()
+    void SettingInventoryFood_Func()
     {
         int _haveFoodNum = Player_Data.Instance.GetInventoryFoodNum_Func();
         inventoryFoodClassList = new List<Food_Script>();
@@ -52,7 +52,7 @@ public class Inventory_Script : MonoBehaviour
             
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.foodID];
 
-            GameObject _foodObj = ObjectPoolManager.Instance.Get_Func(_foodData.foodName);
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.foodName);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
             _foodClass.Init_Func(feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.remainExp);
             _foodClass.SetState_Func(FoodPlaceState.Inventory);
@@ -97,7 +97,7 @@ public class Inventory_Script : MonoBehaviour
         {
             Player_Data.Instance.SetFoodData_Func(inventoryFoodClassList[i], true);
 
-            ObjectPoolManager.Instance.Free_Func(inventoryFoodClassList[i].gameObject);
+            ObjectPool_Manager.Instance.Free_Func(inventoryFoodClassList[i].gameObject);
         }
 
         inventoryFoodClassList.Clear();

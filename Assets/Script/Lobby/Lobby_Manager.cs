@@ -54,12 +54,10 @@ public class Lobby_Manager : MonoBehaviour
         yield break;
     }
     #region Lobby Group
-    public void LobbyEnter_Func()
-    {
-        Enter_Func(LobbyState.MainLobby);
-    }
     public void Enter_Func(string _loobyTypeText)
     {
+        // Call : Btn Event
+
         LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
         Enter_Func(_lobbyState);
     }

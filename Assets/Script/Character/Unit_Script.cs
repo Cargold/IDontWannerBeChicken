@@ -11,6 +11,10 @@ public class Unit_Script : Character_Script
     public float spawnInterval;
     public int populationValue;
     public int unlockLevel;
+    
+    public Sprite cardSprite;
+    public Vector2 cardPortraitPos;
+    public float cardImageSize;
 
     public void SetData_Func(Unit_Data _charData)
     {
@@ -41,8 +45,13 @@ public class Unit_Script : Character_Script
 
         unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
         unitRend.sprite = _charData.unitSprite;
+        if (groupType == GroupType.Enemy)
+            unitRend.flipX = true;
         imagePivotAxisY = _charData.imagePivotAxisY;
         shadowSize = _charData.shadowSize;
+        
+        if (cardSprite == null)
+            cardSprite = unitSprite;
     }
 
     public void Init_Func(GroupType _groupType)
@@ -89,6 +98,7 @@ public class Unit_Script : Character_Script
 
     IEnumerator Move_Cor()
     {
+        animator.SetBool("OnContact", false);
         charState = CharacterState.Move;
 
         while (charState == CharacterState.Move)

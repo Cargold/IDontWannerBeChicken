@@ -11,7 +11,7 @@ public class Game_Manager : MonoBehaviour
     public Player_Data playerDataClass;
     public Battle_Manager battleClass;
     public Lobby_Manager lobbyClass;
-    public ObjectPoolManager objectPoolManager;
+    public ObjectPool_Manager objectPoolManager;
     public SmoothFollow_Script mainCameraSmoothClass;
     public BattleStartDirection_Script directionClass;
 

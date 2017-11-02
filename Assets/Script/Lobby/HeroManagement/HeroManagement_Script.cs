@@ -17,6 +17,8 @@ public class HeroManagement_Script : LobbyUI_Parent
 
     public override void Exit_Func()
     {
+        // Call : Btn Event
+
         this.gameObject.SetActive(false);
     }
     #endregion

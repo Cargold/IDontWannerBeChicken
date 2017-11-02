@@ -2,16 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public struct EnemySpawnData
+{
+    public int enemyID;
+    public int enemyLevel;
+}
+
 public class Battle_Manager : MonoBehaviour
 {
     public static Battle_Manager Instance;
 
     public Player_Script playerClass;
-    public Transform spawnPos_Enemy;
-    public Unit_Script[] enemyUnitClassArr;
     public RectTransform battleUITrf;
     public BattleSpawn_Script[] spawnClassArr_Ally;
+    public Transform spawnPos_Ally;
+    public Transform spawnTrf_Ally;
     public BattleSpawn_Script[] spawnClassArr_Enemy;
+    public Transform spawnTrf_Enemy;
+    public Transform spawnPos_Enemy;
+    [SerializeField]
+    public EnemySpawnData[] enemySpawnDataArr;
+    public ChickenHouse_Script chickenHouseClass;
 
     public ArrayList spawnUnitList_Ally = new ArrayList();
     public ArrayList spawnUnitList_Enemy = new ArrayList();
@@ -56,6 +68,17 @@ public class Battle_Manager : MonoBehaviour
             spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally);
         }
 
+        spawnClassArr_Enemy = new BattleSpawn_Script[enemySpawnDataArr.Length];
+        for (int i = 0; i < enemySpawnDataArr.Length; i++)
+        {
+            GameObject _spawnAllyObj = new GameObject();
+            _spawnAllyObj.transform.parent = this.transform;
+            _spawnAllyObj.name = "SpawnObjEnemy_" + i;
+
+            spawnClassArr_Enemy[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
+            spawnClassArr_Enemy[i].Init_Func(this, GroupType.Enemy);
+        }
+
         pauseClass.Init_Func();
         resultClass.Init_Func(this);
 
@@ -78,7 +101,7 @@ public class Battle_Manager : MonoBehaviour
     IEnumerator BattleEnter_Cor()
     {
         yield return DirectingStart_Cor();
-        BattleStart_Func();
+        BattlePlay_Func();
 
         yield break;
     }
@@ -92,11 +115,13 @@ public class Battle_Manager : MonoBehaviour
     }
     #endregion
     #region Play State
-    void BattleStart_Func()
+    void BattlePlay_Func()
     {
         m_BattleState = BattleState.Play;
 
         playerClass.BattleEnter_Func();
+
+        chickenHouseClass.Init_Func(GroupType.Enemy);
 
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
@@ -115,7 +140,11 @@ public class Battle_Manager : MonoBehaviour
     }
     void OnSpawnEnemyUnit_Func()
     {
-        
+        for (int i = 0; i < enemySpawnDataArr.Length; i++)
+        {
+            Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(enemySpawnDataArr[i].enemyID);
+            spawnClassArr_Enemy[i].ActiveSpawn_Func(_monsterClass);
+        }
     }
 
     public void OnMoveLeft_Func(bool _isDown)

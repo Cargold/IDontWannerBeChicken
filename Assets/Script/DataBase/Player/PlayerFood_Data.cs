@@ -38,9 +38,3 @@ public class PlayerFood_ClassData
         }
     }
 }
-
-public struct PlayerFood_DataTemp
-{
-    public int level;
-    public int haveFoodID;
-}

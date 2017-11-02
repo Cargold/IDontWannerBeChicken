@@ -35,9 +35,13 @@ public class UnitCard_Script : MonoBehaviour
         populationImage.sprite = _populationSprite;
         populationImage.SetNativeSize();
 
-        Sprite _unitSprite = DataBase_Manager.Instance.unitDataArr[_cardId].unitSprite;
+        Sprite _unitSprite = DataBase_Manager.Instance.unitDataArr[_cardId].cardSprite;
         unitImage.sprite = _unitSprite;
         unitImage.SetNativeSize();
+
+        unitImage.transform.localPosition = DataBase_Manager.Instance.unitDataArr[_cardId].cardPortraitPos;
+
+        unitImage.transform.localScale = DataBase_Manager.Instance.unitDataArr[_cardId].cardImageSize * Vector3.one;
     }
     
     public void SetState_Func(CardState _cardState)

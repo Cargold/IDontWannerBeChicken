@@ -25,10 +25,10 @@ public class Player_Script : Character_Script
 
     protected override void Idle_Func()
     {
-        if (CheckTargetAlive_Func() == false)
-            charState = CharacterState.Idle;
-        else
-            SetState_Func(CharacterState.Attack);
+        //if (CheckTargetAlive_Func() == false)
+        //    charState = CharacterState.Idle;
+        //else
+        //    SetState_Func(CharacterState.Attack);
     }
 
     public void MoveLeft_Func()
@@ -42,6 +42,23 @@ public class Player_Script : Character_Script
     public void MoveOver_Func()
     {
         moveDir = MoveDir.None;
+    }
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.A) == true)
+        {
+            moveDir = MoveDir.Left;
+        }
+        else if (Input.GetKey(KeyCode.D) == true)
+        {
+            moveDir = MoveDir.Right;
+        }
+        else if (Input.GetKeyUp(KeyCode.A) == true || Input.GetKeyUp(KeyCode.D) == true)
+        {
+            moveDir = MoveDir.None;
+        }
+
+        MovePlayer_Func();
     }
     void MovePlayer_Func()
     {
@@ -74,21 +91,28 @@ public class Player_Script : Character_Script
         charState = CharacterState.Move;
     }
 
-    void Update()
+    protected override void Attack_Func()
     {
-        if (Input.GetKey(KeyCode.A) == true)
+        charState = CharacterState.Attack;
+
+        animator.SetBool("AttackReady", false);
+        attackRate_Recent = 0f;
+
+        float _attackValue_Calc = attackValue;
+        if (Random.Range(0f, 100f) < criticalPercent)
         {
-            moveDir = MoveDir.Left;
-        }
-        else if (Input.GetKey(KeyCode.D) == true)
-        {
-            moveDir = MoveDir.Right;
-        }
-        else if (Input.GetKeyUp(KeyCode.A) == true || Input.GetKeyUp(KeyCode.D) == true)
-        {
-            moveDir = MoveDir.None;
+            _attackValue_Calc *= criticalBonus;
         }
 
-        MovePlayer_Func();
+        targetClassList[0].Damaged_Func(_attackValue_Calc);
+    }
+
+    protected override void Die_Func()
+    {
+        isAlive = false;
+        charState = CharacterState.Die;
+        targetClassList.Clear();
+
+        Battle_Manager.Instance.GameOver_Func(false);
     }
 }

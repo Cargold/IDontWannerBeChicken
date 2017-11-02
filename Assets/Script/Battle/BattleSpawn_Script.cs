@@ -55,16 +55,26 @@ public class BattleSpawn_Script : MonoBehaviour
     }
     void OnSpawning_Func()
     {
-        GameObject _charObj = ObjectPoolManager.Instance.Get_Func(unitClass.charName);
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
 
         Vector3 _spawnPos = Vector3.zero;
         if (spawnGroupType == GroupType.Ally)
-            _spawnPos = new Vector3(Player_Script.Instance.spawnPos.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));
+        {
+            _spawnPos = new Vector3(Battle_Manager.Instance.spawnPos_Ally.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));
+            _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Ally);
+
+            _charObj.transform.localScale = Vector3.one;
+        }
         else if(spawnGroupType == GroupType.Enemy)
+        {
             _spawnPos = new Vector3(Battle_Manager.Instance.spawnPos_Enemy.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));
+            _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Enemy);
+
+            _charObj.transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
 
         _charObj.transform.position = _spawnPos;
-        _charObj.transform.localScale = Vector3.one;
+        _charObj.transform.localEulerAngles = Vector3.zero;
 
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);

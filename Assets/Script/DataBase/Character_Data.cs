@@ -34,6 +34,11 @@ public struct Unit_Data
     public float imagePivotAxisY;
     public Vector2 shadowSize;
 
+    // Card Data
+    public Sprite cardSprite;
+    public Vector2 cardPortraitPos;
+    public float cardImageSize;
+
     public void SetData_Func(Unit_Script _unitClass, int _unitID)
     {
         charId          = _unitID;
@@ -67,5 +72,9 @@ public struct Unit_Data
             imagePivotAxisY = _unitClass.imagePivotAxisY;
 
         shadowSize = _unitClass.transform.Find("Shadow").localScale;
+
+        cardSprite      = _unitClass.cardSprite;
+        cardPortraitPos = _unitClass.cardPortraitPos;
+        cardImageSize   = _unitClass.cardImageSize;
     }
 }

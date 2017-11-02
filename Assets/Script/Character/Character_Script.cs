@@ -21,8 +21,6 @@ public class Character_Script : MonoBehaviour
     public float attackRate_Max;
     [SerializeField]
     protected float attackRate_Recent;
-    [SerializeField]
-    protected bool isAttackOn;
     public float attackRange;
     public float moveSpeed;
     public float criticalPercent;
@@ -48,13 +46,11 @@ public class Character_Script : MonoBehaviour
     public GroupType groupType;
 
     // Rendering Data
+    public Animator animator;
     public SpriteRenderer unitRend;
     public SpriteRenderer hpRend;
     public Transform hpTrf;
     public Sprite unitSprite;
-    public Sprite cardSprite;
-    public Vector2 cardPortraitPos;
-    public float cardImageSize;
     public float feedImageSize;
     public float imagePivotAxisY;
     public Vector2 shadowSize;
@@ -66,10 +62,10 @@ public class Character_Script : MonoBehaviour
         isAlive = true;
 
         // Init Renderer
-        
+        animator = this.GetComponent<Animator>();
+        if (unitRend == null)
+            unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
         unitRend.sprite = unitSprite;
-        if (cardSprite == null)
-            cardSprite = unitSprite;
         hpTrf = this.transform.Find("HP_Group").Find("Gauge");
         hpRend = hpTrf.GetComponent<SpriteRenderer>();
         SetState_Func(CharacterState.Move);
@@ -158,25 +154,20 @@ public class Character_Script : MonoBehaviour
     {
         while(isAlive == true)
         {
+            // 내가 살아있다면
+
             if (CheckTargetAlive_Func() == true)
             {
+                // 목표대상이 살아있다면
+
                 if (CheckRange_Func() == true)
                 {
+                    // 목표대상이 사정권 내에 있다면
+
                     if (charState != CharacterState.Attack)
-                        SetState_Func(CharacterState.Attack);
-
-                    if(isAttackOn == true)
                     {
-                        isAttackOn = false;
-                        attackRate_Recent = 0f;
-
-                        float _attackValue_Calc = attackValue;
-                        if(Random.Range(0f, 100f) < criticalPercent)
-                        {
-                            _attackValue_Calc *= criticalBonus;
-                        }
-
-                        targetClassList[0].Damaged_Func(_attackValue_Calc);
+                        animator.SetBool("OnContact", true);
+                        SetState_Func(CharacterState.Attack);
                     }
                 }
                 else if (charState == CharacterState.Attack)
@@ -193,12 +184,12 @@ public class Character_Script : MonoBehaviour
     }
     IEnumerator CheckAttackRate_Cor()
     {
-        isAttackOn = true;
+        animator.SetBool("AttackReady", true);
         attackRate_Recent = 0f;
 
         while (isAlive == true)
         {
-            if(isAttackOn == false)
+            if(animator.GetBool("AttackReady") == false)
             {
                 if (attackRate_Recent < attackRate_Max)
                 {
@@ -207,7 +198,7 @@ public class Character_Script : MonoBehaviour
                 }
                 else
                 {
-                    isAttackOn = true;
+                    animator.SetBool("AttackReady", true);
                     attackRate_Recent = 0f;
                 }
             }
@@ -217,38 +208,35 @@ public class Character_Script : MonoBehaviour
             }
         }
     }
-
     bool CheckRange_Func()
     {
-        bool isRangeOn = false;
-        Character_Script _closeCharClass = null;
-        float _closeCharValue = 0f;
+        Character_Script _closerCharClass = null;
+        float _closerCharDistance = 0f;
         int _closeCharID = 0;
 
         for (int i = 0; i < targetClassList.Count; i++)
         {
             float _distanceValue = Vector3.Distance(this.transform.position, targetClassList[i].transform.position);
 
-            if (_distanceValue < _closeCharValue || _closeCharClass == null)
+            if (_distanceValue < _closerCharDistance || _closerCharClass == null)
             {
-                _closeCharValue = _distanceValue;
-                _closeCharClass = targetClassList[i];
+                _closerCharDistance = _distanceValue;
+                _closerCharClass = targetClassList[i];
                 _closeCharID = i;
             }
         }
 
-        if (_closeCharValue <= attackRange)
+        if (_closerCharDistance <= attackRange && _closerCharClass != null)
         {
             Character_Script _tempClass = targetClassList[0];
-            targetClassList[0] = _closeCharClass;
+            targetClassList[0] = _closerCharClass;
             targetClassList[_closeCharID] = _tempClass;
 
-            isRangeOn = true;
+            return true;
         }
 
-        return isRangeOn;
+        return false;
     }
-
     protected bool CheckTargetAlive_Func()
     {
         bool isTargetOn = false;
@@ -269,6 +257,14 @@ public class Character_Script : MonoBehaviour
         return isTargetOn;
     }
 
+    private void CalcHP_Func()
+    {
+        float _remainPer = healthPoint_Recent / healthPoint_Max;
+        float _remainPos = 0.35f * (_remainPer - 1f);
+
+        hpTrf.localPosition = new Vector2(_remainPos * -1f, hpTrf.localPosition.y);
+        hpTrf.localScale = new Vector2(_remainPer, hpTrf.localScale.y);
+    }
     public void Damaged_Func(float _damageValue)
     {
         _damageValue *= defenceValue_Calc;
@@ -284,23 +280,48 @@ public class Character_Script : MonoBehaviour
             SetState_Func(CharacterState.Die);
         }
     }
-
     protected virtual void Die_Func()
     {
         isAlive = false;
         charState = CharacterState.Die;
+        targetClassList.Clear();
 
         // 사망 연출
 
-        ObjectPoolManager.Instance.Free_Func(this.gameObject);
+        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
     }
 
-    private void CalcHP_Func()
+    #region Animation Group
+    public GameObject effectObj;
+    public virtual void AniEvent_OnAttack_Func()
     {
-        float _remainPer = healthPoint_Recent / healthPoint_Max;
-        float _remainPos = 0.35f * (_remainPer - 1f);
+        // Call : Ani Event
 
-        hpTrf.localPosition = new Vector2(_remainPos * -1f, hpTrf.localPosition.y);
-        hpTrf.localScale = new Vector2(_remainPer, hpTrf.localScale.y);
+        if (CheckTargetAlive_Func() == true)
+        {
+            // 목표대상이 살아있다면
+
+            if (CheckRange_Func() == true)
+            {
+                // 목표대상이 사정권 내에 있다면
+
+                if (animator.GetBool("AttackReady") == true)
+                {
+                    animator.SetBool("AttackReady", false);
+                    attackRate_Recent = 0f;
+
+                    float _attackValue_Calc = attackValue;
+                    if (Random.Range(0f, 100f) < criticalPercent)
+                    {
+                        _attackValue_Calc *= criticalBonus;
+                    }
+
+                    targetClassList[0].Damaged_Func(_attackValue_Calc);
+
+                    effectObj.SetActive(true);
+                }
+            }
+        }
     }
+    #endregion
 }
