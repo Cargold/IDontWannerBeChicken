@@ -25,6 +25,14 @@ public class Battle_Manager : MonoBehaviour
     public EnemySpawnData[] enemySpawnDataArr;
     public ChickenHouse_Script chickenHouseClass;
 
+    public float spawnPosX_Range;
+    public float spawnPosY_Min;
+    public float spawnPosY_Max;
+    public float spawnJumpPower_Min;
+    public float spawnJumpPower_Max;
+    public float spawnDelay;
+    public float jumpTime_Relative;
+
     public ArrayList spawnUnitList_Ally = new ArrayList();
     public ArrayList spawnUnitList_Enemy = new ArrayList();
 
@@ -65,7 +73,7 @@ public class Battle_Manager : MonoBehaviour
             _spawnAllyObj.name = "SpawnObjAlly_" + i;
 
             spawnClassArr_Ally[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
-            spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally);
+            spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally, i);
         }
 
         spawnClassArr_Enemy = new BattleSpawn_Script[enemySpawnDataArr.Length];
@@ -76,7 +84,7 @@ public class Battle_Manager : MonoBehaviour
             _spawnAllyObj.name = "SpawnObjEnemy_" + i;
 
             spawnClassArr_Enemy[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
-            spawnClassArr_Enemy[i].Init_Func(this, GroupType.Enemy);
+            spawnClassArr_Enemy[i].Init_Func(this, GroupType.Enemy, i);
         }
 
         pauseClass.Init_Func();

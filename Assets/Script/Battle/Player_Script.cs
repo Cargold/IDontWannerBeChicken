@@ -19,19 +19,38 @@ public class Player_Script : Character_Script
     public float limitPos_Left;
     public float limitPos_Right;
 
+    public bool isAttackClear;
+
     public void BattleEnter_Func()
     {
         Instance = this;
 
         base.Init_Func(GroupType.Ally);
+        InitPlayer_Func();
+    }
+
+    void InitPlayer_Func()
+    {
+        // Set Renderer
+        hpRend_Group.gameObject.SetActive(true);
+        shadowRend.gameObject.SetActive(true);
+
+        // Set Status
+        isAlive = true;
+        SetState_Func(CharacterState.Move);
+
+        // Set Attack
+        StartCoroutine(base.CheckAttackRate_Cor());
+        StartCoroutine(this.CheckAttack_Cor());
     }
 
     protected override void Idle_Func()
     {
-        //if (CheckTargetAlive_Func() == false)
-        //    charState = CharacterState.Idle;
-        //else
-        //    SetState_Func(CharacterState.Attack);
+        charState = CharacterState.Idle;
+
+        isAttackClear = true;
+
+        animator.Play("Idle");
     }
 
     public void MoveLeft_Func()
@@ -67,9 +86,10 @@ public class Player_Script : Character_Script
     {
         if (moveDir == MoveDir.Left)
         {
-            if (charState != CharacterState.Move)
+            if (charState != CharacterState.Attack)
             {
-                SetState_Func(CharacterState.Move);
+                if (charState != CharacterState.Move)
+                    SetState_Func(CharacterState.Move);
             }
 
             float _calcMove = this.transform.position.x + (-1f * moveSpeed * Time.deltaTime);
@@ -78,12 +98,15 @@ public class Player_Script : Character_Script
                 _calcMove = limitPos_Left;
 
             this.transform.position = Vector3.right * _calcMove;
+
+            Enviroment_Manager.Instance.OnDevastated_Func(this.transform.position.x);
         }
         else if (moveDir == MoveDir.Right)
         {
-            if (charState != CharacterState.Move)
+            if (charState != CharacterState.Attack)
             {
-                SetState_Func(CharacterState.Move);
+                if (charState != CharacterState.Move)
+                    SetState_Func(CharacterState.Move);
             }
 
             float _calcMove = this.transform.position.x + (moveSpeed * Time.deltaTime);
@@ -92,32 +115,95 @@ public class Player_Script : Character_Script
                 _calcMove = limitPos_Right;
 
             this.transform.position = Vector3.right * _calcMove;
+
+            Enviroment_Manager.Instance.OnWoody_Func(this.transform.position.x);
         }
         else
         {
-            if (charState == CharacterState.Move)
+            if (charState != CharacterState.Attack && animator.GetBool("OnContact") == false)
+            {
                 SetState_Func(CharacterState.Idle);
+            }
         }
     }
     protected override void Move_Func()
     {
-        charState = CharacterState.Move;
+        if(charState != CharacterState.Attack)
+        {
+            charState = CharacterState.Move;
+
+            animator.Play("Move");
+        }
     }
 
     protected override void Attack_Func()
     {
         charState = CharacterState.Attack;
 
-        animator.SetBool("AttackReady", false);
-        attackRate_Recent = 0f;
+        animator.Play("Attack");
+    }
 
-        float _attackValue_Calc = attackValue;
-        if (Random.Range(0f, 100f) < criticalPercent)
+    protected override IEnumerator CheckAttack_Cor()
+    {
+        isAttackClear = true;
+
+        while (isAlive == true)
         {
-            _attackValue_Calc *= criticalBonus;
-        }
+            // 내가 살아있다면
 
-        targetClassList[0].Damaged_Func(_attackValue_Calc);
+            if (CheckTargetAlive_Func() == true)
+            {
+                // 목표대상이 살아있다면
+
+                if (CheckRange_Func() == true)
+                {
+                    // 목표대상이 사정권 내에 있다면
+
+                    if (animator.GetBool("AttackReady") == true && isAttackClear == true)
+                    {
+                        isAttackClear = false;
+                        SetState_Func(CharacterState.Attack);
+                    }
+                }
+            }
+
+            yield return null;
+        }
+    }
+    public override void AniEvent_OnAttack_Func()
+    {
+        // Call : Ani Event
+
+        if (CheckTargetAlive_Func() == true)
+        {
+            // 목표대상이 살아있다면
+
+            if (CheckRange_Func() == true)
+            {
+                // 목표대상이 사정권 내에 있다면
+
+                if (animator.GetBool("AttackReady") == true)
+                {
+                    animator.SetBool("AttackReady", false);
+                    attackRate_Recent = 0f;
+
+                    float _attackValue_Calc = attackValue;
+                    if (Random.Range(0f, 100f) < criticalPercent)
+                    {
+                        _attackValue_Calc *= criticalBonus;
+                    }
+
+                    targetClassList[0].Damaged_Func(_attackValue_Calc);
+                    isAttackClear = true;
+                }
+                else
+                    SetState_Func(CharacterState.Idle);
+            }
+            else
+                SetState_Func(CharacterState.Idle);
+        }
+        else
+            SetState_Func(CharacterState.Idle);
     }
 
     protected override void Die_Func()

@@ -61,6 +61,13 @@ public class Unit_Script : Character_Script
     {
         base.Init_Func(_groupType);
 
+        if (unitRend == null)
+            unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
+        unitRend.sprite = unitSprite;
+
+        unitRend.sortingOrder = -6;
+        shadowRend.sortingOrder = -7;
+
         InitMove_Func();
     }
     public void SetDataByPlayerUnit_Func(Unit_Script _unitClass)

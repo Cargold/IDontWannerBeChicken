@@ -127,3 +127,17 @@ public enum RewardType
     PopulationPoint,
     Skill,
 }
+
+public enum NatureType
+{
+    None = -1,
+    Mountain,
+    Tree,
+}
+
+public enum NatureWorkType
+{
+    None = -1,
+    Devastated,
+    Woody,
+}

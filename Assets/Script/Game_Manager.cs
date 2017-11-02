@@ -14,6 +14,7 @@ public class Game_Manager : MonoBehaviour
     public ObjectPool_Manager objectPoolManager;
     public SmoothFollow_Script mainCameraSmoothClass;
     public BattleStartDirection_Script directionClass;
+    public Enviroment_Manager enviromentClass;
 
     #region Reference Variable
     public Sprite[] populationSpriteArr;
@@ -41,6 +42,7 @@ public class Game_Manager : MonoBehaviour
         yield return lobbyClass.Init_Cor();         // 4. 플레이어 데이터를 바탕으로 로비 구성
         yield return directionClass.Init_Cor();     // 5. 메인로비의 Idle 애니메이션 연출 시작
         yield return battleClass.Init_Cor();        // 6. 스폰매니저 등 전투 관련 데이터 활성화
+        yield return enviromentClass.Init_Cor();    // 7. 환경 생성
 
         yield return Loading_Cor(true);
 

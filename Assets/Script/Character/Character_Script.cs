@@ -48,7 +48,8 @@ public class Character_Script : MonoBehaviour
     // Rendering Data
     public Animator animator;
     public SpriteRenderer unitRend;
-    public SpriteRenderer hpRend;
+    public SpriteRenderer shadowRend;
+    public Transform hpRend_Group;
     public Transform hpTrf;
     public Sprite unitSprite;
     public float imagePivotAxisY;
@@ -57,26 +58,51 @@ public class Character_Script : MonoBehaviour
     protected void Init_Func(GroupType _groupType)
     {
         groupType = _groupType;
-
-        isAlive = true;
-
+        
         // Init Renderer
         animator = this.GetComponent<Animator>();
-        if (unitRend == null)
-            unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
-        unitRend.sprite = unitSprite;
         hpTrf = this.transform.Find("HP_Group").Find("Gauge");
-        hpRend = hpTrf.GetComponent<SpriteRenderer>();
-        SetState_Func(CharacterState.Move);
+        hpRend_Group = this.transform.Find("HP_Group");
+        hpRend_Group.gameObject.SetActive(false);
+        shadowRend = this.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        shadowRend.gameObject.SetActive(false);
 
         // Init HP
         healthPoint_Recent = healthPoint_Max;
         CalcHP_Func();
-
+        
         // Init Attack
+        defenceValue_Calc = 1f - (defenceValue * 0.01f);
+
+        RuntimeAnimatorController runtimeAni = animator.runtimeAnimatorController;
+        for (int i = 0; i < runtimeAni.animationClips.Length; i++)
+        {
+            if (runtimeAni.animationClips[i].name.Contains("Attack") == true)
+            {
+                Debug.Log("Test, Ani Clip : " + runtimeAni.animationClips[i].name);
+
+                Debug.Log("Test, Rate : " + runtimeAni.animationClips[i].frameRate);
+
+                runtimeAni.animationClips[i].frameRate = 60f;
+            }
+        }
+    }
+
+    public void OnLanding_Func()
+    {
+        // Set Renderer
+        hpRend_Group.gameObject.SetActive(true);
+        shadowRend.gameObject.SetActive(true);
+        unitRend.sortingOrder = 2;
+        shadowRend.sortingOrder = 1;
+
+        // Set Status
+        isAlive = true;
+        SetState_Func(CharacterState.Move);
+        
+        // Set Attack
         StartCoroutine(CheckAttackRate_Cor());
         StartCoroutine(CheckAttack_Cor());
-        defenceValue_Calc = 1f - (defenceValue * 0.01f);
     }
 
     protected void SetState_Func(CharacterState _charState)
@@ -149,7 +175,7 @@ public class Character_Script : MonoBehaviour
         if (charState != CharacterState.Attack)
             charState = CharacterState.Attack;
     }
-    IEnumerator CheckAttack_Cor()
+    protected virtual IEnumerator CheckAttack_Cor()
     {
         while(isAlive == true)
         {
@@ -181,7 +207,7 @@ public class Character_Script : MonoBehaviour
             yield return null;
         }
     }
-    IEnumerator CheckAttackRate_Cor()
+    protected IEnumerator CheckAttackRate_Cor()
     {
         animator.SetBool("AttackReady", true);
         attackRate_Recent = 0f;
@@ -207,7 +233,7 @@ public class Character_Script : MonoBehaviour
             }
         }
     }
-    bool CheckRange_Func()
+    protected bool CheckRange_Func()
     {
         Character_Script _closerCharClass = null;
         float _closerCharDistance = 0f;

@@ -41,6 +41,7 @@ public class ScaleParticles : MonoBehaviour
             {
                 renderer.lengthScale = initialSizes[arrayIndex++] *
                     gameObject.transform.localScale.magnitude;
+
                 renderer.velocityScale = initialSizes[arrayIndex++] *
                     gameObject.transform.localScale.magnitude;
             }
