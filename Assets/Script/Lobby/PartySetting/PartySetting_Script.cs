@@ -97,7 +97,7 @@ public class PartySetting_Script : LobbyUI_Parent
         for (int i = 0; i < 5; i++)
         {
             partySlotClassArr[i] = partySlotGroupTrf.GetChild(i).GetComponent<PartySlot_Script>();
-            partySlotClassArr[i].Init_Func(this, i, PartySlot_Script.CardState.Empty);
+            partySlotClassArr[i].Init_Func(this, i, PartySlot_Script.SlotState.Empty);
         }
     }
     void InitPartymember_Func()
@@ -165,14 +165,14 @@ public class PartySetting_Script : LobbyUI_Parent
             {
                 // 파티카드에서 옮긴 경우(이탈)
 
-                if(contactCardClass.cardState == PartySlot_Script.CardState.Join)
+                if(contactCardClass.slotState == PartySlot_Script.SlotState.Joined)
                 {
                     // 닿아있는 파티 슬롯에 이미 유닛카드가 있는 경우
 
                     disbandCardClass.JoinParty_Func(contactCardClass.joinUnitCardClass, true);
                     _isSwap = true;
                 }
-                else if(contactCardClass.cardState == PartySlot_Script.CardState.Empty)
+                else if(contactCardClass.slotState == PartySlot_Script.SlotState.Empty)
                 {
                     // 닿아있는 파티 슬롯에 유닛카드가 없는 경우
 
@@ -185,7 +185,7 @@ public class PartySetting_Script : LobbyUI_Parent
             {
                 // 유닛카드 슬롯에서 옮긴 경우
 
-                if (contactCardClass.cardState == PartySlot_Script.CardState.Join)
+                if (contactCardClass.slotState == PartySlot_Script.SlotState.Joined)
                 {
                     // 닿아있는 파티 슬롯에 이미 유닛카드가 있는 경우
 
@@ -286,7 +286,6 @@ public class PartySetting_Script : LobbyUI_Parent
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         Player_Data.Instance.JoinParty_Func(_partySlotId, _unitId);
-
     }
     #endregion
     #region Feeding Group

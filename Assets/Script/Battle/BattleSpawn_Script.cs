@@ -30,6 +30,15 @@ public class BattleSpawn_Script : MonoBehaviour
 
         unitClass = _unitClass;
 
+        if(spawnGroupType == GroupType.Enemy)
+        {
+            float _hpValue = DataBase_Manager.Instance.monsterDataArr[_unitClass.unitID].healthPoint;
+            _unitClass.healthPoint_Max = _hpValue * ((battleManagerClass.stageID * 0.05f) + 1f);
+
+            float _attackValue = DataBase_Manager.Instance.monsterDataArr[_unitClass.unitID].attackValue;
+            _unitClass.attackValue = _attackValue * ((battleManagerClass.stageID * 0.05f) + 1f);
+        }
+
         spawnCheckCount = 0;
         
         StartCoroutine("CheckSpawnTimer_Cor");
@@ -101,8 +110,10 @@ public class BattleSpawn_Script : MonoBehaviour
                     0f
                 );
             _spawnUnitClass.transform.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
-                //.SetEase(Ease.InOutCirc)
                 .OnComplete(_spawnUnitClass.OnLanding_Func);
+
+
+            StartCoroutine(SpawnUnitRotate_Cor(_spawnUnitClass.transform, spawnJumpTime_Calc));
 
             _spawnUnitClass.transform.localScale = Vector3.zero;
             _spawnUnitClass.transform.DOScale(1f, spawnJumpTime_Calc);
@@ -123,6 +134,22 @@ public class BattleSpawn_Script : MonoBehaviour
         spawnUnitList.Add(_spawnUnitClass);
         spawnCheckCount++;
     }
+    IEnumerator SpawnUnitRotate_Cor(Transform _targetTrf, float _spawnJumpTime_Calc)
+    {
+        _spawnJumpTime_Calc *= 0.8f;
+
+        float _calcTime = 0f;
+        float _rotateValue = 720f / _spawnJumpTime_Calc;
+        while (_calcTime <= _spawnJumpTime_Calc)
+        {
+            _targetTrf.localEulerAngles = Vector3.forward * _rotateValue * _calcTime;
+
+            _calcTime += 0.02f;
+            yield return new WaitForFixedUpdate();
+        }
+
+        _targetTrf.localEulerAngles = Vector3.zero;
+    }
 
     public IEnumerator StopUnit_Cor()
     {
@@ -132,17 +159,20 @@ public class BattleSpawn_Script : MonoBehaviour
             yield return null;
         }
     }
-    public IEnumerator DeactiveSpawn_Cor(bool _isUneffect)
+    public void DeactiveSpawn_Func()
     {
         isActive = false;
 
         unitClass = null;
 
         StopCoroutine("CheckSpawnTimer_Cor");
-
-        for (int i = 0; i < spawnUnitList.Count; i++)
+    }
+    public IEnumerator KillUnitAll_Cor(bool _isUneffect)
+    {
+        while(0 < spawnUnitList.Count)
         {
-            ((Unit_Script)spawnUnitList[i]).Die_Func(_isUneffect);
+            ((Unit_Script)spawnUnitList[0]).Die_Func(_isUneffect);
+            spawnUnitList.RemoveAt(0);
             yield return null;
         }
     }
@@ -152,5 +182,3 @@ public class BattleSpawn_Script : MonoBehaviour
         return spawnUnitList.ToArray() as Unit_Script[];
     }
 }
-
-//_spawnPos = new Vector3(Battle_Manager.Instance.spawnPos_Enemy.position.x + Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1f, 1f));

@@ -8,6 +8,7 @@ public class MainLobby_Script : LobbyUI_Parent
     public RectTransform thisRTrf;
     public Transform[] partyMemberTrfArr;
     public List<GameObject> partyMemberObjList;
+    public Player_Script playerClass;
 
     #region Override Group
     protected override void InitUI_Func()
@@ -31,6 +32,8 @@ public class MainLobby_Script : LobbyUI_Parent
     #endregion
     public void PrintPartyMember_Func()
     {
+        // Call : Btn Event . PartyRoom Exit
+
         for (int i = 0; i < 5; i++)
         {
             int _partyMemberID = Player_Data.Instance.partyUnitIdArr[i];
@@ -44,15 +47,21 @@ public class MainLobby_Script : LobbyUI_Parent
                 _unitObj.transform.localEulerAngles = Vector3.zero;
                 _unitObj.transform.localScale = Vector3.one;
 
+                _unitObj.GetComponent<Unit_Script>().Init_Func(GroupType.Ally);
+
                 partyMemberObjList.Add(_unitObj);
             }
         }
     }
     public void HidePartyMember_Func()
     {
+        // Call : Btn Event . PartyRoom Enter
+
+        GameObject[] _partyMemberObjArr = partyMemberObjList.ToArray();
+
         for (int i = 0; i < partyMemberObjList.Count; i++)
         {
-            ObjectPool_Manager.Instance.Free_Func(partyMemberObjList[i]);
+            ObjectPool_Manager.Instance.Free_Func(_partyMemberObjArr[i]);
         }
 
         partyMemberObjList.Clear();

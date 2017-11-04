@@ -24,8 +24,10 @@ public class Result_Script : MonoBehaviour
 
     public Transform cardGroupTrf;
     public GameObject[] rewardObjArr;
+    public Image[] resultRewardBGImageArr;
     public Image[] resultRewardImageArr;
     public Text[] resultRewardTextArr;
+    public Sprite[] resultRewardBGSpriteArr;
 
     private bool isActive;
     private bool isVictory;
@@ -40,11 +42,14 @@ public class Result_Script : MonoBehaviour
         _thisRTrf.anchoredPosition = Vector2.zero;
 
         rewardObjArr = new GameObject[4];
+        resultRewardBGImageArr = new Image[4];
         resultRewardTextArr = new Text[4];
         resultRewardImageArr = new Image[4];
         for (int i = 0; i < 4; i++)
         {
             rewardObjArr[i] = cardGroupTrf.GetChild(i).gameObject;
+
+            resultRewardBGImageArr[i] = rewardObjArr[i].GetComponent<Image>();
 
             resultRewardTextArr[i] = rewardObjArr[i].transform.Find("Title").GetComponent<Text>();
 
@@ -103,6 +108,9 @@ public class Result_Script : MonoBehaviour
             int _rewardAmount = _rewardDataArr[i].rewardAmount;
             resultRewardImageArr[i].rectTransform.localScale = Vector3.one;
 
+            resultRewardBGImageArr[i].sprite = resultRewardBGSpriteArr[2];
+            resultRewardBGImageArr[i].SetNativeSize();
+
             switch (_rewardDataArr[i].rewardType)
             {
                 case RewardType.Wealth:
@@ -149,6 +157,9 @@ public class Result_Script : MonoBehaviour
         if (_rewardID == 0)
         {
             resultRewardTextArr[_rewardObjID].text = "골드 " + _rewardAmount;
+
+            resultRewardBGImageArr[_rewardObjID].sprite = resultRewardBGSpriteArr[0];
+            resultRewardBGImageArr[_rewardObjID].SetNativeSize();
         }
         else if (_rewardID == 1)
         {
@@ -163,6 +174,9 @@ public class Result_Script : MonoBehaviour
         resultRewardImageArr[_rewardObjID].SetNativeSize();
 
         resultRewardTextArr[_rewardObjID].text = _foodData.foodName;
+
+        resultRewardBGImageArr[_rewardObjID].sprite = resultRewardBGSpriteArr[1];
+        resultRewardBGImageArr[_rewardObjID].SetNativeSize();
     }
     void SetRewardFoodBox_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {

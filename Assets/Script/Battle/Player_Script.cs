@@ -56,7 +56,7 @@ public class Player_Script : Character_Script
 
         isAttackClear = true;
 
-        animator.speed = attackRate_Speed;
+        animator.speed = 1f;
         animator.Play("Idle");
     }
 
@@ -94,11 +94,7 @@ public class Player_Script : Character_Script
     {
         if (moveDir == MoveDir.Left)
         {
-            if (charState != CharacterState.Attack)
-            {
-                if (charState != CharacterState.Move)
-                    SetState_Func(CharacterState.Move);
-            }
+            SetState_Func(CharacterState.Move);
 
             float _calcMove = this.transform.position.x + (-1f * moveSpeed * Time.deltaTime);
 
@@ -109,13 +105,9 @@ public class Player_Script : Character_Script
 
             Enviroment_Manager.Instance.OnDevastated_Func(this.transform.position.x);
         }
-        else if (moveDir == MoveDir.Right)
+        else if (moveDir == MoveDir.Right && CheckRange_Func(1f) == false)
         {
-            if (charState != CharacterState.Attack)
-            {
-                if (charState != CharacterState.Move)
-                    SetState_Func(CharacterState.Move);
-            }
+            SetState_Func(CharacterState.Move);
 
             float _calcMove = this.transform.position.x + (moveSpeed * Time.deltaTime);
 
@@ -126,23 +118,13 @@ public class Player_Script : Character_Script
 
             Enviroment_Manager.Instance.OnWoody_Func(this.transform.position.x);
         }
-        else
-        {
-            if (charState != CharacterState.Attack && animator.GetBool("OnContact") == false)
-            {
-                SetState_Func(CharacterState.Idle);
-            }
-        }
     }
     protected override void Move_Func()
     {
-        if(charState != CharacterState.Attack)
-        {
-            charState = CharacterState.Move;
+        charState = CharacterState.Move;
 
-            animator.speed = attackRate_Speed;
-            animator.Play("Move");
-        }
+        animator.speed = 1f;
+        animator.Play("Move");
     }
 
     protected override void Attack_Func()
@@ -160,20 +142,28 @@ public class Player_Script : Character_Script
         {
             // 내가 살아있다면
 
-            if (CheckTargetAlive_Func() == true)
+            if(charState != CharacterState.Move)
             {
-                // 목표대상이 살아있다면
-
-                if (CheckRange_Func() == true)
+                if (CheckTargetAlive_Func() == true)
                 {
-                    // 목표대상이 사정권 내에 있다면
+                    // 목표대상이 살아있다면
 
-                    if (animator.GetBool("AttackReady") == true && isAttackClear == true)
+                    if (CheckRange_Func() == true)
                     {
-                        isAttackClear = false;
-                        SetState_Func(CharacterState.Attack);
+                        // 목표대상이 사정권 내에 있다면
+
+                        if (animator.GetBool("AttackReady") == true && isAttackClear == true)
+                        {
+                            isAttackClear = false;
+
+                            SetState_Func(CharacterState.Attack);
+                        }
                     }
                 }
+            }
+            else if (moveDir == MoveDir.None)
+            {
+                SetState_Func(CharacterState.Idle);
             }
 
             yield return null;
@@ -221,6 +211,13 @@ public class Player_Script : Character_Script
         charState = CharacterState.Die;
         targetClassList.Clear();
 
+        hpRend_Group.gameObject.SetActive(false);
+
         Battle_Manager.Instance.GameOver_Func(false);
+    }
+
+    public void AniEvnet_AttackEnd_Func()
+    {
+        SetState_Func(CharacterState.Idle);
     }
 }

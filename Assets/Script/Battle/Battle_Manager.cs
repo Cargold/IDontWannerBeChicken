@@ -67,7 +67,7 @@ public class Battle_Manager : MonoBehaviour
 
     public BattleType battleType;
 
-    private int stageID;
+    public int stageID;
 
     public IEnumerator Init_Cor()
     {
@@ -137,7 +137,11 @@ public class Battle_Manager : MonoBehaviour
 
         chickenHouseClass.Init_Func(GroupType.Enemy);
         chickenHouseClass.OnLanding_Func();
-        chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[0];
+
+        if(battleType == BattleType.Normal)
+            chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[0];
+        else if (battleType == BattleType.Special)
+            chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[1];
 
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
@@ -247,7 +251,7 @@ public class Battle_Manager : MonoBehaviour
             // 승리한 경우
 
             // 1. 치킨집 파괴 이미지 교체
-            chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[1];
+            chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[2];
 
             // 2. 치킨집 파괴 이펙트 연출
 
@@ -255,7 +259,7 @@ public class Battle_Manager : MonoBehaviour
             for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
             {
                 if (spawnClassArr_Enemy[i].isActive == true)
-                    StartCoroutine(spawnClassArr_Enemy[i].DeactiveSpawn_Cor(false));
+                    StartCoroutine(spawnClassArr_Enemy[i].KillUnitAll_Cor(false));
                 else
                     break;
             }
@@ -289,7 +293,7 @@ public class Battle_Manager : MonoBehaviour
             // 2. 아군 사망
             for (int i = 0; i < 5; i++)
             {
-                StartCoroutine(spawnClassArr_Ally[i].DeactiveSpawn_Cor(false));
+                StartCoroutine(spawnClassArr_Ally[i].KillUnitAll_Cor(false));
             }
 
             // 3. 적군 이동 불가
@@ -331,7 +335,21 @@ public class Battle_Manager : MonoBehaviour
         GetRewardTrophy_Func(_isVictory);
         GetRewardFoodBox_Func(_isVictory);
 
-        // 3. UI 출력
+        // 3. 스폰 비활성화
+        for (int i = 0; i < 5; i++)
+        {
+            spawnClassArr_Ally[i].DeactiveSpawn_Func();
+        }
+
+        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+        {
+            if (spawnClassArr_Enemy[i].isActive == true)
+                spawnClassArr_Enemy[i].DeactiveSpawn_Func();
+            else
+                break;
+        }
+
+        // 4. UI 출력
         StartCoroutine(ResultUI_Cor(_isVictory));
     }
     IEnumerator ResultUI_Cor(bool _isVictory)
@@ -446,9 +464,12 @@ public class Battle_Manager : MonoBehaviour
                 }
             }
             
-            Reward_Data _rewardData = new Reward_Data();
-            _rewardData.SetData_Func(RewardType.Unit, _unlockUnitID, 1);
-            rewardDataList.Add(_rewardData);
+            if(0 < _unlockUnitID)
+            {
+                Reward_Data _rewardData = new Reward_Data();
+                _rewardData.SetData_Func(RewardType.Unit, _unlockUnitID, 1);
+                rewardDataList.Add(_rewardData);
+            }
         }
     }
     void GetRewardPopulationPoint_Func(bool _isVictory)
@@ -458,6 +479,8 @@ public class Battle_Manager : MonoBehaviour
         if(battleType == BattleType.Normal)
         {
             int _calcValue = -1;
+
+            if (stageID <= 1) return;
 
             if(Player_Data.Instance.populationPoint < 8)
             {
@@ -570,6 +593,15 @@ public class Battle_Manager : MonoBehaviour
     
     void ClearBattleData_Func()
     {
+        for (int i = 0; i < 5; i++)
+        {
+            StartCoroutine(spawnClassArr_Ally[i].KillUnitAll_Cor(true));
+        }
+        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+        {
+            StartCoroutine(spawnClassArr_Enemy[i].KillUnitAll_Cor(true));
+        }
+
         Enviroment_Manager.Instance.NatureReset_Func();
 
         SetRewardOnPlayer_Func();

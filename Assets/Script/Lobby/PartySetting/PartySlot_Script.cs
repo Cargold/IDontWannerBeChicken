@@ -12,23 +12,23 @@ public class PartySlot_Script : MonoBehaviour
 
     public bool isContactState;
 
-    public enum CardState
+    public enum SlotState
     {
         None = -1,
         Empty,
-        Join,
+        Joined,
     }
-    public CardState cardState;
+    public SlotState slotState;
     public UnitCard_Script joinUnitCardClass;
-    GameObject joinUnitCardObj;
+    public GameObject joinUnitCardObj;
 
-    public void Init_Func(PartySetting_Script _partySettingClass, int _slotId, CardState _cardState)
+    public void Init_Func(PartySetting_Script _partySettingClass, int _slotId, SlotState _cardState)
     {
         partySettingClass = _partySettingClass;
 
         slotId = _slotId;
 
-        if (_cardState == CardState.Empty)
+        if (_cardState == SlotState.Empty)
         {
             OnEmpty_Func();
         }
@@ -54,7 +54,7 @@ public class PartySlot_Script : MonoBehaviour
     {
         if (col.tag == "UnitCard")
         {
-            if (cardState == CardState.Join)
+            if (slotState == SlotState.Joined)
             {
                 if (joinUnitCardObj != null)
                 {
@@ -64,7 +64,7 @@ public class PartySlot_Script : MonoBehaviour
                     }
                 }
             }
-            else if(cardState == CardState.Empty)
+            else if(slotState == SlotState.Empty)
             {
                 partySettingClass.DecontactCard_Func();
             }
@@ -80,12 +80,15 @@ public class PartySlot_Script : MonoBehaviour
             int _populValue = joinUnitCardClass.populValue;
             partySettingClass.CalcPopulation_Func(-_populValue);
 
+            int _unitID = joinUnitCardClass.cardId;
+            Player_Data.Instance.DisbandParty_Func(slotId, _unitID);
+
             joinUnitCardClass.InitPos_Func();
             joinUnitCardClass = null;
             joinUnitCardObj = null;
         }
 
-        cardState = CardState.Empty;
+        slotState = SlotState.Empty;
     }
 
     public void OnDecontact_Func()
@@ -120,7 +123,7 @@ public class PartySlot_Script : MonoBehaviour
 
             joinUnitCardClass = _unitCardClass;
 
-            cardState = CardState.Join;
+            slotState = SlotState.Joined;
 
             if(_isSwap == false)
                 partySettingClass.CalcPopulation_Func(_populValue);

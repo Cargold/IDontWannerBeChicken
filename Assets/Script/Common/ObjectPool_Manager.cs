@@ -14,7 +14,7 @@ public class ObjectPool_Manager : MonoBehaviour
     private GameObject sampleFolderObj;
     public int[] poolAmount;
     
-    Dictionary<string, ObjectPool> objectPoolList = new Dictionary<string, ObjectPool>();
+    Dictionary<string, ObjectPool> objectPoolDic = new Dictionary<string, ObjectPool>();
 
     public IEnumerator Init_Cor()
     {
@@ -116,7 +116,7 @@ public class ObjectPool_Manager : MonoBehaviour
         {
             ObjectPool objectPool = new ObjectPool();
             objectPool.source = poolList[i];
-            objectPoolList[poolList[i].name] = objectPool;
+            objectPoolDic[poolList[i].name] = objectPool;
 
             // 하이라키에 추가한다 
             GameObject folder = new GameObject();
@@ -148,13 +148,13 @@ public class ObjectPool_Manager : MonoBehaviour
 
     public GameObject Get_Func(string name)
     {
-        if(!objectPoolList.ContainsKey(name))
+        if(!objectPoolDic.ContainsKey(name))
         {
             Debug.Log("[ObjectPoolManager] Can't Find ObjectPool! - " + name);
             return null;
         }
 
-        ObjectPool pool = objectPoolList[name];
+        ObjectPool pool = objectPoolDic[name];
         if(pool.unusedList.Count > 0)
         {
             GameObject obj = pool.unusedList[0];            
@@ -167,20 +167,24 @@ public class ObjectPool_Manager : MonoBehaviour
             GameObject obj = Instantiate(pool.source);            
             obj.transform.SetParent(pool.folder.transform);
             obj.name = pool.source.name;
+            obj.SetActive(true);
+            
+            pool.maxAmount++;
+
             return obj;
         }        
     }
     public void Free_Func(GameObject obj)
     {
         string keyName = obj.name;
-        if (!objectPoolList.ContainsKey(keyName))
+        if (!objectPoolDic.ContainsKey(keyName))
         {
-            Debug.LogError("[ObjectPoolManager] Can't Find Free ObjectPool! - " + name);
+            Debug.LogError("Bug : 다음 이름의 객체는 풀링에서 관리하지 않습니다. - " + name);
             return;
         }
         else
         {
-            ObjectPool pool = objectPoolList[keyName];
+            ObjectPool pool = objectPoolDic[keyName];
             obj.SetActive(false);
             pool.unusedList.Add(obj);
             obj.transform.SetParent(pool.folder.transform);

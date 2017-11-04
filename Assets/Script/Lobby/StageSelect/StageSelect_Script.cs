@@ -44,7 +44,7 @@ public class StageSelect_Script : LobbyUI_Parent
         //stageImageArr[0]
         //stageInfoTextArr[0]
 
-        stageTitleTextArr[1].text = "Lv. " + (Player_Data.Instance.stageID_Special + 1) + " 특별 치킨집";
+        stageTitleTextArr[1].text = "Lv. " + (Player_Data.Instance.stageID_Special + 1) + " 무한 치킨집";
         //stageImageArr[1]
         //stageInfoTextArr[1]
 

@@ -30,7 +30,7 @@ public class Unit_Script : Character_Script
         defenceValue = _charData.defenceValue;
         attackValue = _charData.attackValue;
         attackRate_Max = _charData.attackRate;
-        attackRange = _charData.attackRange;
+        attackRange = _charData.attackRange + 1f;
         moveSpeed = _charData.moveSpeed;
         criticalPercent = _charData.criticalPercent;
         criticalBonus = _charData.criticalBonus;
@@ -46,7 +46,7 @@ public class Unit_Script : Character_Script
         groupType = _charData.groupType;
         unitSprite = _charData.unitSprite;
 
-        unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
+        unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
         unitRend.sprite = _charData.unitSprite;
         if (groupType == GroupType.Enemy)
             unitRend.flipX = true;
@@ -62,7 +62,7 @@ public class Unit_Script : Character_Script
         base.Init_Func(_groupType);
 
         if (unitRend == null)
-            unitRend = this.transform.Find("Image").GetComponent<SpriteRenderer>();
+            unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
         unitRend.sprite = unitSprite;
 
         unitRend.sortingOrder = -6;
@@ -77,7 +77,7 @@ public class Unit_Script : Character_Script
         defenceValue = _unitClass.defenceValue;
         attackValue = _unitClass.attackValue;
         attackRate_Max = _unitClass.attackRate_Max;
-        attackRange = _unitClass.attackRange;
+        attackRange = _unitClass.attackRange + 1f;
         moveSpeed = _unitClass.moveSpeed;
         criticalPercent = _unitClass.criticalPercent;
         

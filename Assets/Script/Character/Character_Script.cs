@@ -65,10 +65,10 @@ public class Character_Script : MonoBehaviour
         
         // Init Renderer
         animator = this.GetComponent<Animator>();
-        hpTrf = this.transform.Find("HP_Group").Find("Gauge");
-        hpRend_Group = this.transform.Find("HP_Group");
+        hpTrf = this.transform.Find("Pivot").Find("HP_Group").Find("Gauge");
+        hpRend_Group = this.transform.Find("Pivot").Find("HP_Group");
         hpRend_Group.gameObject.SetActive(false);
-        shadowRend = this.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        shadowRend = this.transform.Find("Pivot").Find("Shadow").GetComponent<SpriteRenderer>();
         shadowRend.gameObject.SetActive(false);
 
         // Init HP
@@ -97,7 +97,8 @@ public class Character_Script : MonoBehaviour
 
         // Set Attack
         StartCoroutine(CheckAttackRate_Cor());
-        StartCoroutine(CheckAttack_Cor());
+        if(isPlayer == false)
+            StartCoroutine(CheckAttack_Cor());
     }
 
     protected void SetState_Func(CharacterState _charState)
@@ -233,25 +234,55 @@ public class Character_Script : MonoBehaviour
             }
         }
     }
-    protected bool CheckRange_Func()
+    protected bool CheckRange_Func(float _checkValue = -1f)
     {
+        if(_checkValue == -1f)
+        {
+            _checkValue = attackRange;
+        }
+
         Character_Script _closerCharClass = null;
         float _closerCharDistance = 0f;
         int _closeCharID = 0;
 
         for (int i = 0; i < targetClassList.Count; i++)
         {
+            // 지나친 대상일 경우 무시
+            if(groupType == GroupType.Ally)
+            {
+                if(targetClassList[i].transform.position.x < this.transform.position.x)
+                {
+                    continue;
+                }
+            }
+            else if(groupType == GroupType.Enemy)
+            {
+                if (this.transform.position.x < targetClassList[i].transform.position.x)
+                {
+                    continue;
+                }
+            }
+
+            // 거리 체크
             float _distanceValue = Vector3.Distance(this.transform.position, targetClassList[i].transform.position);
 
-            if (_distanceValue < _closerCharDistance || _closerCharClass == null)
+            // 처음 체크하는 대상이거나, 기존 최단 근접 대상보다 가까운 경우
+            if (_closerCharClass == null || _distanceValue < _closerCharDistance)
             {
                 _closerCharDistance = _distanceValue;
                 _closerCharClass = targetClassList[i];
                 _closeCharID = i;
+
+                // 체크된 대상이 공격사거리(또는 인자값)보다 짧은 경우
+                if (_distanceValue <= _checkValue)
+                {
+                    break;
+                }
             }
         }
 
-        if (_closerCharDistance <= attackRange && _closerCharClass != null)
+        // 체크된 대상이 있으며, 체크된 대상이 공격사거리(또는 인자값)보다 짧은 경우
+        if (_closerCharClass != null && _closerCharDistance <= _checkValue)
         {
             Character_Script _tempClass = targetClassList[0];
             targetClassList[0] = _closerCharClass;
@@ -285,6 +316,9 @@ public class Character_Script : MonoBehaviour
     private void CalcHP_Func()
     {
         float _remainPer = healthPoint_Recent / healthPoint_Max;
+        if (_remainPer <= 0f)
+            _remainPer = 0f;
+
         float _remainPos = 0.35f * (_remainPer - 1f);
 
         hpTrf.localPosition = new Vector2(_remainPos * -1f, hpTrf.localPosition.y);
@@ -302,6 +336,7 @@ public class Character_Script : MonoBehaviour
         }
         else
         {
+            CalcHP_Func();
             SetState_Func(CharacterState.Die);
         }
     }
@@ -312,6 +347,8 @@ public class Character_Script : MonoBehaviour
         targetClassList.Clear();
 
         StopCoroutine("Move_Cor");
+
+        hpRend_Group.gameObject.SetActive(false);
 
         if(_isImmediate == false)
         {

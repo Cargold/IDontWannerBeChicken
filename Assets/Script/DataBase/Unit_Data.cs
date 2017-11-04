@@ -67,11 +67,11 @@ public struct Unit_Data
         unitSprite      = _unitClass.unitSprite;
 
         if (_unitClass.imagePivotAxisY == 0f)
-            imagePivotAxisY = _unitClass.transform.Find("Image").transform.localPosition.y;
+            imagePivotAxisY = _unitClass.transform.Find("Pivot").Find("Image").transform.localPosition.y;
         else
             imagePivotAxisY = _unitClass.imagePivotAxisY;
 
-        shadowSize = _unitClass.transform.Find("Shadow").localScale;
+        shadowSize = _unitClass.transform.Find("Pivot").Find("Shadow").localScale;
 
         cardSprite      = _unitClass.cardSprite;
         cardPortraitPos = _unitClass.cardPortraitPos;

@@ -125,7 +125,11 @@ public class Player_Data : MonoBehaviour
     }
     public void DisbandParty_Func(int _partySlotId, int _unitId)
     {
-        if(partyUnitIdArr[_partySlotId] == _unitId)
+        if(partyUnitIdArr[_partySlotId] < 0)
+        {
+
+        }
+        else if(partyUnitIdArr[_partySlotId] == _unitId)
         {
             partyUnitIdArr[_partySlotId] = -1;
         }
