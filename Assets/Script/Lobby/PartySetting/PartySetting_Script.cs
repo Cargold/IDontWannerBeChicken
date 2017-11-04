@@ -20,8 +20,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public Transform partySlotGroupTrf;
     public Text playerPopulationText;
 
-    public int populationValue_Max;
-    public int populationValue_Recent;
+    public int populationPoint;
 
     public Text[] unitInfoTextArr;
     public Animation anim;
@@ -41,7 +40,8 @@ public class PartySetting_Script : LobbyUI_Parent
         InitPartySlot_Func();
         InitPartymember_Func();
 
-        playerPopulationText.text = populationValue_Recent.ToString();
+        populationPoint = Player_Data.Instance.populationPoint;
+        playerPopulationText.text = populationPoint.ToString();
 
         this.gameObject.SetActive(false);
     }
@@ -75,9 +75,13 @@ public class PartySetting_Script : LobbyUI_Parent
                     GameObject _unitCardObj = Instantiate(unitCardObj);
                     _unitCardObj.transform.SetParent(unitCardGroupTrf);
 
+                    UnitCard_Script.CardState _cardState = UnitCard_Script.CardState.Lock;
+                    if (Player_Data.Instance.playerUnitDataArr[_cardCount].isHave == true)
+                        _cardState = UnitCard_Script.CardState.Active;
+
                     unitCardClassArr[_cardCount] = _unitCardObj.GetComponent<UnitCard_Script>();
                     unitCardClassArr[_cardCount].Init_Func
-                        (this, _cardCount, UnitCard_Script.CardState.Active);
+                        (this, _cardCount, _cardState);
 
                     unitCardClassArr[_cardCount].InitPos_Func();
                 }
@@ -125,7 +129,7 @@ public class PartySetting_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
-    #region Unit Slot Group
+    #region Card Control Group
     public void SelectUnit_Func(UnitCard_Script _unitCardClass)
     {
         selectCardClass = _unitCardClass;
@@ -221,6 +225,12 @@ public class PartySetting_Script : LobbyUI_Parent
         }
     }
     #endregion
+    #region Unit Card Group
+    public void UnlockCard_Func(int _cardID)
+    {
+        unitCardClassArr[_cardID].SetState_Func(UnitCard_Script.CardState.Active);
+    }
+    #endregion
     #region Party Slot Group
     public void OnDisbandPartySlot_Func(PartySlot_Script _partySlotClass)
     {
@@ -244,7 +254,7 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public bool CheckPopulation_Func(int _populValue)
     {
-        int _calcValue = populationValue_Recent - _populValue;
+        int _calcValue = populationPoint - _populValue;
 
         if (0 <= _calcValue)
         {
@@ -265,13 +275,13 @@ public class PartySetting_Script : LobbyUI_Parent
 
         yield return new WaitForSeconds(0.5f);
 
-        playerPopulationText.color = Game_Manager.Instance.textColor;
+        playerPopulationText.color = DataBase_Manager.Instance.textColor;
         playerPopulationText.fontSize = 50;
     }
     public void CalcPopulation_Func(int _populValue)
     {
-        populationValue_Recent -= _populValue;
-        playerPopulationText.text = populationValue_Recent.ToString();
+        populationPoint -= _populValue;
+        playerPopulationText.text = populationPoint.ToString();
     }
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class UnitCard_Script : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class UnitCard_Script : MonoBehaviour
     public Image populationImage;
     public Image unitImage;
     public GameObject[] cardStateObjArr;
+    public Text unlockConditionText;
 
     public void Init_Func(PartySetting_Script _partySettingClass, int _cardId, CardState _cardState)
     {
@@ -31,7 +33,7 @@ public class UnitCard_Script : MonoBehaviour
 
         populValue = DataBase_Manager.Instance.unitDataArr[_cardId].populationValue;
 
-        Sprite _populationSprite = Game_Manager.Instance.populationSpriteArr[populValue];
+        Sprite _populationSprite = DataBase_Manager.Instance.populationSpriteArr[populValue];
         populationImage.sprite = _populationSprite;
         populationImage.SetNativeSize();
 
@@ -52,6 +54,7 @@ public class UnitCard_Script : MonoBehaviour
         {
             case CardState.Lock:
                 cardStateObjArr[0].SetActive(true);
+                unlockConditionText.text = "Stage " + DataBase_Manager.Instance.unitUnlockConditionArr[cardId];
                 break;
             case CardState.Active:
                 cardStateObjArr[0].SetActive(false);
@@ -61,22 +64,34 @@ public class UnitCard_Script : MonoBehaviour
 
     public void OnSelect_Func()
     {
-        partySettingClass.SelectUnit_Func(this);
+        if (cardState == CardState.Active)
+            partySettingClass.SelectUnit_Func(this);
+        else if (cardState == CardState.Lock)
+        {
+            this.transform.DOPunchScale(Vector3.one * 0.1f, 0.5f, 15).OnComplete(ResetScale_Func);
+        }
+    }
+    void ResetScale_Func()
+    {
+        this.transform.localScale = Vector3.one;
     }
 
     public void DragBegin_Func()
     {
-        partySettingClass.DragBegin_Func(this);
+        if (cardState == CardState.Active)
+            partySettingClass.DragBegin_Func(this);
     }
 
     public void Dragging_Func()
     {
-        partySettingClass.Dragging_Func(this);
+        if (cardState == CardState.Active)
+            partySettingClass.Dragging_Func(this);
     }
 
     public void DragEnd_Func()
     {
-        partySettingClass.DragEnd_Func(this);
+        if (cardState == CardState.Active)
+            partySettingClass.DragEnd_Func(this);
     }
 
     public void InitPos_Func()

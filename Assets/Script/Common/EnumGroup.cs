@@ -123,9 +123,11 @@ public enum RewardType
     None = -1,
     Wealth,
     Food,
+    FoodBoxLevel,
     Unit,
     PopulationPoint,
     Skill,
+    Trophy,
 }
 
 public enum NatureType
@@ -140,4 +142,25 @@ public enum NatureWorkType
     None = -1,
     Devastated,
     Woody,
+}
+
+public enum TrophyType
+{
+    None = -1,
+    HealthPoint_Hero,
+    AttackValue_Hero,
+    CriticalPercent_Hero,
+    CriticalBonus_Hero,
+    ManaRegen,
+    ManaStart,
+    HealthPoint_Unit,
+    AttackValue_Unit,
+    CriticalPercent_Unit,
+    CriticalBonus_Unit,
+    HealthPoint_Monster,
+    AttackValue_Monster,
+    HealthPoint_House,
+    GoldBonus,
+    ItemDropPer,
+    UpgradeExp,
 }

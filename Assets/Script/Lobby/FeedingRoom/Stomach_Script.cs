@@ -32,8 +32,14 @@ public class Stomach_Script : MonoBehaviour
     }
     void SpawnFood_Func()
     {
-        PlayerFood_ClassData[] _playerFoodDataArr =
-            Player_Data.Instance.playerUnitDataArr[stomachUnitID].GetPlayerFoodDataArr_Func();
+        PlayerFood_ClassData[] _playerFoodDataArr = null;
+
+        if (stomachUnitID == 999)
+            _playerFoodDataArr =
+                Player_Data.Instance.heroFoodDataList.ToArray();
+        else
+            _playerFoodDataArr =
+                Player_Data.Instance.playerUnitDataArr[stomachUnitID].GetPlayerFoodDataArr_Func();
 
         feedFoodClassList = new List<Food_Script>();
 
@@ -173,6 +179,14 @@ public class Stomach_Script : MonoBehaviour
         feedFoodClassList.Remove(_foodClass);
         Player_Data.Instance.OutFood_Func(_foodClass, stomachUnitID);
         Player_Data.Instance.AddFood_Func(_foodClass);
+    }
+
+    public Food_Script GetFoodRand_Func()
+    {
+        if (feedFoodClassList.Count == 0)
+            return null;
+        else
+            return feedFoodClassList[Random.Range(0, feedFoodClassList.Count)];
     }
 
     public void ReplaceStomach_Func(Transform _trf)

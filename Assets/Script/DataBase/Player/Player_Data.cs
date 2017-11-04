@@ -16,6 +16,7 @@ public class Player_Data : MonoBehaviour
 
     // Party
     public int[] partyUnitIdArr;
+    public int populationPoint;
 
     // Unit
     [SerializeField]
@@ -28,11 +29,13 @@ public class Player_Data : MonoBehaviour
 
     // Inventory
     public List<PlayerFood_ClassData> inventoryFoodDataList;
-    public int playerBoxLevel;
+    public int foodBoxLevel;
 
     // Trophy
+    public PlayerTrophy_Data[] trophyDataArr;
 
     // Skill
+    
 
     // Stage
     public int stageID_Normal;
@@ -42,6 +45,7 @@ public class Player_Data : MonoBehaviour
     {
         Instance = this;
 
+        Debug.Log("Cargold : 데이터 불러오기, 미작업");
         yield return LoadWealth_Cor();
         yield return LoadUnit_Cor();
         yield return LoadStage_Cor();
@@ -61,18 +65,16 @@ public class Player_Data : MonoBehaviour
     }
     IEnumerator LoadUnit_Cor()
     {
-        // Cargold : 캐릭터 정보 불러오기
-
-        int _unitDataNum = DataBase_Manager.Instance.unitDataObjArr.Length;
-        playerUnitDataArr = new PlayerUnit_ClassData[_unitDataNum];
-
         for (int i = 0; i < playerUnitDataArr.Length; i++)
         {
+            // Cargold : 캐릭터 정보 불러오기
+            bool _isUnlock = true;
+            _isUnlock = playerUnitDataArr[i].isHave; // Test
             Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
 
             playerUnitDataArr[i] = new PlayerUnit_ClassData();
 
-            yield return playerUnitDataArr[i].Init_Cor(_unitClass);
+            yield return playerUnitDataArr[i].Init_Cor(_isUnlock, _unitClass);
         }
 
         yield break;
@@ -80,10 +82,7 @@ public class Player_Data : MonoBehaviour
     IEnumerator LoadStage_Cor()
     {
         // Cargold : 스테이지 데이터 불러오기
-
-        stageID_Normal = 1;
-        stageID_Special = 1;
-
+        
         yield break;
     }
     IEnumerator LoadParty_Cor()
@@ -94,18 +93,18 @@ public class Player_Data : MonoBehaviour
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 1; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
-            _playerFoodData.level = Random.Range(1, 4);
-            int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
-            _playerFoodData.foodID = Random.Range(0, _foodIDMax);
-            _playerFoodData.remainExp = Random.Range(0f, 99f);
+            //_playerFoodData.level = Random.Range(1, 4);
+            //int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
+            //_playerFoodData.foodID = Random.Range(0, _foodIDMax);
+            //_playerFoodData.remainExp = Random.Range(0f, 99f);
 
-            //_playerFoodData.level = 1;
-            //_playerFoodData.foodID = 0;
-            //_playerFoodData.remainExp = 0f;
+            _playerFoodData.level = 1;
+            _playerFoodData.foodID = 1;
+            _playerFoodData.remainExp = 0f;
 
             inventoryFoodDataList.Add(_playerFoodData);
         }
@@ -114,6 +113,12 @@ public class Player_Data : MonoBehaviour
     }
     
     #region Party Group
+    public void UnlockUnit_Func(int _unitID)
+    {
+        playerUnitDataArr[_unitID].isHave = true;
+        Lobby_Manager.Instance.partySettingClass.UnlockCard_Func(_unitID);
+        //Debug.Log("Cargold : 유닛 해금 보상은 미구현됨, Unit ID : " + _unitID);
+    }
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         partyUnitIdArr[_partySlotId] = _unitId;
@@ -128,6 +133,10 @@ public class Player_Data : MonoBehaviour
         {
             Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
         }
+    }
+    public void AddPopulationPoint_Func()
+    {
+        populationPoint++;
     }
     #endregion
     #region Wealth Group
@@ -207,7 +216,7 @@ public class Player_Data : MonoBehaviour
         PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
         if (_foodLevel == -1)
-            _foodLevel = playerBoxLevel;
+            _foodLevel = foodBoxLevel;
         _playerFoodData.level = _foodLevel;
         _playerFoodData.foodID = _foodID;
         _playerFoodData.remainExp = 0f;
@@ -341,7 +350,7 @@ public class Player_Data : MonoBehaviour
     }
     void SetUnitDataByFoodMainEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
     {
-        int _charID = _unitClass.charId;
+        int _charID = _unitClass.unitID;
 
         switch (_foodClass.effectMain)
         {
@@ -360,7 +369,7 @@ public class Player_Data : MonoBehaviour
     }
     void SetUnitDataByFoodSubEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
     {
-        int _charID = _unitClass.charId;
+        int _charID = _unitClass.unitID;
         float _value = 0f;
 
         switch (_foodClass.effectSub)
@@ -396,6 +405,23 @@ public class Player_Data : MonoBehaviour
                 _unitClass.attackValue -= _value;
                 break;
         }
+    }
+
+    public void AddFoodBoxLevel_Func()
+    {
+        foodBoxLevel++;
+    }
+    #endregion
+    #region Skill Group
+    public void UnlockSkill_Func(int _skillID)
+    {
+        Debug.Log("Cargold : 스킬 보상은 미구현됨, Skill ID : " + _skillID);
+    }
+    #endregion
+    #region Trophy Group
+    public void AddTrophy_Func(int _trophyID)
+    {
+        Debug.Log("Cargold : 트로피 보상은 미구현됨, Trophy ID : " + _trophyID);
     }
     #endregion
 }

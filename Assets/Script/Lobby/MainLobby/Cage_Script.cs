@@ -21,10 +21,7 @@ public class Cage_Script : MonoBehaviour
         {
             animArr[i] = this.transform.GetChild(i + 1).GetComponent<Animation>();
         }
-    }
-    
-    public void EnterLobby_Func()
-    {
+
         isBoost = false;
 
         for (int i = 0; i < animArr.Length; i++)
@@ -32,6 +29,11 @@ public class Cage_Script : MonoBehaviour
             float _interval = Random.Range(1f, 3f);
             StartCoroutine(StartAni_Cor(i, _interval));
         }
+    }
+    
+    public void EnterLobby_Func()
+    {
+        isBoost = false;
     }
     IEnumerator StartAni_Cor(int _animID, float _interval)
     {
@@ -71,7 +73,7 @@ public class Cage_Script : MonoBehaviour
     {
         isBoost = true;
 
-        StartCoroutine(StopAni_Cor());
+        //StartCoroutine(StopAni_Cor());
     }
     IEnumerator StopAni_Cor()
     {

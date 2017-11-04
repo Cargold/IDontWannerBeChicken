@@ -9,11 +9,11 @@ public class BattleSpawn_Script : MonoBehaviour
     public GroupType spawnGroupType;
     [SerializeField]
     private ArrayList spawnUnitList = new ArrayList();
-    private int spawnCheckCount;
     public bool isActive = false;
     [SerializeField]
     private Unit_Script unitClass;
     public int spawnID;
+    public int spawnCheckCount;
     
     public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType, int _spawnID)
     {
@@ -29,9 +29,9 @@ public class BattleSpawn_Script : MonoBehaviour
         isActive = true;
 
         unitClass = _unitClass;
-        
-        OnSpawning_Func();
 
+        spawnCheckCount = 0;
+        
         StartCoroutine("CheckSpawnTimer_Cor");
     }
     IEnumerator CheckSpawnTimer_Cor()
@@ -100,7 +100,7 @@ public class BattleSpawn_Script : MonoBehaviour
                     _spawnUnitClass.transform.position.y + spawnPosY_Calc - 3f,
                     0f
                 );
-            _spawnUnitClass.transform.DOJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
+            _spawnUnitClass.transform.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
                 //.SetEase(Ease.InOutCirc)
                 .OnComplete(_spawnUnitClass.OnLanding_Func);
 
@@ -121,9 +121,18 @@ public class BattleSpawn_Script : MonoBehaviour
         }
 
         spawnUnitList.Add(_spawnUnitClass);
+        spawnCheckCount++;
     }
 
-    public IEnumerator DeactiveSpawn_Cor()
+    public IEnumerator StopUnit_Cor()
+    {
+        for (int i = 0; i < spawnUnitList.Count; i++)
+        {
+            ((Unit_Script)spawnUnitList[i]).moveSpeed = 0f;
+            yield return null;
+        }
+    }
+    public IEnumerator DeactiveSpawn_Cor(bool _isUneffect)
     {
         isActive = false;
 
@@ -133,7 +142,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
         for (int i = 0; i < spawnUnitList.Count; i++)
         {
-            ((Unit_Script)spawnUnitList[i]).Die_Func();
+            ((Unit_Script)spawnUnitList[i]).Die_Func(_isUneffect);
             yield return null;
         }
     }

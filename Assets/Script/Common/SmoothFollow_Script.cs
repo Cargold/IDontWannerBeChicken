@@ -23,6 +23,8 @@ public class SmoothFollow_Script : MonoBehaviour
     {
         thisTransform = this.transform;
         velocity = new Vector3(0.5f, 0.5f, 0.5f);
+
+        this.transform.position = new Vector3(6.48f, 8f, -10f);
     }
 
     void Update()

@@ -22,12 +22,16 @@ public class Player_Script : Character_Script
     public float attackRate_Init;
     public bool isAttackClear;
 
+    public bool isMovable;
+
     public void BattleEnter_Func()
     {
         Instance = this;
 
         base.Init_Func(GroupType.Ally);
         InitPlayer_Func();
+
+        isMovable = true;
     }
 
     void InitPlayer_Func()
@@ -83,7 +87,8 @@ public class Player_Script : Character_Script
             moveDir = MoveDir.None;
         }
 
-        MovePlayer_Func();
+        if(isMovable == true)
+            MovePlayer_Func();
     }
     void MovePlayer_Func()
     {
@@ -210,7 +215,7 @@ public class Player_Script : Character_Script
             SetState_Func(CharacterState.Idle);
     }
 
-    public override void Die_Func()
+    public override void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
         charState = CharacterState.Die;

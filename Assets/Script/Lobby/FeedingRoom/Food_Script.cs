@@ -43,7 +43,7 @@ public class Food_Script : MonoBehaviour
         foodId = _foodData.foodId;
         foodName = _foodData.foodName;
         foodGrade = _foodData.foodGrade;
-        gradePenalty = Game_Manager.Instance.foodGradePenaltyValue[(int)foodGrade];
+        gradePenalty = DataBase_Manager.Instance.foodGradePenaltyValue[(int)foodGrade];
         effectMain = _foodData.effectMain;
         effectSub = _foodData.effectSub;
         mainEffectValue = _foodData.mainEffectValue;
@@ -218,8 +218,6 @@ public class Food_Script : MonoBehaviour
     {
         if(_foodPlaceState == FoodPlaceState.Stomach)
         {
-            Debug.Log("Test, 2 : " + foodName);
-
             foodPlaceState = FoodPlaceState.Stomach;
 
             if(foodState == FoodState.Inventory)
@@ -281,8 +279,6 @@ public class Food_Script : MonoBehaviour
     }
     public void OnStomach_Func()
     {
-        Debug.Log("Test, 3 : " + foodName);
-
         foodState = FoodState.Stomach;
         foodImage.color = Color.green;
     }

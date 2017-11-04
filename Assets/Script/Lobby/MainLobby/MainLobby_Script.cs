@@ -1,15 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class MainLobby_Script : LobbyUI_Parent
 {
+    public RectTransform thisRTrf;
     public Transform[] partyMemberTrfArr;
     public List<GameObject> partyMemberObjList;
 
     #region Override Group
     protected override void InitUI_Func()
     {
+        thisRTrf = this.GetComponent<RectTransform>();
+
         partyMemberObjList = new List<GameObject>();
 
         PrintPartyMember_Func();
@@ -18,11 +22,11 @@ public class MainLobby_Script : LobbyUI_Parent
     {
         // Call : Btn Event
 
-        this.gameObject.SetActive(true);
+        thisRTrf.DOSizeDelta(new Vector3(0f, 0f), 0.5f);
     }
     public override void Exit_Func()
     {
-        this.gameObject.SetActive(false);
+        thisRTrf.DOSizeDelta(new Vector3(0f, 600f), 1f);
     }
     #endregion
     public void PrintPartyMember_Func()

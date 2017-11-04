@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 [System.Serializable]
 public struct EnemySpawnData
@@ -24,6 +25,7 @@ public class Battle_Manager : MonoBehaviour
     [SerializeField]
     public EnemySpawnData[] enemySpawnDataArr;
     public ChickenHouse_Script chickenHouseClass;
+    public Sprite[] chickenHouseSpriteArr;
 
     public float spawnPosX_Range;
     public float spawnPosY_Min;
@@ -38,6 +40,13 @@ public class Battle_Manager : MonoBehaviour
 
     public Pause_Script pauseClass;
     public Result_Script resultClass;
+    [SerializeField]
+    private List<Reward_Data> rewardDataList;
+    public int stageClearGold;
+    public float battleTime;
+    public int killCount;
+    public float goldBonus;
+    public float foodGetPer;
 
     public enum BattleState
     {
@@ -59,7 +68,6 @@ public class Battle_Manager : MonoBehaviour
     public BattleType battleType;
 
     private int stageID;
-    public RewardData[] rewardDataArr;
 
     public IEnumerator Init_Cor()
     {
@@ -101,9 +109,7 @@ public class Battle_Manager : MonoBehaviour
         battleType = _battleType;
 
         stageID = _stageID;
-
-        CalcRewardData_Func();
-
+        
         StartCoroutine(BattleEnter_Cor());
     }
     IEnumerator BattleEnter_Cor()
@@ -117,7 +123,7 @@ public class Battle_Manager : MonoBehaviour
     {
         // 전투 시작 연출
 
-        battleUITrf.sizeDelta = Vector2.zero;
+        battleUITrf.DOSizeDelta(Vector2.zero, 0.5f);
 
         yield break;
     }
@@ -130,9 +136,13 @@ public class Battle_Manager : MonoBehaviour
         playerClass.BattleEnter_Func();
 
         chickenHouseClass.Init_Func(GroupType.Enemy);
+        chickenHouseClass.OnLanding_Func();
+        chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[0];
 
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
+        StartCoroutine(OnBattleTimer_Cor());
+        killCount = 0;
     }
     void OnSpawnAllyUnit_Func()
     {
@@ -154,9 +164,26 @@ public class Battle_Manager : MonoBehaviour
             spawnClassArr_Enemy[i].ActiveSpawn_Func(_monsterClass);
         }
     }
+    IEnumerator OnBattleTimer_Cor()
+    {
+        battleTime = 0f;
+
+        while (m_BattleState == BattleState.Play)
+        {
+            battleTime += 0.02f;
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    public void CountKillMonster_Func(int _monsterID)
+    {
+        killCount++;
+    }
 
     public void OnMoveLeft_Func(bool _isDown)
     {
+        // Call : Btn Event
+
         if(m_BattleState == BattleState.Play)
         {
             if(_isDown == true)
@@ -171,6 +198,8 @@ public class Battle_Manager : MonoBehaviour
     }
     public void OnMoveRight_Func(bool _isDown)
     {
+        // Call : Btn Event
+
         if (m_BattleState == BattleState.Play)
         {
             if (_isDown == true)
@@ -207,146 +236,412 @@ public class Battle_Manager : MonoBehaviour
     }
     public void GameOver_Func(bool _isPause)
     {
-
         OnResult_Func(false);
     }
     void OnResult_Func(bool _isVictory)
     {
         // 결과창 연출
-        
+
+        if(_isVictory == true)
+        {
+            // 승리한 경우
+
+            // 1. 치킨집 파괴 이미지 교체
+            chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[1];
+
+            // 2. 치킨집 파괴 이펙트 연출
+
+            // 3. 적군 유닛 전원 사망
+            for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+            {
+                if (spawnClassArr_Enemy[i].isActive == true)
+                    StartCoroutine(spawnClassArr_Enemy[i].DeactiveSpawn_Cor(false));
+                else
+                    break;
+            }
+
+            // 4. 플레이어 이동 불가
+            playerClass.isMovable = false;
+
+            // 4. 아군 이동 불가
+            for (int i = 0; i < 5; i++)
+            {
+                StartCoroutine(spawnClassArr_Ally[i].StopUnit_Cor());
+            }
+
+            // 5. 스테이지 데이터 기록
+            if (battleType == BattleType.Normal)
+            {
+                Player_Data.Instance.stageID_Normal = stageID;
+            }
+            else if (battleType == BattleType.Special)
+            {
+                Player_Data.Instance.stageID_Special = stageID;
+            }
+        }
+        else if(_isVictory == false)
+        {
+            // 패배한 경우
+
+            // 1. 플레이어 사망
+            playerClass.isMovable = false; // 임시
+
+            // 2. 아군 사망
+            for (int i = 0; i < 5; i++)
+            {
+                StartCoroutine(spawnClassArr_Ally[i].DeactiveSpawn_Cor(false));
+            }
+
+            // 3. 적군 이동 불가
+            for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+            {
+                if (spawnClassArr_Enemy[i].isActive == true)
+                    StartCoroutine(spawnClassArr_Enemy[i].StopUnit_Cor());
+                else
+                    break;
+            }
+
+            // 4. 스테이지 데이터 기록
+            if (battleType == BattleType.Normal)
+            {
+
+            }
+            else if (battleType == BattleType.Special)
+            {
+                Debug.Log("Cargold : 특별치킨집 패배 후 처리 미작업");
+            }
+
+            // 5. 자연 파괴
+            Enviroment_Manager.Instance.NatureReset_Func();
+        }
+
+        // 공통 처리
+
+        // 1. 전투상태, 결과
         m_BattleState = BattleState.Result;
-        
-        resultClass.Active_Func(battleType, _isVictory, rewardDataArr);
+
+        // 2. 보상 계산
+        rewardDataList = new List<Reward_Data>();
+        GetRewardGold_Func(_isVictory);
+        GetRewardMineral_Func(_isVictory);
+        GetRewardFood_Func(_isVictory);
+        GetRewardUnit_Func(_isVictory);
+        GetRewardPopulationPoint_Func(_isVictory);
+        GetRewardSkill_Func(_isVictory);
+        GetRewardTrophy_Func(_isVictory);
+        GetRewardFoodBox_Func(_isVictory);
+
+        // 3. UI 출력
+        StartCoroutine(ResultUI_Cor(_isVictory));
+    }
+    IEnumerator ResultUI_Cor(bool _isVictory)
+    {
+        yield return new WaitForSeconds(1f);
+
+        resultClass.Active_Func(battleType, _isVictory, rewardDataList.ToArray());
+        yield break;
+    }
+    void GetRewardGold_Func(bool _isVictory)
+    {
+        int _wealthAmount = 0;
+        stageClearGold = ((stageID - 1) * 200) + 1000;
+
+        float _calcBonus = stageClearGold / 400f;
+        goldBonus += battleTime * _calcBonus;
+        goldBonus += killCount * _calcBonus;
+        if (stageClearGold < goldBonus)
+            goldBonus = stageClearGold;
+
+        if (_isVictory == true)
+        {
+            _wealthAmount += stageClearGold;
+            _wealthAmount += (int)goldBonus;
+        }
+        else if(_isVictory == false)
+        {
+            _wealthAmount = (int)(goldBonus / 2f);
+        }
+
+        Reward_Data _rewardData = new Reward_Data();
+        _rewardData.SetData_Func(RewardType.Wealth, 0, _wealthAmount);
+
+        rewardDataList.Add(_rewardData);
+    }
+    void GetRewardMineral_Func(bool _isVictory)
+    {
+        if(battleType == BattleType.Normal)
+        {
+            if(_isVictory == true)
+            {
+                Reward_Data _rewardData = new Reward_Data();
+                _rewardData.SetData_Func(RewardType.Wealth, 1, 10);
+
+                rewardDataList.Add(_rewardData);
+            }
+        }
+    }
+    void GetRewardFood_Func(bool _isVictory)
+    {
+        float _calcFoodGetPer = 0f;
+
+        if(_isVictory == true)
+        {
+            _calcFoodGetPer = foodGetPer;
+        }
+        else if(_isVictory == false)
+        {
+            _calcFoodGetPer = (goldBonus / stageClearGold) * foodGetPer;
+        }
+
+        // 아이템 획득 확률 비교
+        if (_calcFoodGetPer < Random.Range(0f, 100f)) return;
+
+        FoodGrade _foodGrade = FoodGrade.None;
+        int _randValue = Random.Range(0, 100);
+        if(0 <= _randValue && _randValue < 70)
+        {
+            _foodGrade = FoodGrade.Common;
+        }
+        else if (70 <= _randValue && _randValue < 95)
+        {
+            _foodGrade = FoodGrade.Rare;
+        }
+        else
+        {
+            _foodGrade = FoodGrade.Legend;
+        }
+
+        int _foodNum = DataBase_Manager.Instance.foodDataArr.Length;
+        int _randFoodID = Random.Range(0, _foodNum);
+        while(true)
+        {
+            if(_foodGrade == DataBase_Manager.Instance.foodDataArr[_randFoodID].foodGrade)
+            {
+                break;
+            }
+
+            _randFoodID++;
+            if (_foodNum <= _randFoodID)
+                _randFoodID = 0;
+        }
+
+        Reward_Data _rewardData = new Reward_Data();
+        _rewardData.SetData_Func(RewardType.Food, _randFoodID, 1);
+        rewardDataList.Add(_rewardData);
+    }
+    void GetRewardUnit_Func(bool _isVictory)
+    {
+        if (_isVictory == false) return;
+
+        if (battleType == BattleType.Normal)
+        {
+            int _unitNum = DataBase_Manager.Instance.GetUnitCount_Func();
+            int _unlockUnitID = -1;
+            for (int i = 0; i < _unitNum; i++)
+            {
+                if(stageID == DataBase_Manager.Instance.unitUnlockConditionArr[i])
+                {
+                    _unlockUnitID = i;
+                    break;
+                }
+            }
+            
+            Reward_Data _rewardData = new Reward_Data();
+            _rewardData.SetData_Func(RewardType.Unit, _unlockUnitID, 1);
+            rewardDataList.Add(_rewardData);
+        }
+    }
+    void GetRewardPopulationPoint_Func(bool _isVictory)
+    {
+        if (_isVictory == false) return;
 
         if(battleType == BattleType.Normal)
         {
-            Player_Data.Instance.stageID_Normal = stageID;
+            int _calcValue = -1;
+
+            if(Player_Data.Instance.populationPoint < 8)
+            {
+                _calcValue = (stageID - 6) % 5;
+            }
+            else
+            {
+                _calcValue = (stageID - 1) % 10;
+            }
+
+            if(_calcValue == 0)
+            {
+                Reward_Data _rewardData = new Reward_Data();
+                _rewardData.SetData_Func(RewardType.PopulationPoint, 0, 1);
+                rewardDataList.Add(_rewardData);
+            }
         }
-        else if(battleType == BattleType.Special)
+    }
+    void GetRewardSkill_Func(bool _isVictory)
+    {
+        if (_isVictory == false) return;
+    } // Uncomplete
+    void GetRewardTrophy_Func(bool _isVictory)
+    {
+        if (_isVictory == false) return;
+
+        if (battleType == BattleType.Normal)
         {
-            Player_Data.Instance.stageID_Special = stageID;
+            int _calcValue = -1;
+
+            _calcValue = (stageID - 9) % 10;
+
+            if (_calcValue == 0)
+            {
+                int _trophyDataNum = DataBase_Manager.Instance.trophyDataArr.Length;
+                int _randTrophyID = Random.Range(0, _trophyDataNum);
+                while (true)
+                {
+                    PlayerTrophy_Data _playerTrophyData = Player_Data.Instance.trophyDataArr[_randTrophyID];
+                    if (_playerTrophyData.haveNumLimit == 0)
+                    {
+                        break;
+                    }
+                    else if (_playerTrophyData.haveNum < _playerTrophyData.haveNumLimit)
+                    {
+                        break;
+                    }
+
+                    _randTrophyID++;
+                    if (_trophyDataNum <= _randTrophyID)
+                        _randTrophyID = 0;
+                }
+
+                Reward_Data _rewardData = new Reward_Data();
+                _rewardData.SetData_Func(RewardType.Trophy, _randTrophyID, 1);
+                rewardDataList.Add(_rewardData);
+            }
         }
+    }
+    void GetRewardFoodBox_Func(bool _isVictory)
+    {
+        if (_isVictory == false) return;
+
+        if (battleType == BattleType.Special)
+        {
+            int _calcValue = -1;
+
+            _calcValue = (stageID - 4) % 10;
+
+            if (_calcValue == 0)
+            {
+                Reward_Data _rewardData = new Reward_Data();
+                _rewardData.SetData_Func(RewardType.FoodBoxLevel, 0, 1);
+                rewardDataList.Add(_rewardData);
+            }
+        }
+    }
+    public int GetGoldByWatchedAD_Func()
+    {
+        int _adValue = rewardDataList[0].rewardAmount * 2;
+        rewardDataList[0].SetRewardAmount_Func(_adValue);
+        
+        // 광고 연출
+
+        return _adValue;
     }
 
     public void NextStage_Func()
     {
-        StartCoroutine(NextStage_Cor());
-    }
-    IEnumerator NextStage_Cor()
-    {
-        yield return ClearBattleData_Cor();
+        ClearBattleData_Func();
 
         Game_Manager.Instance.BattleEnter_Func(battleType);
     }
-
     public void Retry_Func()
     {
-        StartCoroutine(Retry_Cor());
-    }
-    IEnumerator Retry_Cor()
-    {
-        yield return ClearBattleData_Cor();
+        ClearBattleData_Func();
 
         Game_Manager.Instance.BattleEnter_Func(battleType, stageID);
     }
-
     public void ExitBattle_Func()
     {
         // Reward Get
 
-        StartCoroutine(ExitBattle_Cor());
-    }
-    IEnumerator ExitBattle_Cor()
-    {
-        yield return ClearBattleData_Cor();
+        ClearBattleData_Func();
 
         Game_Manager.Instance.LobbyEnter_Func();
 
-        battleUITrf.sizeDelta = new Vector2(0f, 600f);
+        battleUITrf.DOSizeDelta(new Vector2(0f, 600f), 1f);
     }
-
-    public void WatchAD_Func()
+    
+    void ClearBattleData_Func()
     {
-        rewardDataArr[0].rewardAmount *= 2;
-    }
-
-    void CalcRewardData_Func()
-    {
-        rewardDataArr = new RewardData[3];
-
-        rewardDataArr[0].SetData_Func(RewardType.Wealth, 0, 1000 * stageID);
-        rewardDataArr[1].SetData_Func(RewardType.Wealth, 1, 10);
-        rewardDataArr[2].SetData_Func(RewardType.Food, 0, 0);
-    }
-    #endregion
-
-    IEnumerator ClearBattleData_Cor()
-    {
-        Game_Manager.Instance.Loading_Func();
-
-        for (int i = 0; i < 5; i++)
-        {
-            StartCoroutine(spawnClassArr_Ally[i].DeactiveSpawn_Cor());
-        }
-
-        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
-        {
-            if (spawnClassArr_Enemy[i].isActive == true)
-                StartCoroutine(spawnClassArr_Enemy[i].DeactiveSpawn_Cor());
-            else
-                break;
-        }
-
         Enviroment_Manager.Instance.NatureReset_Func();
 
-        GetRewardData_Func();
-
-        yield return new WaitForSeconds(0.5f);
-
-        Game_Manager.Instance.LoadingClear_Func();
+        SetRewardOnPlayer_Func();
+        
+        goldBonus = 0f;
     }
-    void GetRewardData_Func()
+    void SetRewardOnPlayer_Func()
     {
-        for (int i = 0; i < rewardDataArr.Length; i++)
+        for (int i = 0; i < rewardDataList.Count; i++)
         {
-            int _rewardID = rewardDataArr[i].rewardID;
-            int _rewardAmount = rewardDataArr[i].rewardAmount;
+            int _rewardID = rewardDataList[i].rewardID;
+            int _rewardAmount = rewardDataList[i].rewardAmount;
 
-            switch (rewardDataArr[i].rewardType)
+            switch (rewardDataList[i].rewardType)
             {
                 case RewardType.Wealth:
-                    Player_Data.Instance.AddWealth_Func((WealthType)_rewardID, _rewardAmount);
+                    SetRewardOnPlayerWealth_Func(_rewardID, _rewardAmount);
                     break;
 
                 case RewardType.Food:
-                    //Food_Script _foodClass = new Food_Script();
-                    //Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_rewardID];
-                    ////_foodClass.SetData_Func(_foodData);
-                    //_foodClass.level = Player_Data.Instance.playerBoxLevel;
-                    Player_Data.Instance.AddFood_Func(_rewardID);
+                    SetRewardOnPlayerFood_Func(_rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.FoodBoxLevel:
+                    SetRewardOnPlayerFoodBox_Func(_rewardID, _rewardAmount);
                     break;
 
                 case RewardType.Unit:
+                    SetRewardOnPlayerUnit_Func(_rewardID, _rewardAmount);
                     break;
+
                 case RewardType.PopulationPoint:
+                    SetRewardOnPlayerPopulationPoint_Func(_rewardID, _rewardAmount);
                     break;
+
                 case RewardType.Skill:
+                    SetRewardOnPlayerSkill_Func(_rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.Trophy:
+                    SetRewardOnPlayerTrophy_Func(_rewardID, _rewardAmount);
                     break;
             }
         }
     }
-}
-
-public struct RewardData
-{
-    public RewardType rewardType;
-    public int rewardID;
-    public int rewardAmount;
-
-    public void SetData_Func(RewardType _rewardType, int _rewardID, int _rewardAmount)
+    void SetRewardOnPlayerWealth_Func(int _rewardID, int _rewardAmount)
     {
-        rewardType = _rewardType;
-        rewardID = _rewardID;
-        rewardAmount = _rewardAmount;
+        Player_Data.Instance.AddWealth_Func((WealthType)_rewardID, _rewardAmount);
     }
+    void SetRewardOnPlayerFood_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.AddFood_Func(_rewardID);
+    }
+    void SetRewardOnPlayerFoodBox_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.AddFoodBoxLevel_Func();
+    }
+    void SetRewardOnPlayerUnit_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.UnlockUnit_Func(_rewardID);
+    }
+    void SetRewardOnPlayerPopulationPoint_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.AddPopulationPoint_Func();
+    }
+    void SetRewardOnPlayerSkill_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.UnlockSkill_Func(_rewardID);
+    }
+    void SetRewardOnPlayerTrophy_Func(int _rewardID, int _rewardAmount)
+    {
+        Player_Data.Instance.AddTrophy_Func(_rewardID);
+    }
+    #endregion
 }

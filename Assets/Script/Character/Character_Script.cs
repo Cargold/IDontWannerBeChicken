@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Character_Script : MonoBehaviour
 {
-    public int charId;
+    public int unitID;
     public string charName;
     public string charDesc;
 
@@ -56,6 +56,9 @@ public class Character_Script : MonoBehaviour
     public float imagePivotAxisY;
     public Vector2 shadowSize;
 
+    public bool isPlayer;
+    public bool isHouse;
+
     protected void Init_Func(GroupType _groupType)
     {
         groupType = _groupType;
@@ -83,8 +86,10 @@ public class Character_Script : MonoBehaviour
         // Set Renderer
         hpRend_Group.gameObject.SetActive(true);
         shadowRend.gameObject.SetActive(true);
-        unitRend.sortingOrder = 2;
-        shadowRend.sortingOrder = 1;
+        if(isHouse == false && isPlayer == false)
+            unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+        if (isHouse == false && isPlayer == false)
+            shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
 
         // Set Status
         isAlive = true;
@@ -300,7 +305,7 @@ public class Character_Script : MonoBehaviour
             SetState_Func(CharacterState.Die);
         }
     }
-    public virtual void Die_Func()
+    public virtual void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
         charState = CharacterState.Die;
@@ -308,9 +313,15 @@ public class Character_Script : MonoBehaviour
 
         StopCoroutine("Move_Cor");
 
-        // 사망 연출
+        if(_isImmediate == false)
+        {
+            // 사망 연출
+        }
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
+
+        if(groupType == GroupType.Enemy)
+            Battle_Manager.Instance.CountKillMonster_Func(unitID);
     }
 
     #region Animation Group

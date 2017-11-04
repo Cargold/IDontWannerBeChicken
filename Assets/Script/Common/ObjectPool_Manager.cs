@@ -19,7 +19,7 @@ public class ObjectPool_Manager : MonoBehaviour
     public IEnumerator Init_Cor()
     {
         Instance = this;
-
+        
         yield return InitFolder_Cor();
         yield return InitUnit_Cor();
         yield return InitFood_Cor();

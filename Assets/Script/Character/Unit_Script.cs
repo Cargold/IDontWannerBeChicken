@@ -21,7 +21,7 @@ public class Unit_Script : Character_Script
 
     public void SetData_Func(Unit_Data _charData)
     {
-        charId = _charData.charId;
+        unitID = _charData.charId;
         charName = _charData.charName;
         charDesc = _charData.charDesc;
 
@@ -83,7 +83,7 @@ public class Unit_Script : Character_Script
         
         spawnInterval = _unitClass.spawnInterval;
 
-        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[charId].attackRate / _unitClass.attackRate_Max;
+        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
     }
 
     void InitMove_Func()

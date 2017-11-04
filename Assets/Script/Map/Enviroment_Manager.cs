@@ -23,12 +23,24 @@ public class Enviroment_Manager : MonoBehaviour
     [SerializeField]
     private int mountainID_Check;
 
+    [SerializeField]
+    private GameObject cloudObj;
+    [SerializeField]
+    private Transform[] cloudGroupTrfArr;
+    [SerializeField]
+    private float[] flowSpeedArr;
+
+    [SerializeField]
+    private Material skyMat;
+
     public IEnumerator Init_Cor()
     {
         Instance = this;
 
         StartCoroutine(InitTree_Cor());
         StartCoroutine(InitMountain_Cor());
+        StartCoroutine(InitCloud_Cor());
+        StartCoroutine(FlowSky_Cor());
 
         yield break;
     }
@@ -49,7 +61,10 @@ public class Enviroment_Manager : MonoBehaviour
 
             treeClassList.Add(_natureClass);
             
-            axisX += Random.Range(0.5f, 1.5f);
+            float _randValue = Random.Range(0.5f, 1.5f);
+            //if (_randValue <= 1.0f)
+            //    _randValue *= 2f;
+            axisX += _randValue;
             natureID++;
             yield return null;
         }
@@ -71,9 +86,73 @@ public class Enviroment_Manager : MonoBehaviour
 
             mountainClassList.Add(_natureClass);
 
-            axisX += Random.Range(5f, 4.5f);
+            float _randValue = Random.Range(1.5f, 4.5f);
+            axisX += _randValue;
             natureID++;
             yield return null;
+        }
+    }
+    IEnumerator InitCloud_Cor()
+    {
+        int _groupNum = cloudGroupTrfArr.Length;
+
+        for (int i = 0; i < _groupNum; i++)
+        {
+            float _axisX = 0f;
+
+            for (; _axisX < 110f;)
+            {
+                GameObject _cloudObj = Instantiate(cloudObj);
+                _cloudObj.transform.SetParent(cloudGroupTrfArr[i]);
+                int _randValue = Random.Range(0, 2);
+                _cloudObj.transform.GetChild(_randValue).gameObject.SetActive(true);
+                _cloudObj.transform.GetChild(_randValue).GetComponent<SpriteRenderer>().sortingOrder = (i+50) * -1;
+                _cloudObj.transform.localScale = Vector3.one - (Vector3.one * i * 0.2f);
+
+                float _randAxisX = Random.Range(5f, 15f);
+                float _randAxisY = Random.Range(0f, 0.5f);
+
+                _cloudObj.transform.localPosition = new Vector3(_axisX, i + _randAxisY, 0f);
+                _cloudObj.transform.localEulerAngles = Vector3.zero;
+
+                _axisX += _randAxisX;
+
+                yield return null;
+            }
+        }
+
+        StartCoroutine(FlowCloud_Cor());
+    }
+
+    IEnumerator FlowCloud_Cor()
+    {
+        while (true)
+        {
+            for (int i = 0; i < cloudGroupTrfArr.Length; i++)
+            {
+                cloudGroupTrfArr[i].transform.localPosition += Vector3.right * flowSpeedArr[i];
+
+                int _childCount = cloudGroupTrfArr[i].childCount - 1;
+                while (100f < cloudGroupTrfArr[i].GetChild(_childCount).position.x)
+                {
+                    float _randAxisX = Random.Range(1.5f, 4.5f);
+                    float _randAxisY = Random.Range(0f, 1.5f);
+
+                    cloudGroupTrfArr[i].GetChild(_childCount).position = new Vector3(_randAxisX, i + 5 + _randAxisY, 0f);
+                    cloudGroupTrfArr[i].GetChild(_childCount).SetAsFirstSibling();
+                }
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    IEnumerator FlowSky_Cor()
+    {
+        while(true)
+        {
+            skyMat.mainTextureOffset -= Vector2.right * 0.001f;
+
+            yield return new WaitForFixedUpdate();
         }
     }
 

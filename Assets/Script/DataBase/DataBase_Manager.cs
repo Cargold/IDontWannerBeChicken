@@ -18,7 +18,7 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Unit_Data[] m_UnitDataArr;
     public Dictionary<int, Unit_Script> unitClassDic;
-    //public Unit_Script[] unit
+    public int[] unitUnlockConditionArr;
 
     // Monster Data
     public GameObject[] monsterDataObjArr;
@@ -56,9 +56,26 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Skill_Data[] m_SkillDataArr;
     
+    // Trophy Data
+    public Trophy_Data[] trophyDataArr
+    {
+        get
+        {
+            return m_TrophyDataArr;
+        }
+    }
+    [SerializeField]
+    private Trophy_Data[] m_TrophyDataArr;
+
     // Reference Data
     public Sprite populationPointSprite;
     public Sprite[] wealthSpriteArr;
+    public Sprite[] populationSpriteArr;
+    public Sprite[] manaCostSpriteArr;
+
+    public Color textColor;
+
+    public float[] foodGradePenaltyValue;
 
     public IEnumerator Init_Cor()
     {
@@ -134,6 +151,10 @@ public class DataBase_Manager : MonoBehaviour
         }
 
         return _unitClass;
+    }
+    public int GetUnitCount_Func()
+    {
+        return unitDataObjArr.Length;
     }
 
     // Food

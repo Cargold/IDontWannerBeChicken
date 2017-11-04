@@ -77,7 +77,7 @@ public class Nature_Script : MonoBehaviour
             case 3:
                 // 이미지 정상 크기, 이미지 바운딩
                 controlObj.transform.DOScaleY(1f, 0.25f);
-                controlObj.transform.DOLocalJump(Vector3.zero, 1f, 3, 0.8f).OnComplete(OnWoodyWork_Func);
+                controlObj.transform.DOLocalJump(Vector3.zero, 1f, 1, 0.8f).OnComplete(OnWoodyWork_Func);
                 break;
             case 4:
                 // 값 초기화
@@ -100,6 +100,9 @@ public class Nature_Script : MonoBehaviour
 
     public void OnDevastated_Func()
     {
+
+
+
         isWork_Devastated = true;
 
         if(isWorking == false)

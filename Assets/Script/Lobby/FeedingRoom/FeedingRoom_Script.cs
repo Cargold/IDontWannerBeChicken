@@ -11,6 +11,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public Text foodText;
     public Text mainEffectText;
     public Text subEffectText;
+    public GameObject guideInitObj;
     public GameObject guideSelectObj;
     public GameObject guideDragObj;
     public Text upgradeCostText;
@@ -34,6 +35,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public enum FeedingRoomState
     {
         None = -1,
+        InitState,
         SelectFood,
         ChooseUpgrade,
     }
@@ -54,6 +56,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
+        selectedFoodClass = null;
+
         if(isActive == true)
         {
             stomachClass.Deactive_Func();
@@ -73,11 +77,39 @@ public class FeedingRoom_Script : LobbyUI_Parent
         selectUnitID = _selectUnitID;
 
         inventoryClass.Active_Func(_selectUnitID);
-        
-        PointUp_Func(inventoryClass.GetFoodRand_Func());
+
+        Food_Script _foodClass = inventoryClass.GetFoodRand_Func();
+        if(_foodClass == null)
+        {
+            _foodClass = stomachClass.GetFoodRand_Func();
+        }
+
+        if(_foodClass == null)
+        {
+            InitSelect_Func();
+        }
+        else
+        {
+            PointUp_Func(_foodClass);
+        }
 
         anim["FeedingRoom"].speed = 1f;
         anim.Play("FeedingRoom");
+    }
+    void InitSelect_Func()
+    {
+        feedingRoomState = FeedingRoomState.InitState;
+
+        guideInitObj.SetActive(true);
+
+        foodText.text = "";
+        mainEffectText.text = "";
+        subEffectText.text = "";
+        
+        guideSelectObj.SetActive(false);
+
+        expMainImage.fillAmount = 0f;
+        expProgressImage.fillAmount = 0f;
     }
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
@@ -122,6 +154,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     void SelectNewFood_Func(Food_Script _foodClass)
     {
+        guideInitObj.SetActive(false);
+
         PrintFoodInfo_Func(_foodClass);
 
         if(selectedFoodClass != null)
@@ -129,6 +163,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
             inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
         }
 
+        feedingRoomState = FeedingRoomState.SelectFood;
         selectedFoodClass = _foodClass;
         SetTopDepthTrf_Func(selectedFoodClass.transform);
         selectedFoodClass.transform.SetAsLastSibling();
@@ -336,7 +371,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         }
         else
         {
-            upgradeCostText.color = Game_Manager.Instance.textColor;
+            upgradeCostText.color = DataBase_Manager.Instance.textColor;
         }
     }
     private void UpgradeBegin_Func(Food_Script _foodClass)
@@ -349,8 +384,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         guideDragObj.SetActive(true);
 
         touchOffsetPos = Input.mousePosition - materialFoodClass.transform.position;
-
-
+        
         upgradeFocusImage.SetNaturalAlphaColor_Func(0.7f);
         upgradeFocusImage.transform.SetAsLastSibling();
 
@@ -439,8 +473,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             if(_setterFoodClass.foodState == FoodState.Inventory)
             {
-                Debug.Log("Test, 1 : " + _setterFoodClass.foodName);
-
                 _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
             }
         }

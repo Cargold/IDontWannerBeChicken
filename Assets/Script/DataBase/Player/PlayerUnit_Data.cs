@@ -11,8 +11,9 @@ public class PlayerUnit_ClassData
 
     private List<PlayerFood_ClassData> playerFoodDataList;
 
-    public IEnumerator Init_Cor(Unit_Script _unitClass)
+    public IEnumerator Init_Cor(bool _isUnlock, Unit_Script _unitClass)
     {
+        isHave = _isUnlock;
         unitClass = _unitClass;
         playerFoodDataList = new List<PlayerFood_ClassData>();
 

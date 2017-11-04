@@ -121,7 +121,10 @@ public class Inventory_Script : MonoBehaviour
     }
     public Food_Script GetFoodRand_Func()
     {
-        return inventoryFoodClassList[Random.Range(0, inventoryFoodClassList.Count)];
+        if (inventoryFoodClassList.Count == 0)
+            return null;
+        else
+            return inventoryFoodClassList[Random.Range(0, inventoryFoodClassList.Count)];
     }
 
     public bool CheckInventoryFood_Func(Food_Script _foodClass)

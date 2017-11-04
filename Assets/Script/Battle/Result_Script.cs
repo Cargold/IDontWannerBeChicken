@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Result_Script : MonoBehaviour
 {
@@ -21,10 +22,12 @@ public class Result_Script : MonoBehaviour
     public Text btnText_Right;
     public GameObject btnAD;
 
-    public GameObject[] resultRewardObjArr;
+    public Transform cardGroupTrf;
+    public GameObject[] rewardObjArr;
     public Image[] resultRewardImageArr;
     public Text[] resultRewardTextArr;
 
+    private bool isActive;
     private bool isVictory;
     private BattleType battleType;
 
@@ -36,65 +39,38 @@ public class Result_Script : MonoBehaviour
         _thisRTrf.localPosition = Vector3.zero;
         _thisRTrf.anchoredPosition = Vector2.zero;
 
+        rewardObjArr = new GameObject[4];
+        resultRewardTextArr = new Text[4];
+        resultRewardImageArr = new Image[4];
+        for (int i = 0; i < 4; i++)
+        {
+            rewardObjArr[i] = cardGroupTrf.GetChild(i).gameObject;
+
+            resultRewardTextArr[i] = rewardObjArr[i].transform.Find("Title").GetComponent<Text>();
+
+            resultRewardImageArr[i] = rewardObjArr[i].transform.Find("Mask").GetChild(0).GetComponent<Image>();
+
+            rewardObjArr[i].SetActive(false);
+        }
+
         this.gameObject.SetActive(false);
     }
-
-    public void Active_Func(BattleType _battleType, bool _isVictory, RewardData[] _rewardDataArr)
+    public void Active_Func(BattleType _battleType, bool _isVictory, Reward_Data[] _rewardDataArr)
     {
         this.gameObject.SetActive(true);
 
+        for (int i = 0; i < 4; i++)
+        {
+            rewardObjArr[i].SetActive(false);
+        }
+
+        StartCoroutine(RewardEffect_Cor(_battleType, _isVictory, _rewardDataArr));
+    }
+    IEnumerator RewardEffect_Cor(BattleType _battleType, bool _isVictory, Reward_Data[] _rewardDataArr)
+    {
+        isActive = true;
         battleType = _battleType;
         isVictory = _isVictory;
-
-        for (int i = 0; i < 3; i++)
-        {
-            if(i< _rewardDataArr.Length)
-            {
-                resultRewardObjArr[i].SetActive(true);
-
-                int _rewardID = _rewardDataArr[i].rewardID;
-                int _rewardAmount = _rewardDataArr[i].rewardAmount;
-
-                switch (_rewardDataArr[i].rewardType)
-                {
-                    case RewardType.Wealth:
-                        resultRewardImageArr[i].sprite = DataBase_Manager.Instance.wealthSpriteArr[_rewardID];
-                        resultRewardImageArr[i].SetNativeSize();
-
-                        if(_rewardID == 0)
-                        {
-                            resultRewardTextArr[i].text = "골드 " + _rewardAmount;
-                        }
-                        else if(_rewardID == 1)
-                        {
-                            resultRewardTextArr[i].text = "미네랄 " +  +_rewardAmount;
-                        }
-                        break;
-                    case RewardType.Food:
-                        Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_rewardID];
-
-                        resultRewardImageArr[i].sprite = _foodData.foodSprite;
-                        resultRewardImageArr[i].SetNativeSize();
-
-                        resultRewardTextArr[i].text = _foodData.foodName;
-                        break;
-                    case RewardType.Unit:
-                        resultRewardImageArr[i].sprite = DataBase_Manager.Instance.unitDataArr[_rewardDataArr[i].rewardID].unitSprite;
-                        resultRewardImageArr[i].SetNativeSize();
-                        break;
-                    case RewardType.PopulationPoint:
-                        resultRewardImageArr[i].sprite = Game_Manager.Instance.populationSpriteArr[_rewardID];
-                        resultRewardImageArr[i].SetNativeSize();
-                        break;
-                    case RewardType.Skill:
-                        resultRewardImageArr[i].sprite = DataBase_Manager.Instance.skillDataArr[_rewardDataArr[i].rewardID].skillSprite;
-                        resultRewardImageArr[i].SetNativeSize();
-                        break;
-                }
-            }
-            else
-                resultRewardObjArr[i].SetActive(false);
-        }
 
         if (_isVictory == false)
         {
@@ -103,16 +79,16 @@ public class Result_Script : MonoBehaviour
             btnText_Right.text = "재시도";
             btnAD.SetActive(false);
         }
-        else if(_isVictory == true)
+        else if (_isVictory == true)
         {
-            if(_battleType == BattleType.Normal)
+            if (_battleType == BattleType.Normal)
             {
                 titleText.text = "치킨집 파괴!";
                 btnText_Left.text = "약탈하기";
                 btnText_Right.text = "";
                 btnAD.SetActive(true);
             }
-            else if(_battleType == BattleType.Special)
+            else if (_battleType == BattleType.Special)
             {
                 titleText.text = "악의 치킨집 파괴!";
                 btnText_Left.text = "전진하기";
@@ -120,10 +96,122 @@ public class Result_Script : MonoBehaviour
                 btnAD.SetActive(false);
             }
         }
+
+        for (int i = 0; i < _rewardDataArr.Length; i++)
+        {
+            int _rewardID = _rewardDataArr[i].rewardID;
+            int _rewardAmount = _rewardDataArr[i].rewardAmount;
+            resultRewardImageArr[i].rectTransform.localScale = Vector3.one;
+
+            switch (_rewardDataArr[i].rewardType)
+            {
+                case RewardType.Wealth:
+                    SetRewardWealth_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.Food:
+                    SetRewardFood_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.FoodBoxLevel:
+                    SetRewardFoodBox_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.Unit:
+                    SetRewardUnit_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.PopulationPoint:
+                    SetRewardPopulationPoint_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.Skill:
+                    SetRewardSkill_Func(i, _rewardID, _rewardAmount);
+                    break;
+
+                case RewardType.Trophy:
+                    SetRewardTrophy_Func(i, _rewardID, _rewardAmount);
+                    break;
+            }
+
+            rewardObjArr[i].SetActive(true);
+            rewardObjArr[i].transform.DOPunchScale(Vector3.one, 0.5f);
+
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+    void SetRewardWealth_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.wealthSpriteArr[_rewardID];
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+        resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
+
+        if (_rewardID == 0)
+        {
+            resultRewardTextArr[_rewardObjID].text = "골드 " + _rewardAmount;
+        }
+        else if (_rewardID == 1)
+        {
+            resultRewardTextArr[_rewardObjID].text = "미네랄 " + +_rewardAmount;
+        }
+    }
+    void SetRewardFood_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_rewardID];
+
+        resultRewardImageArr[_rewardObjID].sprite = _foodData.foodSprite;
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+
+        resultRewardTextArr[_rewardObjID].text = _foodData.foodName;
+    }
+    void SetRewardFoodBox_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+
+    }
+    void SetRewardUnit_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        Unit_Data _unitData = DataBase_Manager.Instance.unitDataArr[_rewardID];
+
+        resultRewardImageArr[_rewardObjID].sprite = _unitData.unitSprite;
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+
+        resultRewardImageArr[_rewardObjID].rectTransform.localPosition = _unitData.cardPortraitPos;
+
+        resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * _unitData.cardImageSize;
+
+        resultRewardTextArr[_rewardObjID].text = _unitData.charName;
+    }
+    void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationSpriteArr[0];
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+        resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
+
+        resultRewardTextArr[_rewardObjID].text = "닭 한 마리 추가요!";
+    }
+    void SetRewardSkill_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        Skill_Data _skillData = DataBase_Manager.Instance.skillDataArr[_rewardID];
+
+        resultRewardImageArr[_rewardObjID].sprite = _skillData.skillSprite;
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+
+        resultRewardTextArr[_rewardObjID].text = _skillData.skillName;
+    }
+    void SetRewardTrophy_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    {
+        Trophy_Data _trophyData = DataBase_Manager.Instance.trophyDataArr[_rewardID];
+
+        resultRewardImageArr[_rewardObjID].sprite = _trophyData.trophySprite;
+        resultRewardImageArr[_rewardObjID].SetNativeSize();                                                                                 
+
+        resultRewardTextArr[_rewardObjID].text = _trophyData.trophyName;
     }
 
     public void OnButton_Func(bool _isLeft)
     {
+        // Call : Btn Event
+
         if (isVictory == false)
         {
             if (_isLeft == true)
@@ -153,8 +241,8 @@ public class Result_Script : MonoBehaviour
                 {
                     // Watch AD
 
-                    battleManager.WatchAD_Func();
-                    resultRewardTextArr[0].text = "골드 " + battleManager.rewardDataArr[0].rewardAmount;
+                    int _adValue = battleManager.GetGoldByWatchedAD_Func();
+                    resultRewardTextArr[0].text = "골드 " + _adValue;
                 }
             }
             else if (battleType == BattleType.Special)
@@ -176,9 +264,14 @@ public class Result_Script : MonoBehaviour
 
         Deactive_Func();
     }
+    public void WatchAD_Func(bool _isSuccess)
+    {
+
+    }
 
     public void Deactive_Func()
     {
+        isActive = false;
         this.gameObject.SetActive(false);
     }
 }

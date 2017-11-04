@@ -16,22 +16,13 @@ public class Game_Manager : MonoBehaviour
     public BattleStartDirection_Script directionClass;
     public Enviroment_Manager enviromentClass;
 
-    #region Reference Variable
-    public Sprite[] populationSpriteArr;
-    public Sprite[] manaCostSpriteArr;
-
-    public Color textColor;
-
-    public float[] foodGradePenaltyValue;
-    #endregion
-    
     public GameState gameState;
     public Image loadingImage;
 
     void Awake()
     {
         StartCoroutine(Init_Cor());
-    }
+    }   
 
     IEnumerator Init_Cor()
     {
@@ -88,7 +79,7 @@ public class Game_Manager : MonoBehaviour
             }
         }
 
-        battleClass.BattleEnter_Func(_battleType, _stageID_Next);
+        battleClass.BattleEnter_Func(_battleType, _stageID_Next + 1);
         directionClass.EnterUI_Func(GameState.Battle);
     }
 
