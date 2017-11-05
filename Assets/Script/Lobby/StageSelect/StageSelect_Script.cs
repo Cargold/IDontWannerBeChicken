@@ -38,7 +38,7 @@ public class StageSelect_Script : LobbyUI_Parent
     #region Set Data Group
     void SetStageData_Func()
     {
-        titleText.text = "약탈!";
+        titleText.text = "치킨을 위하여!";
 
         stageTitleTextArr[0].text = "Lv. " + (Player_Data.Instance.stageID_Normal + 1) + " 일반 치킨집";
         //stageImageArr[0]

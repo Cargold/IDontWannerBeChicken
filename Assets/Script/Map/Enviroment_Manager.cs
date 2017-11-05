@@ -32,6 +32,10 @@ public class Enviroment_Manager : MonoBehaviour
 
     [SerializeField]
     private Material skyMat;
+    [SerializeField]
+    private SpriteRenderer skyRend;
+    [SerializeField]
+    private Sprite[] skySpriteArr;
 
     public IEnumerator Init_Cor()
     {
@@ -156,6 +160,10 @@ public class Enviroment_Manager : MonoBehaviour
         }
     }
 
+    public void OnSky_Func(BattleType _battleType)
+    {
+        skyRend.sprite = skySpriteArr[(int)_battleType];
+    }
     public void OnWoody_Func(float _playerPosX)
     {
         while (treeClassList[treeID_Check].naturePosX < _playerPosX)

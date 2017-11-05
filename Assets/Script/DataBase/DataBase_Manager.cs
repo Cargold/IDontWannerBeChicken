@@ -32,6 +32,7 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Unit_Data[] m_MonsterDataArr;
     public Dictionary<int, Unit_Script> monsterClassDic;
+    public float chickenHouseHp_Default;
 
     // Food Data
     public GameObject[] foodDataObjArr;
@@ -66,6 +67,9 @@ public class DataBase_Manager : MonoBehaviour
     }
     [SerializeField]
     private Trophy_Data[] m_TrophyDataArr;
+
+    // Shell Data
+    public GameObject[] shellObjArr;
 
     // Reference Data
     public Sprite populationPointSprite;

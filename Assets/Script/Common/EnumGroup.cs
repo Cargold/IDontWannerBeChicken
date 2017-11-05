@@ -1,8 +1,9 @@
 ﻿public enum ShootType
 {
     None = -1,
-    Melee,
-    Range,
+    RelativeAnimation,
+    Projectile,
+    FixedRange,
 }
 
 public enum AttackType
@@ -163,4 +164,11 @@ public enum TrophyType
     GoldBonus,
     ItemDropPer,
     UpgradeExp,
+}
+
+public enum MutantType
+{
+    None = -1,
+    Attack,
+    Health,
 }

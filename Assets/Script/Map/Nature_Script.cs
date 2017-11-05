@@ -70,8 +70,11 @@ public class Nature_Script : MonoBehaviour
                 break;
             case 2:
                 // 황폐 이미지 끄고, 울창 이미지 키고
-                controlObj_Devastated.SetActive(false);
-                controlObj_Woody.SetActive(true);
+                if(Battle_Manager.Instance.battleType == BattleType.Normal)
+                {
+                    controlObj_Devastated.SetActive(false);
+                    controlObj_Woody.SetActive(true);
+                }
                 OnWoodyWork_Func();
                 break;
             case 3:
@@ -100,9 +103,6 @@ public class Nature_Script : MonoBehaviour
 
     public void OnDevastated_Func()
     {
-
-
-
         isWork_Devastated = true;
 
         if(isWorking == false)

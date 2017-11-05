@@ -81,6 +81,7 @@ public class Game_Manager : MonoBehaviour
 
         battleClass.BattleEnter_Func(_battleType, _stageID_Next + 1);
         directionClass.EnterUI_Func(GameState.Battle);
+        enviromentClass.OnSky_Func(_battleType);
     }
 
     public void LobbyEnter_Func()

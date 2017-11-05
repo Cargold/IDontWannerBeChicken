@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Unit_Script : Character_Script
 {
+    public MutantType mutantType;
+
     [SerializeField]
     private Vector3 moveDir;
 
@@ -35,7 +37,7 @@ public class Unit_Script : Character_Script
         criticalPercent = _charData.criticalPercent;
         criticalBonus = _charData.criticalBonus;
         shootType = _charData.shootType;
-        shootSpeed = _charData.shootSpeed;
+        shootTime = _charData.shootSpeed;
         shootHeight = _charData.shootHeight;
         attackType = _charData.attackType;
 
@@ -47,6 +49,7 @@ public class Unit_Script : Character_Script
         unitSprite = _charData.unitSprite;
 
         unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
+        unitRend.color = Color.white;
         unitRend.sprite = _charData.unitSprite;
         if (groupType == GroupType.Enemy)
             unitRend.flipX = true;
@@ -64,6 +67,7 @@ public class Unit_Script : Character_Script
         if (unitRend == null)
             unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
         unitRend.sprite = unitSprite;
+        unitRend.color = Color.white;
 
         unitRend.sortingOrder = -6;
         shadowRend.sortingOrder = -7;
@@ -84,6 +88,26 @@ public class Unit_Script : Character_Script
         spawnInterval = _unitClass.spawnInterval;
 
         attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+    }
+    public void SetMutant_Func(MutantType _mutantType)
+    {
+        mutantType = _mutantType;
+
+        if (_mutantType == MutantType.Attack)
+        {
+            attackRate_Max *= 0.5f;
+            attackRate_Speed *= 0.5f;
+            attackValue *= 2f;
+
+            unitRend.color = new Color(1f, 0.5f, 0.5f, 1f);
+        }
+        else if(_mutantType == MutantType.Health)
+        {
+            healthPoint_Max *= 4f;
+            healthPoint_Recent *= 4f;
+
+            this.transform.localScale *= 2f;
+        }
     }
 
     void InitMove_Func()

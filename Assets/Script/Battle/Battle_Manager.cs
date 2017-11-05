@@ -47,6 +47,7 @@ public class Battle_Manager : MonoBehaviour
     public int killCount;
     public float goldBonus;
     public float foodGetPer;
+    public bool[] isTestSpawnAlly;
 
     public enum BattleState
     {
@@ -67,7 +68,7 @@ public class Battle_Manager : MonoBehaviour
 
     public BattleType battleType;
 
-    public int stageID;
+    public int battleID;
 
     public IEnumerator Init_Cor()
     {
@@ -108,7 +109,7 @@ public class Battle_Manager : MonoBehaviour
 
         battleType = _battleType;
 
-        stageID = _stageID;
+        battleID = _stageID;
         
         StartCoroutine(BattleEnter_Cor());
     }
@@ -135,6 +136,7 @@ public class Battle_Manager : MonoBehaviour
 
         playerClass.BattleEnter_Func();
 
+        chickenHouseClass.healthPoint_Max = ((battleID * 0.05f) + 1f) * DataBase_Manager.Instance.chickenHouseHp_Default;
         chickenHouseClass.Init_Func(GroupType.Enemy);
         chickenHouseClass.OnLanding_Func();
 
@@ -156,7 +158,7 @@ public class Battle_Manager : MonoBehaviour
             if (0 <= _partyUnitId)
             {
                 PlayerUnit_ClassData _playerUnitData = Player_Data.Instance.playerUnitDataArr[_partyUnitId];
-                spawnClassArr_Ally[i].ActiveSpawn_Func(_playerUnitData.unitClass);
+                spawnClassArr_Ally[i].ActiveSpawn_Func(_playerUnitData.unitClass, battleType, battleID);
             }
         }
     }
@@ -164,8 +166,17 @@ public class Battle_Manager : MonoBehaviour
     {
         for (int i = 0; i < enemySpawnDataArr.Length; i++)
         {
-            Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(enemySpawnDataArr[i].enemyID);
-            spawnClassArr_Enemy[i].ActiveSpawn_Func(_monsterClass);
+            int _enemyID = enemySpawnDataArr[i].enemyID;
+
+            Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(_enemyID);
+
+            float _hpValue = DataBase_Manager.Instance.monsterDataArr[_enemyID].healthPoint;
+            _monsterClass.healthPoint_Max = _hpValue * ((battleID * 0.05f) + 1f);
+
+            float _attackValue = DataBase_Manager.Instance.monsterDataArr[_enemyID].attackValue;
+            _monsterClass.attackValue = _attackValue * ((battleID * 0.05f) + 1f);
+
+            spawnClassArr_Enemy[i].ActiveSpawn_Func(_monsterClass, battleType, battleID);
         }
     }
     IEnumerator OnBattleTimer_Cor()
@@ -276,11 +287,11 @@ public class Battle_Manager : MonoBehaviour
             // 5. 스테이지 데이터 기록
             if (battleType == BattleType.Normal)
             {
-                Player_Data.Instance.stageID_Normal = stageID;
+                Player_Data.Instance.stageID_Normal = battleID;
             }
             else if (battleType == BattleType.Special)
             {
-                Player_Data.Instance.stageID_Special = stageID;
+                Player_Data.Instance.stageID_Special = battleID;
             }
         }
         else if(_isVictory == false)
@@ -312,7 +323,9 @@ public class Battle_Manager : MonoBehaviour
             }
             else if (battleType == BattleType.Special)
             {
-                Debug.Log("Cargold : 특별치킨집 패배 후 처리 미작업");
+                int _penalty = Player_Data.Instance.stageID_Special % 5;
+
+                Player_Data.Instance.stageID_Special -= _penalty;
             }
 
             // 5. 자연 파괴
@@ -362,7 +375,7 @@ public class Battle_Manager : MonoBehaviour
     void GetRewardGold_Func(bool _isVictory)
     {
         int _wealthAmount = 0;
-        stageClearGold = ((stageID - 1) * 200) + 1000;
+        stageClearGold = ((battleID - 1) * 200) + 1000;
 
         float _calcBonus = stageClearGold / 400f;
         goldBonus += battleTime * _calcBonus;
@@ -457,7 +470,7 @@ public class Battle_Manager : MonoBehaviour
             int _unlockUnitID = -1;
             for (int i = 0; i < _unitNum; i++)
             {
-                if(stageID == DataBase_Manager.Instance.unitUnlockConditionArr[i])
+                if(battleID == DataBase_Manager.Instance.unitUnlockConditionArr[i])
                 {
                     _unlockUnitID = i;
                     break;
@@ -480,15 +493,15 @@ public class Battle_Manager : MonoBehaviour
         {
             int _calcValue = -1;
 
-            if (stageID <= 1) return;
+            if (battleID <= 1) return;
 
             if(Player_Data.Instance.populationPoint < 8)
             {
-                _calcValue = (stageID - 6) % 5;
+                _calcValue = (battleID - 6) % 5;
             }
             else
             {
-                _calcValue = (stageID - 1) % 10;
+                _calcValue = (battleID - 1) % 10;
             }
 
             if(_calcValue == 0)
@@ -511,7 +524,7 @@ public class Battle_Manager : MonoBehaviour
         {
             int _calcValue = -1;
 
-            _calcValue = (stageID - 9) % 10;
+            _calcValue = (battleID - 9) % 10;
 
             if (_calcValue == 0)
             {
@@ -548,7 +561,7 @@ public class Battle_Manager : MonoBehaviour
         {
             int _calcValue = -1;
 
-            _calcValue = (stageID - 4) % 10;
+            _calcValue = (battleID - 4) % 10;
 
             if (_calcValue == 0)
             {
@@ -578,7 +591,7 @@ public class Battle_Manager : MonoBehaviour
     {
         ClearBattleData_Func();
 
-        Game_Manager.Instance.BattleEnter_Func(battleType, stageID);
+        Game_Manager.Instance.BattleEnter_Func(battleType, battleID);
     }
     public void ExitBattle_Func()
     {

@@ -26,6 +26,7 @@ public class ObjectPool_Manager : MonoBehaviour
         yield return InitMonster_Cor();
         yield return InitEffect_Cor();
         yield return InitSkill_Cor();
+        yield return InitShell_Cor();
 
         yield return InitObjectPool_Cor();
 	}
@@ -110,6 +111,20 @@ public class ObjectPool_Manager : MonoBehaviour
     {
         yield break;
     }
+    IEnumerator InitShell_Cor()
+    {
+        int _poolListCount = poolList.Count;
+        int _shellObjNum = DataBase_Manager.Instance.shellObjArr.Length;
+        for (int i = 0; i < _shellObjNum; i++, _poolListCount++)
+        {
+            GameObject _shellObj = Instantiate(DataBase_Manager.Instance.shellObjArr[i]);
+            poolList.Add(_shellObj);
+            poolList[_poolListCount].transform.SetParent(sampleFolderObj.transform);
+            poolList[_poolListCount].name = DataBase_Manager.Instance.shellObjArr[i].name;
+        }
+
+        yield break;
+    }
     IEnumerator InitObjectPool_Cor()
     {
         for (int i = 0; i < poolList.Count; i++)
@@ -164,7 +179,9 @@ public class ObjectPool_Manager : MonoBehaviour
         }
         else // 사용 가능한 오브젝트가 없을때
         {
-            GameObject obj = Instantiate(pool.source);            
+            //Debug.Log("Test, Spawn : " + pool.folder.transform);
+
+            GameObject obj = Instantiate(pool.source);
             obj.transform.SetParent(pool.folder.transform);
             obj.name = pool.source.name;
             obj.SetActive(true);

@@ -54,7 +54,7 @@ public struct Unit_Data
         criticalPercent = _unitClass.criticalPercent;
         criticalBonus   = _unitClass.criticalBonus;
         shootType       = _unitClass.shootType;
-        shootSpeed      = _unitClass.shootSpeed;
+        shootSpeed      = _unitClass.shootTime;
         shootHeight     = _unitClass.shootHeight;
         attackType      = _unitClass.attackType;
 

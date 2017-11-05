@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Character_Script : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class Character_Script : MonoBehaviour
     [SerializeField]
     protected float defenceValue_Calc;
     public float attackValue;
+    [SerializeField]
+    private float attackValue_Calc;
     public float attackRate_Speed;
     public float attackRate_Max;
     [SerializeField]
@@ -27,11 +30,18 @@ public class Character_Script : MonoBehaviour
     public float criticalPercent;
     public float criticalBonus;
     public ShootType shootType;
-    public float shootSpeed;
+    public float shootTime;
     public float shootHeight;
+    public float shootArriveHeight;
+    public GameObject shellObj;
+    public Transform shellPivotTrf;
+    public Shell_Script spawnShellClass;
     public AttackType attackType;
+    public float pluralRange;
+    private Vector3 targetPos;
     [SerializeField]
     protected List<Character_Script> targetClassList = new List<Character_Script>();
+    public Transform[] effectPivotTrfArr;
 
     public enum CharacterState
     {
@@ -192,6 +202,12 @@ public class Character_Script : MonoBehaviour
 
                     if (charState != CharacterState.Attack)
                     {
+                        attackValue_Calc = attackValue;
+                        if (Random.Range(0f, 100f) < criticalPercent)
+                        {
+                            attackValue_Calc *= criticalBonus;
+                        }
+
                         animator.SetBool("OnContact", true);
                         SetState_Func(CharacterState.Attack);
                     }
@@ -366,27 +382,126 @@ public class Character_Script : MonoBehaviour
     {
         // Call : Ani Event
 
-        if (CheckTargetAlive_Func() == true)
+        if (animator.GetBool("AttackReady") == true)
         {
-            // 목표대상이 살아있다면
+            // 공격이 준비된 상태라면
 
-            if (CheckRange_Func() == true)
-            {
-                // 목표대상이 사정권 내에 있다면
-
-                if (animator.GetBool("AttackReady") == true)
-                {
-                    animator.SetBool("AttackReady", false);
-                    attackRate_Recent = 0f;
-
-                    float _attackValue_Calc = attackValue;
-                    if (Random.Range(0f, 100f) < criticalPercent)
-                    {
-                        _attackValue_Calc *= criticalBonus;
-                    }
+            animator.SetBool("AttackReady", false);
+            attackRate_Recent = 0f;
                     
-                    targetClassList[0].Damaged_Func(_attackValue_Calc);
+            if (shootType == ShootType.RelativeAnimation)
+            {
+                if (CheckTargetAlive_Func() == true)
+                {
+                    // 목표대상이 살아있다면
+
+                    if (CheckRange_Func() == true)
+                    {
+                        // 목표대상이 사정권 내에 있다면
+
+                        OnAttack_Func();
+                    }
                 }
+            }
+            else if(shootType == ShootType.Projectile)
+            {
+                GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+                _spawnShellObj.transform.SetParent(shellPivotTrf);
+                _spawnShellObj.transform.position = shellPivotTrf.position;
+                _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
+
+                spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+                int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
+                spawnShellClass.Init_Func(this, _sortingOrder);
+
+                float _shootTime = shootTime;
+                if (shootHeight == 0)
+                {
+                    float _distance = Vector3.Distance(this.transform.position, targetClassList[0].transform.position);
+                    _shootTime *= _distance / attackRange;
+                }
+
+                _spawnShellObj.transform.DORotate(Vector3.zero, shootTime);
+                if (attackType == AttackType.Single)
+                {
+                    bool _isRealShot = false;
+
+                    if (CheckTargetAlive_Func() == true)
+                    {
+                        // 목표대상이 살아있다면
+
+                        if (CheckRange_Func() == true)
+                        {
+                            // 목표대상이 사정권 내에 있다면
+
+                            _isRealShot = true;
+                        }
+                    }
+
+                    if(_isRealShot == true)
+                    {
+                        _spawnShellObj.transform.DOJump(targetClassList[0].transform.position, shootHeight, 1, shootTime).OnComplete(OnAttack_Func);
+                    }
+                    else if(_isRealShot == false)
+                    {
+                        _spawnShellObj.transform.DOJump(targetClassList[0].transform.position, shootHeight, 1, shootTime);
+                    }
+                }
+                else if (attackType == AttackType.Plural)
+                {
+                    targetPos = targetClassList[0].transform.position;
+
+                    _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.OnAttack_Func);
+                }
+            }
+            else if(shootType == ShootType.FixedRange)
+            {
+                if (attackType == AttackType.Plural)
+                {
+                    GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+                    _spawnShellObj.transform.position = shellPivotTrf.position;
+                    _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
+
+                    spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+                    spawnShellClass.Init_Func(this, 0);
+                            
+                    spawnShellClass.OnAttack_Func();
+                }
+                else
+                {
+                    Debug.LogError("Bug : 고정된 사거리 방식인 경우, 광역 공격만 가능합니다.");
+                }
+            }
+        }
+    }
+    private void OnAttack_Func()
+    {
+        targetClassList[0].Damaged_Func(attackValue_Calc);
+    }
+    public void OnAttackPlural_Func(Character_Script _targetCharClass)
+    {
+        if(shootType == ShootType.Projectile)
+        {
+            Vector3 _targetPos = _targetCharClass.transform.position;
+            _targetPos = new Vector3(_targetPos.x, 0f, 0f);
+            float _distanceValue = Vector3.Distance(targetPos, _targetPos);
+
+            if (_distanceValue < pluralRange)
+            {
+                _targetCharClass.Damaged_Func(attackValue_Calc);
+            }
+        }
+        else if(shootType == ShootType.FixedRange)
+        {
+            Vector3 _pivotPos = shellPivotTrf.position;
+            Vector3 _targetPos = _targetCharClass.transform.position;
+            _targetPos = new Vector3(_targetPos.x, 0f, 0f);
+
+            float _distanceValue = Vector3.Distance(_pivotPos, _targetPos);
+
+            if(_distanceValue < pluralRange)
+            {
+                _targetCharClass.Damaged_Func(attackValue_Calc);
             }
         }
     }
