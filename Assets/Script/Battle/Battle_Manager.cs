@@ -275,7 +275,7 @@ public class Battle_Manager : MonoBehaviour
             for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
             {
                 if (spawnClassArr_Enemy[i].isActive == true)
-                    StartCoroutine(spawnClassArr_Enemy[i].KillUnitAll_Cor(false));
+                    spawnClassArr_Enemy[i].KillUnitAll_Func(false);
                 else
                     break;
             }
@@ -309,7 +309,8 @@ public class Battle_Manager : MonoBehaviour
             // 2. 아군 사망
             for (int i = 0; i < 5; i++)
             {
-                StartCoroutine(spawnClassArr_Ally[i].KillUnitAll_Cor(false));
+                Debug.Log("Test, Ally Count : " + spawnClassArr_Ally[i].spawnUnitList.Count);
+                spawnClassArr_Ally[i].KillUnitAll_Func(false);
             }
 
             // 3. 적군 이동 불가
@@ -616,11 +617,11 @@ public class Battle_Manager : MonoBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            StartCoroutine(spawnClassArr_Ally[i].KillUnitAll_Cor(true));
+            spawnClassArr_Ally[i].KillUnitAll_Func(true);
         }
         for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
         {
-            StartCoroutine(spawnClassArr_Enemy[i].KillUnitAll_Cor(true));
+            spawnClassArr_Enemy[i].KillUnitAll_Func(true);
         }
 
         Enviroment_Manager.Instance.NatureReset_Func();

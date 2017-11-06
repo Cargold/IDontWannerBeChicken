@@ -180,9 +180,7 @@ public class Unit_Script : Character_Script
                 _effectObj.transform.eulerAngles = new Vector3(270f, 0f, 0f);
             }
         }
-
-        Debug.Log("Test, Unit : " + charName);
-        Debug.Log("Test, spawnCalss : " + spawnCalss);
+        
         spawnCalss.UnitDie_Func(this);
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);

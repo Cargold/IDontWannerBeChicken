@@ -25,8 +25,6 @@ public abstract class Skill_Parent : MonoBehaviour
 
         return _var;
     }
-
-    
 }
 
 [System.Serializable]

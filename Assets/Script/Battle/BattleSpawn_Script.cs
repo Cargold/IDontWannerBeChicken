@@ -10,7 +10,7 @@ public class BattleSpawn_Script : MonoBehaviour
     public BattleType battleType;
     public int battleID;
     [SerializeField]
-    private ArrayList spawnUnitList = new ArrayList();
+    public ArrayList spawnUnitList = new ArrayList();
     public bool isActive = false;
     [SerializeField]
     private Unit_Script unitClass;
@@ -235,12 +235,18 @@ public class BattleSpawn_Script : MonoBehaviour
 
         StopCoroutine("CheckSpawnTimer_Cor");
     }
-    public IEnumerator KillUnitAll_Cor(bool _isUneffect)
+    public void KillUnitAll_Func(bool _isUneffect)
+    {
+        StartCoroutine(KillUnitAll_Cor(_isUneffect));
+    }
+    IEnumerator KillUnitAll_Cor(bool _isUneffect)
     {
         while(0 < spawnUnitList.Count)
         {
-            ((Unit_Script)spawnUnitList[0]).Die_Func(_isUneffect);
+            Unit_Script _unitClass = (Unit_Script)spawnUnitList[0];
             spawnUnitList.RemoveAt(0);
+            _unitClass.Die_Func(_isUneffect);
+
             yield return null;
         }
     }

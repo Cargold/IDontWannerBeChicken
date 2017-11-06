@@ -47,7 +47,8 @@ public class DataBase_Manager : MonoBehaviour
     private Food_Data[] m_FoodDataArr;
 
     // Skill Data
-    public Skill_Parent[] skillDataArr
+    public GameObject[] skillDataObjArr;
+    public Skill_Data[] skillDataArr
     {
         get
         {
@@ -55,7 +56,7 @@ public class DataBase_Manager : MonoBehaviour
         }
     }
     [SerializeField]
-    private Skill_Parent[] m_SkillDataArr;
+    private Skill_Data[] m_SkillDataArr;
     
     // Trophy Data
     public Trophy_Data[] trophyDataArr
@@ -140,7 +141,15 @@ public class DataBase_Manager : MonoBehaviour
     }
     IEnumerator InitSkillData_Cor()
     {
-        yield break;
+        int _skillDataObjNum = skillDataObjArr.Length;
+        m_SkillDataArr = new Skill_Data[_skillDataObjNum];
+        for (int i = 0; i < _skillDataObjNum; i++)
+        {
+            Skill_Parent _skillClass = skillDataObjArr[i].GetComponent<Skill_Parent>();
+            m_SkillDataArr[i].SetData_Func(_skillClass);
+
+            yield return null;
+        }
     }
 
     // Unit

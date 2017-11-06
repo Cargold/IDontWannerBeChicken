@@ -1,0 +1,59 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public struct PlayerSkill_Data
+{
+    public int skillID;
+    public bool isUnlock;
+    public int skillLevel;
+    public Skill_Parent skillParentClass;
+
+    public void Init_Func(int _skillID)
+    {
+        skillID = _skillID;
+        isUnlock = false;
+        skillLevel = 1;
+        skillParentClass = null;
+    }
+
+    public void UnlockSkill_Func(int _skillID)
+    {
+        skillID = _skillID;
+
+        if (isUnlock == false)
+        {
+            isUnlock = true;
+            skillLevel = 1;
+        }
+        else
+        {
+            Debug.LogError("Bug : 이미 해금된 스킬을 획득");
+        }
+    }
+
+    public void LevelUpSkill_Func(int _fixedValue = -1)
+    {
+        if(_fixedValue == -1)
+        {
+            if(skillLevel < 20)
+            {
+                skillLevel++;
+            }
+            else
+            {
+                Debug.LogError("Bug : 스킬 레벨이 최대치에 도달했음에도 레벨업이 발생함");
+            }
+        }
+        else
+        {
+            skillLevel = _fixedValue;
+
+            if (20 < _fixedValue)
+            {
+                Debug.LogError("Bug : 스킬 레벨이 최대치에 도달했음에도 레벨업이 발생함");
+            }
+        }
+    }
+}

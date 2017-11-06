@@ -27,6 +27,7 @@ public class SkillSystem_Manager : MonoBehaviour
         for (int i = 0; i < skillClassArr.Length; i++)
         {
             skillClassArr[i].Init_Func();
+            Player_Data.Instance.skillDataArr[i].skillParentClass = skillClassArr[i];
         }
 
         for (int i = 0; i < 5; i++)
@@ -43,6 +44,17 @@ public class SkillSystem_Manager : MonoBehaviour
 
         for (int i = 0; i < 5; i++)
         {
+            int _selectSkillID = Player_Data.Instance.selectSkillIDArr[i];
+
+            if(0 <= _selectSkillID)
+            {
+                playerSkillClassArr[i] = skillClassArr[_selectSkillID];
+            }
+            else
+            {
+                playerSkillClassArr[i] = null;
+            }
+
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
 

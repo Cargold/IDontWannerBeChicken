@@ -23,7 +23,7 @@ public class Player_Data : MonoBehaviour
     public PlayerUnit_ClassData[] playerUnitDataArr;
 
     // Hero
-    public int levelHero;
+    public int heroLevel;
     public Player_Script playerClass;
     public List<PlayerFood_ClassData> heroFoodDataList;
 
@@ -35,7 +35,9 @@ public class Player_Data : MonoBehaviour
     public PlayerTrophy_Data[] trophyDataArr;
 
     // Skill
-    
+    public PlayerSkill_Data[] skillDataArr;
+    public int[] selectSkillIDArr;
+    public int[] test_SkillLevel;
 
     // Stage
     public int stageID_Normal;
@@ -47,10 +49,13 @@ public class Player_Data : MonoBehaviour
 
         Debug.Log("Cargold : 데이터 불러오기, 미작업");
         yield return LoadWealth_Cor();
-        yield return LoadUnit_Cor();
-        yield return LoadStage_Cor();
         yield return LoadParty_Cor();
+        yield return LoadUnit_Cor();
+        yield return LoadHero_Cor();
         yield return LoadInventory_Cor();
+        yield return LoadTrophy_Cor();
+        yield return LoadSkill_Cor();
+        yield return LoadStage_Cor();
 
         yield break;
     }
@@ -60,6 +65,15 @@ public class Player_Data : MonoBehaviour
 
         playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
         playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+
+        yield break;
+    }
+    IEnumerator LoadParty_Cor()
+    {
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    partyUnitIdArr[i] = 0;
+        //}
 
         yield break;
     }
@@ -79,20 +93,23 @@ public class Player_Data : MonoBehaviour
 
         yield break;
     }
-    IEnumerator LoadStage_Cor()
+    IEnumerator LoadHero_Cor()
     {
-        // Cargold : 스테이지 데이터 불러오기
-        
-        yield break;
-    }
-    IEnumerator LoadParty_Cor()
-    {
+        //heroLevel = 0;
+
+
+        // 영웅의 음식 정보 불러오기
+        //heroFoodDataList = new List<PlayerFood_ClassData>();
+        //for (int i = 0; i < heroFoodDataList.Count; i++)
+        //{
+
+        //}
+
         yield break;
     }
     IEnumerator LoadInventory_Cor()
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
-
         for (int i = 0; i < 1; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
@@ -110,7 +127,37 @@ public class Player_Data : MonoBehaviour
         }
 
         yield break;
-    }
+    } // UnComplete
+    IEnumerator LoadTrophy_Cor()
+    {
+        yield break;
+    } // UnComplete
+    IEnumerator LoadSkill_Cor()
+    {
+        // Test
+        skillDataArr = new PlayerSkill_Data[10];
+        for (int i = 0; i < 10; i++)
+        {
+            skillDataArr[i].Init_Func(i);
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            if(0 < test_SkillLevel[i])
+            {
+                UnlockSkill_Func(i);
+                LevelUpSkill_Func(i, test_SkillLevel[i]);
+            }
+        }
+
+        yield break;
+    } // UnComplete
+    IEnumerator LoadStage_Cor()
+    {
+        // Cargold : 스테이지 데이터 불러오기
+        
+        yield break;
+    } // UnComplete
     
     #region Party Group
     public void UnlockUnit_Func(int _unitID)
@@ -419,13 +466,26 @@ public class Player_Data : MonoBehaviour
     #region Skill Group
     public void UnlockSkill_Func(int _skillID)
     {
-        Debug.Log("Cargold : 스킬 보상은 미구현됨, Skill ID : " + _skillID);
+        skillDataArr[_skillID].UnlockSkill_Func(_skillID);
+    }
+    public void LevelUpSkill_Func(int _skillID, int _fixedLevel = -1)
+    {
+        skillDataArr[_skillID].LevelUpSkill_Func(_fixedLevel);
+    }
+    public void SelectSkill_Func(int _grade, bool _isUpSkill)
+    {
+        selectSkillIDArr[_grade] = _grade * 2;
+
+        if (_isUpSkill == false)
+        {
+            selectSkillIDArr[_grade]++;
+        }
     }
     #endregion
     #region Trophy Group
     public void AddTrophy_Func(int _trophyID)
     {
-        Debug.Log("Cargold : 트로피 보상은 미구현됨, Trophy ID : " + _trophyID);
+        trophyDataArr[_trophyID].AddTrophy_Func();
     }
     #endregion
 }
