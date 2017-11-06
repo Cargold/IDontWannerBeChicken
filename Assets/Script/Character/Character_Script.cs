@@ -32,16 +32,15 @@ public class Character_Script : MonoBehaviour
     public ShootType shootType;
     public float shootTime;
     public float shootHeight;
-    public float shootArriveHeight;
     public GameObject shellObj;
     public Transform shellPivotTrf;
     public Shell_Script spawnShellClass;
     public AttackType attackType;
+    public bool isContactAttackTiming;
     public float pluralRange;
     private Vector3 targetPos;
     [SerializeField]
-    protected List<Character_Script> targetClassList = new List<Character_Script>();
-    public Transform[] effectPivotTrfArr;
+    protected List<Character_Script> contactCharClassList = new List<Character_Script>();
 
     public enum CharacterState
     {
@@ -69,6 +68,32 @@ public class Character_Script : MonoBehaviour
     public bool isPlayer;
     public bool isHouse;
 
+    public CharEffectData effectData_AttackStart;
+    public CharEffectData effectData_AttackAniOn;
+    public CharEffectData effectData_Die;
+
+    public bool isControlOut = false;
+
+    [System.Serializable]
+    public struct KnockBackData
+    {
+        public bool isHave;
+        public float power;
+        public float height;
+        public float time;
+        public Character_Script hitterClass;
+    }
+    public KnockBackData knockBackData;
+    [System.Serializable]
+    public struct StunData
+    {
+        public bool isHave;
+        public float time;
+        public Character_Script hitterClass;
+    }
+    public StunData stunData;
+    private Character_Script hitterClass;
+
     protected void Init_Func(GroupType _groupType)
     {
         groupType = _groupType;
@@ -87,6 +112,9 @@ public class Character_Script : MonoBehaviour
         
         // Init Attack
         defenceValue_Calc = 1f - (defenceValue * 0.01f);
+
+        // Init Var
+        RestoreControl_Func();
     }
 
     public void OnLanding_Func()
@@ -156,9 +184,9 @@ public class Character_Script : MonoBehaviour
         {
             Character_Script _charClass = col.GetComponent<Character_Script>();
 
-            if(targetClassList.Contains(_charClass) == true)
+            if(contactCharClassList.Contains(_charClass) == true)
             {
-                targetClassList.Remove(_charClass);
+                contactCharClassList.Remove(_charClass);
             }
         }
     }
@@ -170,9 +198,9 @@ public class Character_Script : MonoBehaviour
 
             if (_charClass.groupType != this.groupType)
             {
-                if(targetClassList.Contains(_charClass) == false)
+                if(contactCharClassList.Contains(_charClass) == false)
                 {
-                    targetClassList.Add(col.GetComponent<Character_Script>());
+                    contactCharClassList.Add(col.GetComponent<Character_Script>());
                 }
             }
         }
@@ -192,33 +220,52 @@ public class Character_Script : MonoBehaviour
         {
             // 내가 살아있다면
 
-            if (CheckTargetAlive_Func() == true)
+            if (isControlOut == false)
             {
-                // 목표대상이 살아있다면
-
-                if (CheckRange_Func() == true)
+                if (CheckTargetAlive_Func() == true)
                 {
-                    // 목표대상이 사정권 내에 있다면
+                    // 목표대상이 살아있다면
 
-                    if (charState != CharacterState.Attack)
+                    if (CheckRange_Func() == true)
                     {
-                        attackValue_Calc = attackValue;
-                        if (Random.Range(0f, 100f) < criticalPercent)
-                        {
-                            attackValue_Calc *= criticalBonus;
-                        }
+                        // 목표대상이 사정권 내에 있다면
 
-                        animator.SetBool("OnContact", true);
-                        SetState_Func(CharacterState.Attack);
+                        if (charState != CharacterState.Attack)
+                        {
+                            attackValue_Calc = attackValue;
+                            if (Random.Range(0f, 100f) < criticalPercent)
+                            {
+                                attackValue_Calc *= criticalBonus;
+                            }
+
+                            animator.SetBool("OnContact", true);
+                            SetState_Func(CharacterState.Attack);
+
+                            if (effectData_AttackStart.isEffectOn == true)
+                            {
+                                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_AttackStart.effectObj);
+                                _effectObj.transform.position = effectData_AttackStart.effectPos.position;
+
+                                if (effectData_AttackStart.isSetParentTrf == true)
+                                {
+                                    _effectObj.transform.SetParent(effectData_AttackStart.effectPos);
+                                    _effectObj.transform.rotation = effectData_AttackStart.effectPos.rotation;
+                                }
+                            }
+                        }
                     }
+                    else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
+                        SetState_Func(CharacterState.Move);
                 }
-                else if (charState == CharacterState.Attack)
-                    SetState_Func(CharacterState.Move);
+                else
+                {
+                    if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
+                        SetState_Func(CharacterState.Move);
+                }
             }
-            else
+            else if(isControlOut == true)
             {
-                if (charState == CharacterState.Attack)
-                    SetState_Func(CharacterState.Move);
+                SetState_Func(CharacterState.Idle);
             }
 
             yield return null;
@@ -231,23 +278,24 @@ public class Character_Script : MonoBehaviour
 
         while (isAlive == true)
         {
-            if(animator.GetBool("AttackReady") == false)
+            if(isControlOut == false)
             {
-                if (attackRate_Recent < attackRate_Max)
+                if(animator.GetBool("AttackReady") == false)
                 {
-                    attackRate_Recent += 0.02f;
-                    yield return new WaitForFixedUpdate();
-                }
-                else
-                {
-                    animator.SetBool("AttackReady", true);
-                    attackRate_Recent = 0f;
+                    if (attackRate_Recent < attackRate_Max)
+                    {
+                        attackRate_Recent += 0.02f;
+                        yield return new WaitForFixedUpdate();
+                    }
+                    else
+                    {
+                        animator.SetBool("AttackReady", true);
+                        attackRate_Recent = 0f;
+                    }
                 }
             }
-            else
-            {
-                yield return null;
-            }
+
+            yield return null;
         }
     }
     protected bool CheckRange_Func(float _checkValue = -1f)
@@ -261,32 +309,32 @@ public class Character_Script : MonoBehaviour
         float _closerCharDistance = 0f;
         int _closeCharID = 0;
 
-        for (int i = 0; i < targetClassList.Count; i++)
+        for (int i = 0; i < contactCharClassList.Count; i++)
         {
             // 지나친 대상일 경우 무시
             if(groupType == GroupType.Ally)
             {
-                if(targetClassList[i].transform.position.x < this.transform.position.x)
+                if(contactCharClassList[i].transform.position.x < this.transform.position.x)
                 {
                     continue;
                 }
             }
             else if(groupType == GroupType.Enemy)
             {
-                if (this.transform.position.x < targetClassList[i].transform.position.x)
+                if (this.transform.position.x < contactCharClassList[i].transform.position.x)
                 {
                     continue;
                 }
             }
 
             // 거리 체크
-            float _distanceValue = Vector3.Distance(this.transform.position, targetClassList[i].transform.position);
+            float _distanceValue = Vector3.Distance(this.transform.position, contactCharClassList[i].transform.position);
 
             // 처음 체크하는 대상이거나, 기존 최단 근접 대상보다 가까운 경우
             if (_closerCharClass == null || _distanceValue < _closerCharDistance)
             {
                 _closerCharDistance = _distanceValue;
-                _closerCharClass = targetClassList[i];
+                _closerCharClass = contactCharClassList[i];
                 _closeCharID = i;
 
                 // 체크된 대상이 공격사거리(또는 인자값)보다 짧은 경우
@@ -300,9 +348,9 @@ public class Character_Script : MonoBehaviour
         // 체크된 대상이 있으며, 체크된 대상이 공격사거리(또는 인자값)보다 짧은 경우
         if (_closerCharClass != null && _closerCharDistance <= _checkValue)
         {
-            Character_Script _tempClass = targetClassList[0];
-            targetClassList[0] = _closerCharClass;
-            targetClassList[_closeCharID] = _tempClass;
+            Character_Script _tempClass = contactCharClassList[0];
+            contactCharClassList[0] = _closerCharClass;
+            contactCharClassList[_closeCharID] = _tempClass;
 
             return true;
         }
@@ -313,11 +361,11 @@ public class Character_Script : MonoBehaviour
     {
         bool isTargetOn = false;
 
-        while (0 < targetClassList.Count)
+        while (0 < contactCharClassList.Count)
         {
-            if (targetClassList[0].isAlive == false)
+            if (contactCharClassList[0].isAlive == false)
             {
-                targetClassList.Remove(targetClassList[0]);
+                contactCharClassList.Remove(contactCharClassList[0]);
             }
             else
             {
@@ -360,7 +408,7 @@ public class Character_Script : MonoBehaviour
     {
         isAlive = false;
         charState = CharacterState.Die;
-        targetClassList.Clear();
+        contactCharClassList.Clear();
 
         StopCoroutine("Move_Cor");
 
@@ -368,7 +416,12 @@ public class Character_Script : MonoBehaviour
 
         if(_isImmediate == false)
         {
-            // 사망 연출
+            if (effectData_Die.isEffectOn == true)
+            {
+                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Die.effectObj);
+                _effectObj.transform.position = effectData_Die.effectPos.position;
+                _effectObj.transform.eulerAngles = new Vector3(270f, 0f, 0f);
+            }
         }
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
@@ -388,7 +441,19 @@ public class Character_Script : MonoBehaviour
 
             animator.SetBool("AttackReady", false);
             attackRate_Recent = 0f;
-                    
+
+            if (effectData_AttackAniOn.isEffectOn == true)
+            {
+                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_AttackAniOn.effectObj);
+                _effectObj.transform.position = effectData_AttackAniOn.effectPos.position;
+
+                if (effectData_AttackAniOn.isSetParentTrf == true)
+                {
+                    _effectObj.transform.SetParent(effectData_AttackAniOn.effectPos);
+                    _effectObj.transform.rotation = effectData_AttackAniOn.effectPos.rotation;
+                }
+            }
+
             if (shootType == ShootType.RelativeAnimation)
             {
                 if (CheckTargetAlive_Func() == true)
@@ -414,44 +479,68 @@ public class Character_Script : MonoBehaviour
                 int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
                 spawnShellClass.Init_Func(this, _sortingOrder);
 
-                float _shootTime = shootTime;
-                if (shootHeight == 0)
+                //float _shootTime = shootTime;
+                //if (shootHeight == 0)
+                //{
+                //    float _distance = Vector3.Distance(this.transform.position, contactCharClassList[0].transform.position);
+                //    _shootTime *= _distance / attackRange;
+                //}
+                
+                if(isContactAttackTiming == false)
                 {
-                    float _distance = Vector3.Distance(this.transform.position, targetClassList[0].transform.position);
-                    _shootTime *= _distance / attackRange;
+                    targetPos = contactCharClassList[0].transform.position;
+                }
+                else if(isContactAttackTiming == true)
+                {
+                    float _attackRange = attackRange;
+                    if (groupType == GroupType.Enemy)
+                        _attackRange *= -1f;
+
+                    targetPos = new Vector3(shellPivotTrf.position.x + _attackRange, shellPivotTrf.position.y, shellPivotTrf.position.z);
                 }
 
-                _spawnShellObj.transform.DORotate(Vector3.zero, shootTime);
                 if (attackType == AttackType.Single)
                 {
-                    bool _isRealShot = false;
-
-                    if (CheckTargetAlive_Func() == true)
+                    if (isContactAttackTiming == false)
                     {
-                        // 목표대상이 살아있다면
+                        bool _isRealShot = false;
 
-                        if (CheckRange_Func() == true)
+                        if (CheckTargetAlive_Func() == true)
                         {
-                            // 목표대상이 사정권 내에 있다면
+                            // 목표대상이 살아있다면
 
-                            _isRealShot = true;
+                            if (CheckRange_Func() == true)
+                            {
+                                // 목표대상이 사정권 내에 있다면
+
+                                _isRealShot = true;
+                            }
+
+                            if (_isRealShot == true)
+                            {
+                                _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(OnAttack_Func);
+                            }
+                            else if (_isRealShot == false)
+                            {
+                                _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
+                            }
                         }
                     }
-
-                    if(_isRealShot == true)
+                    else if(isContactAttackTiming == true)
                     {
-                        _spawnShellObj.transform.DOJump(targetClassList[0].transform.position, shootHeight, 1, shootTime).OnComplete(OnAttack_Func);
-                    }
-                    else if(_isRealShot == false)
-                    {
-                        _spawnShellObj.transform.DOJump(targetClassList[0].transform.position, shootHeight, 1, shootTime);
+                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
                     }
                 }
                 else if (attackType == AttackType.Plural)
                 {
-                    targetPos = targetClassList[0].transform.position;
-
-                    _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.OnAttack_Func);
+                    if (isContactAttackTiming == false)
+                    {
+                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.OnAttack_Func);
+                    }
+                    else if (isContactAttackTiming == true)
+                    {
+                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
+                    }
                 }
             }
             else if(shootType == ShootType.FixedRange)
@@ -476,17 +565,27 @@ public class Character_Script : MonoBehaviour
     }
     private void OnAttack_Func()
     {
-        targetClassList[0].Damaged_Func(attackValue_Calc);
+        contactCharClassList[0].Damaged_Func(attackValue_Calc);
+
+        knockBackData.hitterClass = this;
+        contactCharClassList[0].CheckKnockBack_Func(knockBackData);
     }
-    public void OnAttackPlural_Func(Character_Script _targetCharClass)
+    public void OnAttackPlural_Func(Character_Script _targetCharClass, bool _isDistanceClear = false)
     {
         if(shootType == ShootType.Projectile)
         {
-            Vector3 _targetPos = _targetCharClass.transform.position;
-            _targetPos = new Vector3(_targetPos.x, 0f, 0f);
-            float _distanceValue = Vector3.Distance(targetPos, _targetPos);
+            if(_isDistanceClear == false)
+            {
+                Vector3 _targetPos = _targetCharClass.transform.position;
+                _targetPos = new Vector3(_targetPos.x, 0f, 0f);
+                float _distanceValue = Vector3.Distance(targetPos, _targetPos);
 
-            if (_distanceValue < pluralRange)
+                if (_distanceValue < pluralRange)
+                {
+                    _targetCharClass.Damaged_Func(attackValue_Calc);
+                }
+            }
+            else if(_isDistanceClear == true)
             {
                 _targetCharClass.Damaged_Func(attackValue_Calc);
             }
@@ -502,8 +601,98 @@ public class Character_Script : MonoBehaviour
             if(_distanceValue < pluralRange)
             {
                 _targetCharClass.Damaged_Func(attackValue_Calc);
+
+                knockBackData.hitterClass = this;
+                _targetCharClass.CheckKnockBack_Func(knockBackData);
             }
         }
+    }
+    public void SelfDie_Func()
+    {
+        Die_Func(true);
+    }
+    #endregion
+    #region Skill Group
+    void CheckKnockBack_Func(KnockBackData _knockbackData)
+    {
+        if(isPlayer == false && isHouse == false)
+        {
+            if (_knockbackData.isHave == true)
+            {
+                this.KnockBack_Func(_knockbackData);
+            }
+        }
+    }
+    public void KnockBack_Func(KnockBackData _knockbackData)
+    {
+        isControlOut = true;
+        animator.SetBool("OnContact", false);
+        animator.SetBool("AttackReady", false);
+        attackRate_Recent = 0f;
+
+        hitterClass = _knockbackData.hitterClass;
+
+        float _power = _knockbackData.power;
+        if (groupType == GroupType.Enemy)
+            _power *= 1f;
+
+        Vector3 _powerPos = this.transform.position;
+        _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y, _powerPos.z);
+
+        this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
+
+        //stun
+        //if (stream != null)
+        //    stream.kill();
+        //stream.do ();
+
+        ////knockback
+        //if (stream == null)
+        //var stream = this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
+
+        ////oncomplet
+        //stream = null;
+    }
+    void CheckStun_Func()
+    {
+        if (isPlayer == false && isHouse == false)
+        {
+            StunData _stunData = hitterClass.stunData;
+
+            if (_stunData.isHave == true)
+            {
+                if(this.gameObject.activeInHierarchy == true)
+                {
+                    StartCoroutine(StunTime_Cor(_stunData.time));
+                }
+            }
+            else
+            {
+                RestoreControl_Func();
+            }
+        }
+        else
+        {
+            RestoreControl_Func();
+        }
+    }
+    IEnumerator StunTime_Cor(float _stunTime)
+    {
+        yield return new WaitForSeconds(_stunTime);
+
+        RestoreControl_Func();
+    }
+    public void Stun_Func()
+    {
+        isControlOut = true;
+        animator.SetBool("OnContact", false);
+        animator.SetBool("AttackReady", false);
+        attackRate_Recent = 0f;
+    }
+    public void RestoreControl_Func()
+    {
+        isControlOut = false;
+        animator.SetBool("OnContact", true);
     }
     #endregion
 }

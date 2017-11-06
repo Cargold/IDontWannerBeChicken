@@ -87,7 +87,14 @@ public class Unit_Script : Character_Script
         
         spawnInterval = _unitClass.spawnInterval;
 
-        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+        if(groupType == GroupType.Ally)
+        {
+            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+        }
+        else if (groupType == GroupType.Enemy)
+        {
+            attackRate_Speed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+        }
     }
     public void SetMutant_Func(MutantType _mutantType)
     {
@@ -107,6 +114,10 @@ public class Unit_Script : Character_Script
             healthPoint_Recent *= 4f;
 
             this.transform.localScale *= 2f;
+        }
+        else
+        {
+            unitRend.color = Color.white;
         }
     }
 

@@ -13,7 +13,7 @@ public class ChickenHouse_Script : Character_Script
     {
         isAlive = false;
         charState = CharacterState.Die;
-        targetClassList.Clear();
+        contactCharClassList.Clear();
 
         Battle_Manager.Instance.GameClear_Func();
     }

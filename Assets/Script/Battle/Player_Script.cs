@@ -192,7 +192,7 @@ public class Player_Script : Character_Script
                         _attackValue_Calc *= criticalBonus;
                     }
 
-                    targetClassList[0].Damaged_Func(_attackValue_Calc);
+                    contactCharClassList[0].Damaged_Func(_attackValue_Calc);
                     isAttackClear = true;
                 }
                 else
@@ -209,7 +209,7 @@ public class Player_Script : Character_Script
     {
         isAlive = false;
         charState = CharacterState.Die;
-        targetClassList.Clear();
+        contactCharClassList.Clear();
 
         hpRend_Group.gameObject.SetActive(false);
 

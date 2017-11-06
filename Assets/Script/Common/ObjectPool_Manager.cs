@@ -105,6 +105,16 @@ public class ObjectPool_Manager : MonoBehaviour
     }
     IEnumerator InitEffect_Cor()
     {
+        int _poolListCount = poolList.Count;
+        int _effectObjNum = DataBase_Manager.Instance.effectObjArr.Length;
+        for (int i = 0; i < _effectObjNum; i++, _poolListCount++)
+        {
+            GameObject _effectObj = Instantiate(DataBase_Manager.Instance.effectObjArr[i]);
+            poolList.Add(_effectObj);
+            poolList[_poolListCount].transform.SetParent(sampleFolderObj.transform);
+            poolList[_poolListCount].name = DataBase_Manager.Instance.effectObjArr[i].name;
+        }
+
         yield break;
     }
     IEnumerator InitSkill_Cor()
@@ -161,6 +171,10 @@ public class ObjectPool_Manager : MonoBehaviour
         }
     }
 
+    public GameObject Get_Func(GameObject _obj)
+    {
+        return Get_Func(_obj.name);
+    }
     public GameObject Get_Func(string name)
     {
         if(!objectPoolDic.ContainsKey(name))

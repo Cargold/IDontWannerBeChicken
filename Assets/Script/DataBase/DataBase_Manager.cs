@@ -71,6 +71,9 @@ public class DataBase_Manager : MonoBehaviour
     // Shell Data
     public GameObject[] shellObjArr;
 
+    // Effect Data
+    public GameObject[] effectObjArr;
+
     // Reference Data
     public Sprite populationPointSprite;
     public Sprite[] wealthSpriteArr;

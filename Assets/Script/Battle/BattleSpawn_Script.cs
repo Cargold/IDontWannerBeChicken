@@ -173,27 +173,27 @@ public class BattleSpawn_Script : MonoBehaviour
         MutantType _mutantType = MutantType.None;
         int _mutantPer = 50;
 
-        //if (battleType == BattleType.Normal)
-        //{
-        //    if (20 < battleID)
-        //    {
-        //        _mutantPer = battleID % 5;
-        //        if (_mutantPer == 0)
-        //            _mutantPer = 4;
-        //        else
-        //            _mutantPer = 2;
-        //    }
-        //}
-        //else if (battleType == BattleType.Special)
-        //{
-        //    _mutantPer = battleID % 5;
-        //    if (_mutantPer == 0)
-        //        _mutantPer = 10;
-        //    else
-        //    {
-        //        _mutantPer *= 2;
-        //    }
-        //}
+        if (battleType == BattleType.Normal)
+        {
+            if (20 < battleID)
+            {
+                _mutantPer = battleID % 5;
+                if (_mutantPer == 0)
+                    _mutantPer = 4;
+                else
+                    _mutantPer = 2;
+            }
+        }
+        else if (battleType == BattleType.Special)
+        {
+            _mutantPer = battleID % 5;
+            if (_mutantPer == 0)
+                _mutantPer = 10;
+            else
+            {
+                _mutantPer *= 2;
+            }
+        }
 
         if (0 < _mutantPer)
         {

@@ -172,3 +172,18 @@ public enum MutantType
     Attack,
     Health,
 }
+
+public enum AttackTiming
+{
+    None = -1,
+    Closer,
+    Contact,
+}
+
+public enum CharacterCondition
+{
+    None = -1,
+    Normal,
+    Stun,
+    KnockBack,
+}
