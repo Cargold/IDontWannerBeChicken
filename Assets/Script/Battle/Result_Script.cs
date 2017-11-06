@@ -67,6 +67,7 @@ public class Result_Script : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             rewardObjArr[i].SetActive(false);
+            rewardObjArr[i].transform.localScale = Vector3.one;
         }
 
         StartCoroutine(RewardEffect_Cor(_battleType, _isVictory, _rewardDataArr));
@@ -193,7 +194,7 @@ public class Result_Script : MonoBehaviour
 
         resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * _unitData.cardImageSize;
 
-        resultRewardTextArr[_rewardObjID].text = _unitData.charName;
+        resultRewardTextArr[_rewardObjID].text = _unitData.unitName;
     }
     void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {

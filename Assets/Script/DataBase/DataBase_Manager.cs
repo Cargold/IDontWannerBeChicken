@@ -146,7 +146,7 @@ public class DataBase_Manager : MonoBehaviour
     // Unit
     public string GetUnitName_Func(int _unitID)
     {
-        return m_UnitDataArr[_unitID].charName;
+        return m_UnitDataArr[_unitID].unitName;
     }
     public Unit_Script GetUnitClass_Func(int _unitID)
     {
@@ -173,7 +173,7 @@ public class DataBase_Manager : MonoBehaviour
     // Monster
     public string GetMonsterName_Func(int _unitID)
     {
-        return m_MonsterDataArr[_unitID].charName;
+        return m_MonsterDataArr[_unitID].unitName;
     }
     public Unit_Script GetMonsterClass_Func(int _unitID)
     {

@@ -12,6 +12,7 @@ public class Shell_Script : MonoBehaviour
     public List<Character_Script> contactCharClassList;
     public CharEffectData effectData_ContactTarget;
     public CharEffectData effectData_ArriveTarget;
+    public CharEffectData effectData_Deactive;
 
     public void Init_Func(Character_Script _charClass, int _sortingOrder)
     {
@@ -125,6 +126,22 @@ public class Shell_Script : MonoBehaviour
 
     public void Deactive_Func()
     {
+        if (effectData_Deactive.isEffectOn == true)
+        {
+            GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Deactive.effectObj);
+            _effectObj.transform.position = effectData_Deactive.effectPos.position;
+
+            if (effectData_Deactive.isSetParentTrf == true)
+            {
+                _effectObj.transform.SetParent(effectData_Deactive.effectPos);
+            }
+
+            if(effectData_Deactive.isRotationSet == true)
+            {
+                _effectObj.transform.rotation = effectData_Deactive.effectPos.rotation;
+            }
+        }
+
         sphereCol.enabled = false;
         StopAllCoroutines();
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);

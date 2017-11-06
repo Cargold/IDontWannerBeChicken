@@ -9,4 +9,5 @@ public struct CharEffectData
     public Transform effectPos;
     public GameObject effectObj;
     public bool isSetParentTrf;
+    public bool isRotationSet;
 }

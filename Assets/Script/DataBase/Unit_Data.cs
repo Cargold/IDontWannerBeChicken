@@ -5,9 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public struct Unit_Data
 {
-    public int charId;
-    public string charName;
-    public string charDesc;
+    public int unitId;
+    public string unitName;
+    public string unitDesc;
 
     public float healthPoint;
     public float defenceValue;
@@ -24,6 +24,7 @@ public struct Unit_Data
 
     public int spawnNum;
     public float spawnInterval;
+    public int spawnNum_Limit;
     public int populationValue;
 
     // Info Data
@@ -41,9 +42,9 @@ public struct Unit_Data
 
     public void SetData_Func(Unit_Script _unitClass, int _unitID)
     {
-        charId          = _unitID;
-        charName        = _unitClass.charName;
-        charDesc        = _unitClass.charDesc;
+        unitId          = _unitID;
+        unitName        = _unitClass.charName;
+        unitDesc        = _unitClass.charDesc;
 
         healthPoint     = _unitClass.healthPoint_Max;
         defenceValue    = _unitClass.defenceValue;
@@ -60,6 +61,7 @@ public struct Unit_Data
 
         spawnNum        = _unitClass.spawnNum;
         spawnInterval   = _unitClass.spawnInterval;
+        spawnNum_Limit  = _unitClass.spawnNum_Limit;
         populationValue = _unitClass.populationValue;
 
         groupType       = _unitClass.groupType;

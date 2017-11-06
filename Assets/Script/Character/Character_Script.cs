@@ -82,6 +82,8 @@ public class Character_Script : MonoBehaviour
         public float height;
         public float time;
         public Character_Script hitterClass;
+        public Vector3 knockingStartPos;
+        public bool isKnockBackState;
     }
     public KnockBackData knockBackData;
     [System.Serializable]
@@ -90,6 +92,7 @@ public class Character_Script : MonoBehaviour
         public bool isHave;
         public float time;
         public Character_Script hitterClass;
+        public bool isStunState;
     }
     public StunData stunData;
     private Character_Script hitterClass;
@@ -116,7 +119,6 @@ public class Character_Script : MonoBehaviour
         // Init Var
         RestoreControl_Func();
     }
-
     public void OnLanding_Func()
     {
         if (this.gameObject.activeSelf == false) return;
@@ -629,6 +631,7 @@ public class Character_Script : MonoBehaviour
         animator.SetBool("OnContact", false);
         animator.SetBool("AttackReady", false);
         attackRate_Recent = 0f;
+        knockBackData.isKnockBackState = true;
 
         hitterClass = _knockbackData.hitterClass;
 
@@ -637,21 +640,18 @@ public class Character_Script : MonoBehaviour
             _power *= 1f;
 
         Vector3 _powerPos = this.transform.position;
-        _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y, _powerPos.z);
-
+        if(knockBackData.isKnockBackState == false)
+        {
+            knockBackData.knockingStartPos = this.transform.position;
+            _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y, _powerPos.z);
+        }
+        else
+        {
+            float _startPosY = this.transform.position.y - knockBackData.knockingStartPos.y;
+            _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y - _startPosY, _powerPos.z);
+        }
+        
         this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
-
-        //stun
-        //if (stream != null)
-        //    stream.kill();
-        //stream.do ();
-
-        ////knockback
-        //if (stream == null)
-        //var stream = this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
-
-        ////oncomplet
-        //stream = null;
     }
     void CheckStun_Func()
     {
@@ -663,16 +663,19 @@ public class Character_Script : MonoBehaviour
             {
                 if(this.gameObject.activeInHierarchy == true)
                 {
-                    StartCoroutine(StunTime_Cor(_stunData.time));
+                    StopCoroutine("StunTime_Cor");
+                    StartCoroutine("StunTime_Cor", _stunData.time);
                 }
             }
             else
             {
+                knockBackData.isKnockBackState = false;
                 RestoreControl_Func();
             }
         }
         else
         {
+            knockBackData.isKnockBackState = false;
             RestoreControl_Func();
         }
     }
@@ -680,6 +683,7 @@ public class Character_Script : MonoBehaviour
     {
         yield return new WaitForSeconds(_stunTime);
 
+        stunData.isStunState = false;
         RestoreControl_Func();
     }
     public void Stun_Func()
@@ -688,11 +692,16 @@ public class Character_Script : MonoBehaviour
         animator.SetBool("OnContact", false);
         animator.SetBool("AttackReady", false);
         attackRate_Recent = 0f;
+
+        stunData.isStunState = true;
     }
     public void RestoreControl_Func()
     {
-        isControlOut = false;
-        animator.SetBool("OnContact", true);
+        if(knockBackData.isKnockBackState == false && stunData.isStunState == false)
+        {
+            isControlOut = false;
+            animator.SetBool("OnContact", true);
+        }
     }
     #endregion
 }

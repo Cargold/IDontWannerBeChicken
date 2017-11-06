@@ -9,8 +9,10 @@ public class Unit_Script : Character_Script
     [SerializeField]
     private Vector3 moveDir;
 
+    private BattleSpawn_Script spawnCalss;
     public int spawnNum;
     public float spawnInterval;
+    public int spawnNum_Limit;
     public int populationValue;
     public int unlockLevel;
     
@@ -21,40 +23,41 @@ public class Unit_Script : Character_Script
     public Vector2 feedImagePos;
     public float feedImageSize;
 
-    public void SetData_Func(Unit_Data _charData)
+    public void SetData_Func(Unit_Data _unitData)
     {
-        unitID = _charData.charId;
-        charName = _charData.charName;
-        charDesc = _charData.charDesc;
+        unitID = _unitData.unitId;
+        charName = _unitData.unitName;
+        charDesc = _unitData.unitDesc;
 
-        healthPoint_Max = _charData.healthPoint;
-        healthPoint_Recent = _charData.healthPoint;
-        defenceValue = _charData.defenceValue;
-        attackValue = _charData.attackValue;
-        attackRate_Max = _charData.attackRate;
-        attackRange = _charData.attackRange + 1f;
-        moveSpeed = _charData.moveSpeed;
-        criticalPercent = _charData.criticalPercent;
-        criticalBonus = _charData.criticalBonus;
-        shootType = _charData.shootType;
-        shootTime = _charData.shootSpeed;
-        shootHeight = _charData.shootHeight;
-        attackType = _charData.attackType;
+        healthPoint_Max = _unitData.healthPoint;
+        healthPoint_Recent = _unitData.healthPoint;
+        defenceValue = _unitData.defenceValue;
+        attackValue = _unitData.attackValue;
+        attackRate_Max = _unitData.attackRate;
+        attackRange = _unitData.attackRange + 1f;
+        moveSpeed = _unitData.moveSpeed;
+        criticalPercent = _unitData.criticalPercent;
+        criticalBonus = _unitData.criticalBonus;
+        shootType = _unitData.shootType;
+        shootTime = _unitData.shootSpeed;
+        shootHeight = _unitData.shootHeight;
+        attackType = _unitData.attackType;
 
-        spawnNum = _charData.spawnNum;
-        spawnInterval = _charData.spawnInterval;
-        populationValue = _charData.populationValue;
+        spawnNum = _unitData.spawnNum;
+        spawnInterval = _unitData.spawnInterval;
+        spawnNum_Limit = _unitData.spawnNum_Limit;
+        populationValue = _unitData.populationValue;
 
-        groupType = _charData.groupType;
-        unitSprite = _charData.unitSprite;
+        groupType = _unitData.groupType;
+        unitSprite = _unitData.unitSprite;
 
         unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
         unitRend.color = Color.white;
-        unitRend.sprite = _charData.unitSprite;
+        unitRend.sprite = _unitData.unitSprite;
         if (groupType == GroupType.Enemy)
             unitRend.flipX = true;
-        imagePivotAxisY = _charData.imagePivotAxisY;
-        shadowSize = _charData.shadowSize;
+        imagePivotAxisY = _unitData.imagePivotAxisY;
+        shadowSize = _unitData.shadowSize;
         
         if (cardSprite == null)
             cardSprite = unitSprite;
@@ -120,6 +123,10 @@ public class Unit_Script : Character_Script
             unitRend.color = Color.white;
         }
     }
+    public void SetSpawner_Func(BattleSpawn_Script _spawnClass)
+    {
+        spawnCalss = _spawnClass;
+    }
 
     void InitMove_Func()
     {
@@ -154,5 +161,33 @@ public class Unit_Script : Character_Script
 
             yield return new WaitForFixedUpdate();
         }
+    }
+
+    public override void Die_Func(bool _isImmediate = false)
+    {
+        isAlive = false;
+        charState = CharacterState.Die;
+        contactCharClassList.Clear();
+
+        StopCoroutine("Move_Cor");
+
+        hpRend_Group.gameObject.SetActive(false);
+
+        if (_isImmediate == false)
+        {
+            if (effectData_Die.isEffectOn == true)
+            {
+                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Die.effectObj);
+                _effectObj.transform.position = effectData_Die.effectPos.position;
+                _effectObj.transform.eulerAngles = new Vector3(270f, 0f, 0f);
+            }
+        }
+
+        spawnCalss.UnitDie_Func(this);
+
+        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
+
+        if (groupType == GroupType.Enemy)
+            Battle_Manager.Instance.CountKillMonster_Func(unitID);
     }
 }

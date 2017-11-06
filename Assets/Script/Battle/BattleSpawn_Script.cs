@@ -16,6 +16,7 @@ public class BattleSpawn_Script : MonoBehaviour
     private Unit_Script unitClass;
     public int spawnID;
     public int spawnCheckCount;
+    public int spawnNumLimit;
     
     public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType,  int _spawnID)
     {
@@ -37,7 +38,9 @@ public class BattleSpawn_Script : MonoBehaviour
         battleID = _battleID;
 
         spawnCheckCount = 0;
-        
+
+        spawnNumLimit = _unitClass.spawnNum_Limit;
+            
         StartCoroutine("CheckSpawnTimer_Cor");
     }
     IEnumerator CheckSpawnTimer_Cor()
@@ -75,6 +78,11 @@ public class BattleSpawn_Script : MonoBehaviour
                         OnSpawningEnemy_Func();
 
                     yield return new WaitForSeconds(battleManagerClass.spawnDelay);
+                }
+
+                while(spawnNumLimit <= spawnUnitList.Count)
+                {
+                    yield return null;
                 }
 
                 yield return null;
@@ -135,6 +143,7 @@ public class BattleSpawn_Script : MonoBehaviour
         _spawnUnitClass.Init_Func(spawnGroupType);
         _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
         _spawnUnitClass.SetMutant_Func(_mutantType);
+        _spawnUnitClass.SetSpawner_Func(this);
         _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
 
         float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);
@@ -171,7 +180,7 @@ public class BattleSpawn_Script : MonoBehaviour
     private MutantType CheckMutant_Func()
     {
         MutantType _mutantType = MutantType.None;
-        int _mutantPer = 50;
+        int _mutantPer = 0;
 
         if (battleType == BattleType.Normal)
         {
@@ -205,7 +214,6 @@ public class BattleSpawn_Script : MonoBehaviour
 
         return _mutantType;
     }
-
     public IEnumerator StopUnit_Cor()
     {
         for (int i = 0; i < spawnUnitList.Count; i++)
@@ -213,6 +221,10 @@ public class BattleSpawn_Script : MonoBehaviour
             ((Unit_Script)spawnUnitList[i]).moveSpeed = 0f;
             yield return null;
         }
+    }
+    public void UnitDie_Func(Unit_Script _unitClass)
+    {
+        spawnUnitList.Remove(_unitClass);
     }
     public void DeactiveSpawn_Func()
     {
