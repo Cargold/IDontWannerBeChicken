@@ -102,6 +102,7 @@ public class BattleSpawn_Script : MonoBehaviour
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);
         _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
+        _spawnUnitClass.SetSpawner_Func(this);
         _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
 
         float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);

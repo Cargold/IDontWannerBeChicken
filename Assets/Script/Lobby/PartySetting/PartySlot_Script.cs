@@ -77,9 +77,6 @@ public class PartySlot_Script : MonoBehaviour
 
         if (joinUnitCardClass != null)
         {
-            int _populValue = joinUnitCardClass.populValue;
-            partySettingClass.CalcPopulation_Func(-_populValue);
-
             int _unitID = joinUnitCardClass.cardId;
             Player_Data.Instance.DisbandParty_Func(slotId, _unitID);
 
@@ -108,15 +105,10 @@ public class PartySlot_Script : MonoBehaviour
         isContactState = false;
         contactCheckTrf.localScale = Vector3.zero;
 
-        int _populValue = 0;
-        if (_isSwap == false)
-         _populValue = _unitCardClass.populValue;
-
-        if (partySettingClass.CheckPopulation_Func(_populValue) == true || _isSwap == true)
+        if (_isSwap == true)
         {
             // 조건에 부합하여 유닛이 파티에 합류하는 경우
-            // 조건 1 : 인구수가 충분할 때
-            // 조건 2 : 파티슬롯 내 서로 교체할 때
+            // 조건 1 : 파티슬롯 내 서로 교체할 때
 
             joinUnitCardObj = _unitCardClass.gameObject;
             joinUnitCardObj.transform.position = this.transform.position;
@@ -124,9 +116,6 @@ public class PartySlot_Script : MonoBehaviour
             joinUnitCardClass = _unitCardClass;
 
             slotState = SlotState.Joined;
-
-            if(_isSwap == false)
-                partySettingClass.CalcPopulation_Func(_populValue);
 
             partySettingClass.JoinParty_Func(slotId, joinUnitCardClass.cardId);
         }

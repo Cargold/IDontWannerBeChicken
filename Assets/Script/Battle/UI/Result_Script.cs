@@ -206,7 +206,7 @@ public class Result_Script : MonoBehaviour
     }
     void SetRewardSkill_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
-        Skill_Data _skillData = DataBase_Manager.Instance.skillDataArr[_rewardID];
+        Skill_Parent _skillData = DataBase_Manager.Instance.skillDataArr[_rewardID];
 
         resultRewardImageArr[_rewardObjID].sprite = _skillData.skillSprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();

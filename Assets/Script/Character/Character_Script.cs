@@ -390,7 +390,7 @@ public class Character_Script : MonoBehaviour
         hpTrf.localPosition = new Vector2(_remainPos * -1f, hpTrf.localPosition.y);
         hpTrf.localScale = new Vector2(_remainPer, hpTrf.localScale.y);
     }
-    public void Damaged_Func(float _damageValue)
+    public virtual void Damaged_Func(float _damageValue)
     {
         _damageValue *= defenceValue_Calc;
 

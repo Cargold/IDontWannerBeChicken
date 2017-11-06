@@ -16,8 +16,7 @@ public class UnitCard_Script : MonoBehaviour
         Active,
     }
     public CardState cardState;
-
-    public int populValue;
+    
     public Image populationImage;
     public Image unitImage;
     public GameObject[] cardStateObjArr;
@@ -30,12 +29,6 @@ public class UnitCard_Script : MonoBehaviour
         cardId = _cardId;
 
         SetState_Func(_cardState);
-
-        populValue = DataBase_Manager.Instance.unitDataArr[_cardId].populationValue;
-
-        Sprite _populationSprite = DataBase_Manager.Instance.populationSpriteArr[populValue];
-        populationImage.sprite = _populationSprite;
-        populationImage.SetNativeSize();
 
         Sprite _unitSprite = DataBase_Manager.Instance.unitDataArr[_cardId].cardSprite;
         unitImage.sprite = _unitSprite;

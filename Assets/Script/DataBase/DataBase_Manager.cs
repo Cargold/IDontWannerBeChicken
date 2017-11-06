@@ -47,7 +47,7 @@ public class DataBase_Manager : MonoBehaviour
     private Food_Data[] m_FoodDataArr;
 
     // Skill Data
-    public Skill_Data[] skillDataArr
+    public Skill_Parent[] skillDataArr
     {
         get
         {
@@ -55,7 +55,7 @@ public class DataBase_Manager : MonoBehaviour
         }
     }
     [SerializeField]
-    private Skill_Data[] m_SkillDataArr;
+    private Skill_Parent[] m_SkillDataArr;
     
     // Trophy Data
     public Trophy_Data[] trophyDataArr

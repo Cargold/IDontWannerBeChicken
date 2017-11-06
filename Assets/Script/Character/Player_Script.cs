@@ -22,7 +22,12 @@ public class Player_Script : Character_Script
     public float attackRate_Init;
     public bool isAttackClear;
 
-    public bool isMovable;
+    public bool isControlOut_Player;
+
+    public Transform shieldGroupTrf;
+    public Transform shieldGaugeTrf;
+    public float shieldValue_Max;
+    public float shieldValue_Recent;
 
     public void BattleEnter_Func()
     {
@@ -31,7 +36,7 @@ public class Player_Script : Character_Script
         base.Init_Func(GroupType.Ally);
         InitPlayer_Func();
 
-        isMovable = true;
+        isControlOut_Player = false;
     }
 
     void InitPlayer_Func()
@@ -87,7 +92,7 @@ public class Player_Script : Character_Script
             moveDir = MoveDir.None;
         }
 
-        if(isMovable == true)
+        if(isControlOut_Player == false)
             MovePlayer_Func();
     }
     void MovePlayer_Func()
@@ -205,6 +210,42 @@ public class Player_Script : Character_Script
             SetState_Func(CharacterState.Idle);
     }
 
+    public override void Damaged_Func(float _damageValue)
+    {
+        if(0f < shieldValue_Recent)
+        {
+            _damageValue *= defenceValue_Calc;
+
+            shieldValue_Recent -= _damageValue;
+            CalcShieldGauge_Func();
+        }
+        else
+        {
+            base.Damaged_Func(_damageValue);
+        }
+    }
+    public void SetShield_Func(float _maxValue)
+    {
+        shieldValue_Max = _maxValue;
+        shieldValue_Recent = shieldValue_Max;
+
+        shieldGaugeTrf.localScale = Vector2.one;
+        shieldGroupTrf.gameObject.SetActive(true);
+    }
+    private void CalcShieldGauge_Func()
+    {
+        float _remainPer = shieldValue_Recent / shieldValue_Max;
+        if (_remainPer <= 0f)
+        {
+            _remainPer = 0f;
+            shieldGroupTrf.gameObject.SetActive(false);
+        }
+
+        float _remainPos = 0.35f * (_remainPer - 1f);
+
+        shieldGaugeTrf.localPosition = new Vector2(_remainPos * -1f, shieldGaugeTrf.localPosition.y);
+        shieldGaugeTrf.localScale = new Vector2(_remainPer, shieldGaugeTrf.localScale.y);
+    }
     public override void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
@@ -220,4 +261,11 @@ public class Player_Script : Character_Script
     {
         SetState_Func(CharacterState.Idle);
     }
+
+    #region Skill Group
+    public void SetControlOut_Func(bool _isOn)
+    {
+        isControlOut_Player = _isOn;
+    }
+    #endregion
 }

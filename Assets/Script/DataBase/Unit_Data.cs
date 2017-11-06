@@ -25,7 +25,6 @@ public struct Unit_Data
     public int spawnNum;
     public float spawnInterval;
     public int spawnNum_Limit;
-    public int populationValue;
 
     // Info Data
     public GroupType groupType;
@@ -62,7 +61,6 @@ public struct Unit_Data
         spawnNum        = _unitClass.spawnNum;
         spawnInterval   = _unitClass.spawnInterval;
         spawnNum_Limit  = _unitClass.spawnNum_Limit;
-        populationValue = _unitClass.populationValue;
 
         groupType       = _unitClass.groupType;
 

@@ -40,9 +40,6 @@ public class PartySetting_Script : LobbyUI_Parent
         InitPartySlot_Func();
         InitPartymember_Func();
 
-        populationPoint = Player_Data.Instance.populationPoint;
-        playerPopulationText.text = populationPoint.ToString();
-
         this.gameObject.SetActive(false);
     }
     void InitUnitCardSlot_Func()
@@ -189,16 +186,14 @@ public class PartySetting_Script : LobbyUI_Parent
                 {
                     // 닿아있는 파티 슬롯에 이미 유닛카드가 있는 경우
 
-                    int _contactCardPopulValue = contactCardClass.joinUnitCardClass.populValue;
-                    int _selectCardPopulValue = selectCardClass.populValue;
-                    int _checkValue = _selectCardPopulValue - _contactCardPopulValue;
+                    _isSwap = true;
+                    contactCardClass.OnEmpty_Func();
+                }
+                else if(contactCardClass.slotState == PartySlot_Script.SlotState.Empty)
+                {
+                    // 닿아있는 파티 슬롯에 유닛카드가 없는 경우
 
-                    if(CheckPopulation_Func(_checkValue) == true)
-                    {
-                        // 새로운 카드 인구수 - 기존 카드 인구수, 남은 인구수와 비교
-
-                        contactCardClass.OnEmpty_Func();
-                    }
+                    _isSwap = true;
                 }
             }
             
@@ -251,37 +246,6 @@ public class PartySetting_Script : LobbyUI_Parent
         contactCardClass = _partySlotClass;
 
         contactCardClass.OnContact_Func();
-    }
-    public bool CheckPopulation_Func(int _populValue)
-    {
-        int _calcValue = populationPoint - _populValue;
-
-        if (0 <= _calcValue)
-        {
-            return true;
-        }
-        else
-        {
-            StopCoroutine("FailPopul_Cor");
-            StartCoroutine("FailPopul_Cor");
-
-            return false;
-        }
-    }
-    IEnumerator FailPopul_Cor()
-    {
-        playerPopulationText.color = Color.red;
-        playerPopulationText.fontSize = 75;
-
-        yield return new WaitForSeconds(0.5f);
-
-        playerPopulationText.color = DataBase_Manager.Instance.textColor;
-        playerPopulationText.fontSize = 50;
-    }
-    public void CalcPopulation_Func(int _populValue)
-    {
-        populationPoint -= _populValue;
-        playerPopulationText.text = populationPoint.ToString();
     }
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {

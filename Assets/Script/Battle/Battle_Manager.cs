@@ -15,6 +15,7 @@ public class Battle_Manager : MonoBehaviour
     public static Battle_Manager Instance;
 
     public Player_Script playerClass;
+    public SkillSystem_Manager skillSystemManager;
     public RectTransform battleUITrf;
     public BattleSpawn_Script[] spawnClassArr_Ally;
     public Transform spawnPos_Ally;
@@ -99,6 +100,8 @@ public class Battle_Manager : MonoBehaviour
         pauseClass.Init_Func();
         resultClass.Init_Func(this);
 
+        yield return skillSystemManager.Init_Cor();
+
         yield break;
     }
 
@@ -149,6 +152,8 @@ public class Battle_Manager : MonoBehaviour
         OnSpawnEnemyUnit_Func();
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
+
+        skillSystemManager.Active_Func();
     }
     void OnSpawnAllyUnit_Func()
     {
@@ -276,7 +281,7 @@ public class Battle_Manager : MonoBehaviour
             }
 
             // 4. 플레이어 이동 불가
-            playerClass.isMovable = false;
+            playerClass.isControlOut_Player = false;
 
             // 4. 아군 이동 불가
             for (int i = 0; i < 5; i++)
@@ -299,7 +304,7 @@ public class Battle_Manager : MonoBehaviour
             // 패배한 경우
 
             // 1. 플레이어 사망
-            playerClass.isMovable = false; // 임시
+            playerClass.isControlOut_Player = false; // 임시
 
             // 2. 아군 사망
             for (int i = 0; i < 5; i++)
@@ -362,7 +367,10 @@ public class Battle_Manager : MonoBehaviour
                 break;
         }
 
-        // 4. UI 출력
+        // 4. 스킬 시스템 작동 중지
+        skillSystemManager.Deactive_Func();
+
+        // 5. UI 출력
         StartCoroutine(ResultUI_Cor(_isVictory));
     }
     IEnumerator ResultUI_Cor(bool _isVictory)

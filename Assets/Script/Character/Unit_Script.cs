@@ -13,7 +13,6 @@ public class Unit_Script : Character_Script
     public int spawnNum;
     public float spawnInterval;
     public int spawnNum_Limit;
-    public int populationValue;
     public int unlockLevel;
     
     public Sprite cardSprite;
@@ -46,7 +45,6 @@ public class Unit_Script : Character_Script
         spawnNum = _unitData.spawnNum;
         spawnInterval = _unitData.spawnInterval;
         spawnNum_Limit = _unitData.spawnNum_Limit;
-        populationValue = _unitData.populationValue;
 
         groupType = _unitData.groupType;
         unitSprite = _unitData.unitSprite;
@@ -183,6 +181,8 @@ public class Unit_Script : Character_Script
             }
         }
 
+        Debug.Log("Test, Unit : " + charName);
+        Debug.Log("Test, spawnCalss : " + spawnCalss);
         spawnCalss.UnitDie_Func(this);
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
