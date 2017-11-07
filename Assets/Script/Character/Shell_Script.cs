@@ -123,7 +123,6 @@ public class Shell_Script : MonoBehaviour
             }
         }
     }
-
     public void Deactive_Func()
     {
         if (effectData_Deactive.isEffectOn == true)

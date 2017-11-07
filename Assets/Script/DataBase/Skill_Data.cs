@@ -16,7 +16,7 @@ public struct Skill_Data
     public float manaCost;
     public int unlockLevel;
     public float upgradeCost;
-    public skillVar[] skillVarArr;
+    public SkillVar[] skillVarArr;
 
     public void SetData_Func(Skill_Parent _skillClass)
     {

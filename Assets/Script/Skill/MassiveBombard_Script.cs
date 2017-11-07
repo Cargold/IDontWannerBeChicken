@@ -8,4 +8,9 @@ public class MassiveBombard_Script : Skill_Parent
     {
 
     }
+
+    public override void UseSkill_Func()
+    {
+
+    }
 }

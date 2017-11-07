@@ -37,6 +37,7 @@ public class SkillCard_Script : MonoBehaviour
 
         isUnlock = _playerSkillData.isUnlock;
         lockImageObj.SetActive(!_playerSkillData.isUnlock);
+        lockConditionText.gameObject.SetActive(!_playerSkillData.isUnlock);
     }
 
     public void OnButton_Func()
@@ -52,7 +53,7 @@ public class SkillCard_Script : MonoBehaviour
         {
             if(selectImageObj.activeInHierarchy == false)
             {
-                heroManagementClass.CheckSelectCard_Func(this);
+                heroManagementClass.SelectCard_Func(this);
 
                 selectImageObj.SetActive(true);
             }

@@ -5,9 +5,8 @@ using UnityEngine.UI;
 
 public class Player_Script : Character_Script
 {
-    public static Player_Script Instance;
     public Transform spawnPos;
-    enum MoveDir
+    public enum MoveDir
     {
         None,
         Left,
@@ -22,7 +21,8 @@ public class Player_Script : Character_Script
     public float attackRate_Init;
     public bool isAttackClear;
 
-    public bool isControlOut_Player;
+    [SerializeField]
+    private int isControlOutCount_Player;
 
     public Transform shieldGroupTrf;
     public Transform shieldGaugeTrf;
@@ -31,12 +31,10 @@ public class Player_Script : Character_Script
 
     public void BattleEnter_Func()
     {
-        Instance = this;
-
         base.Init_Func(GroupType.Ally);
         InitPlayer_Func();
 
-        isControlOut_Player = false;
+        isControlOutCount_Player = 0;
     }
 
     void InitPlayer_Func()
@@ -67,33 +65,38 @@ public class Player_Script : Character_Script
 
     public void MoveLeft_Func()
     {
-        moveDir = MoveDir.Left;
+        if (isControlOutCount_Player == 0)
+            moveDir = MoveDir.Left;
     }
     public void MoveRight_Func()
     {
-        moveDir = MoveDir.Right;
+        if (isControlOutCount_Player == 0)
+            moveDir = MoveDir.Right;
     }
     public void MoveOver_Func()
     {
-        moveDir = MoveDir.None;
+        if (isControlOutCount_Player == 0)
+            moveDir = MoveDir.None;
     }
     void Update()
     {
-        if (Input.GetKey(KeyCode.A) == true)
+        if(isControlOutCount_Player == 0)
         {
-            moveDir = MoveDir.Left;
-        }
-        else if (Input.GetKey(KeyCode.D) == true)
-        {
-            moveDir = MoveDir.Right;
-        }
-        else if (Input.GetKeyUp(KeyCode.A) == true || Input.GetKeyUp(KeyCode.D) == true)
-        {
-            moveDir = MoveDir.None;
+            if (Input.GetKey(KeyCode.A) == true)
+            {
+                moveDir = MoveDir.Left;
+            }
+            else if (Input.GetKey(KeyCode.D) == true)
+            {
+                moveDir = MoveDir.Right;
+            }
+            else if (Input.GetKeyUp(KeyCode.A) == true || Input.GetKeyUp(KeyCode.D) == true)
+            {
+                moveDir = MoveDir.None;
+            }
         }
 
-        if(isControlOut_Player == false)
-            MovePlayer_Func();
+        MovePlayer_Func();
     }
     void MovePlayer_Func()
     {
@@ -110,7 +113,7 @@ public class Player_Script : Character_Script
 
             Enviroment_Manager.Instance.OnDevastated_Func(this.transform.position.x);
         }
-        else if (moveDir == MoveDir.Right && CheckRange_Func(1f) == false)
+        else if (moveDir == MoveDir.Right && GetCollideCheck_Func(1f) == false)
         {
             SetState_Func(CharacterState.Move);
 
@@ -153,7 +156,7 @@ public class Player_Script : Character_Script
                 {
                     // 목표대상이 살아있다면
 
-                    if (CheckRange_Func() == true)
+                    if (GetCollideCheck_Func() == true)
                     {
                         // 목표대상이 사정권 내에 있다면
 
@@ -182,7 +185,7 @@ public class Player_Script : Character_Script
         {
             // 목표대상이 살아있다면
 
-            if (CheckRange_Func() == true)
+            if (GetCollideCheck_Func() == true)
             {
                 // 목표대상이 사정권 내에 있다면
 
@@ -224,14 +227,6 @@ public class Player_Script : Character_Script
             base.Damaged_Func(_damageValue);
         }
     }
-    public void SetShield_Func(float _maxValue)
-    {
-        shieldValue_Max = _maxValue;
-        shieldValue_Recent = shieldValue_Max;
-
-        shieldGaugeTrf.localScale = Vector2.one;
-        shieldGroupTrf.gameObject.SetActive(true);
-    }
     private void CalcShieldGauge_Func()
     {
         float _remainPer = shieldValue_Recent / shieldValue_Max;
@@ -265,7 +260,45 @@ public class Player_Script : Character_Script
     #region Skill Group
     public void SetControlOut_Func(bool _isOn)
     {
-        isControlOut_Player = _isOn;
+        if (_isOn == true)
+        {
+            isControlOutCount_Player++;
+        }
+        else if (_isOn == false)
+        {
+            isControlOutCount_Player--;
+
+            if(isControlOutCount_Player < 0)
+            {
+                Debug.LogError("Bug : 플레이어 상태가 비정상입니다.");
+            }
+        }
     }
+    #region Rush Group
+    public void SetShield_Func(float _maxValue)
+    {
+        if(0f < _maxValue)
+        {
+            shieldValue_Max = _maxValue;
+            shieldValue_Recent = shieldValue_Max;
+
+            shieldGaugeTrf.localScale = Vector2.one;
+            shieldGroupTrf.gameObject.SetActive(true);
+        }
+        else if(_maxValue == 0f)
+        {
+            shieldValue_Recent = 0f;
+
+            shieldGaugeTrf.localScale = Vector2.zero;
+            shieldGroupTrf.gameObject.SetActive(false);
+        }
+    }
+    public void SetMove_Func(MoveDir _moveDir, float _setSpeed)
+    {
+        moveDir = _moveDir;
+
+        moveSpeed = _setSpeed;
+    }
+    #endregion
     #endregion
 }

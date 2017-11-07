@@ -15,7 +15,9 @@ public struct PlayerSkill_Data
         skillID = _skillID;
         isUnlock = false;
         skillLevel = 1;
-        skillParentClass = null;
+
+        GameObject _skillObj = GameObject.Instantiate(DataBase_Manager.Instance.skillDataObjArr[_skillID]);
+        skillParentClass = _skillObj.GetComponent<Skill_Parent>();
     }
 
     public void UnlockSkill_Func(int _skillID)
@@ -40,6 +42,7 @@ public struct PlayerSkill_Data
             if(skillLevel < 20)
             {
                 skillLevel++;
+                skillParentClass.skillLevel = skillLevel;
             }
             else
             {
@@ -49,6 +52,7 @@ public struct PlayerSkill_Data
         else
         {
             skillLevel = _fixedValue;
+            skillParentClass.skillLevel = skillLevel;
 
             if (20 < _fixedValue)
             {

@@ -13,9 +13,10 @@ public class SkillSystem_Manager : MonoBehaviour
     public SkillBtn_Script[] skillBtnClassArr;
     public Color skillBtnCoolTimeColor;
 
+    public float mana_StartValue;
     public float mana_Max;
     public float mana_Recent;
-    public float manaRegen;
+    public float mana_RegenValue;
     public bool isActive = false;
 
     public Image manaImage;
@@ -26,8 +27,9 @@ public class SkillSystem_Manager : MonoBehaviour
 
         for (int i = 0; i < skillClassArr.Length; i++)
         {
+            skillClassArr[i] = Player_Data.Instance.skillDataArr[i].skillParentClass;
+            skillClassArr[i].transform.SetParent(this.transform);
             skillClassArr[i].Init_Func();
-            Player_Data.Instance.skillDataArr[i].skillParentClass = skillClassArr[i];
         }
 
         for (int i = 0; i < 5; i++)
@@ -38,7 +40,7 @@ public class SkillSystem_Manager : MonoBehaviour
         yield break;
     }
 
-    public void Active_Func()
+    public void BattleStart_Func()
     {
         isActive = true;
 
@@ -46,7 +48,7 @@ public class SkillSystem_Manager : MonoBehaviour
         {
             int _selectSkillID = Player_Data.Instance.selectSkillIDArr[i];
 
-            if(0 <= _selectSkillID)
+            if (0 <= _selectSkillID)
             {
                 playerSkillClassArr[i] = skillClassArr[_selectSkillID];
             }
@@ -55,9 +57,15 @@ public class SkillSystem_Manager : MonoBehaviour
                 playerSkillClassArr[i] = null;
             }
 
+            if (playerSkillClassArr[i] != null)
+            {
+                playerSkillClassArr[i].BattleEnter_Func();
+            }
+
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
 
+        mana_Recent = mana_StartValue;
         StartCoroutine("ManaRegen_Cor");
     }
 
@@ -65,7 +73,7 @@ public class SkillSystem_Manager : MonoBehaviour
     {
         while(isActive == true)
         {
-            SetMana_Func(manaRegen * 0.02f);
+            SetMana_Func(mana_RegenValue * 0.02f);
             
             yield return new WaitForFixedUpdate();
         }
@@ -111,6 +119,8 @@ public class SkillSystem_Manager : MonoBehaviour
     {
         float _manaCost = playerSkillClassArr[_slotID].manaCost;
         SetMana_Func(_manaCost, true);
+
+        playerSkillClassArr[_slotID].UseSkill_Func();
     }
 
     public void Deactive_Func()

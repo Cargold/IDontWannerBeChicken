@@ -153,7 +153,7 @@ public class Battle_Manager : MonoBehaviour
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
 
-        skillSystemManager.Active_Func();
+        skillSystemManager.BattleStart_Func();
     }
     void OnSpawnAllyUnit_Func()
     {
@@ -281,7 +281,7 @@ public class Battle_Manager : MonoBehaviour
             }
 
             // 4. 플레이어 이동 불가
-            playerClass.isControlOut_Player = false;
+            playerClass.SetControlOut_Func(true);
 
             // 4. 아군 이동 불가
             for (int i = 0; i < 5; i++)
@@ -304,12 +304,11 @@ public class Battle_Manager : MonoBehaviour
             // 패배한 경우
 
             // 1. 플레이어 사망
-            playerClass.isControlOut_Player = false; // 임시
+            playerClass.SetControlOut_Func(true); // 임시
 
             // 2. 아군 사망
             for (int i = 0; i < 5; i++)
             {
-                Debug.Log("Test, Ally Count : " + spawnClassArr_Ally[i].spawnUnitList.Count);
                 spawnClassArr_Ally[i].KillUnitAll_Func(false);
             }
 

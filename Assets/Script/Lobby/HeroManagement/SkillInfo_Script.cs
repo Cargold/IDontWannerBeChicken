@@ -18,19 +18,22 @@ public class SkillInfo_Script : MonoBehaviour
     public void PrintSelectCardInfo_Func(SkillCard_Script _skillCardClass)
     {
         PlayerSkill_Data _playerSkillData = Player_Data.Instance.skillDataArr[_skillCardClass.cardID];
+        int _skillLevel = _playerSkillData.skillLevel;
         Skill_Parent _skillClass = _playerSkillData.skillParentClass;
 
-        nameText.text = _skillClass.skillName + " Lv." + _playerSkillData.skillLevel;
+        nameText.text = _skillClass.skillName + " Lv." + _skillLevel;
 
         int _varNum = _skillClass.skillVarArr.Length;
         float[] _varUpgradeValueArr = new float[_varNum];
         for (int i = 0; i < _varNum; i++)
         {
-            _varUpgradeValueArr[i] = _skillClass.skillVarArr[i].upgradeValue;
+            _varUpgradeValueArr[i]
+                = _skillClass.skillVarArr[i].initValue
+                + (_skillLevel * _skillClass.skillVarArr[i].upgradeValue);
         }
 
         string _descByFormatting = "";
-        _descByFormatting = string.Format(_skillClass.skillDesc, _varUpgradeValueArr[0]);
+        _descByFormatting = string.Format(_skillClass.skillDesc, _varUpgradeValueArr);
 
         descText.text = _descByFormatting;
     }

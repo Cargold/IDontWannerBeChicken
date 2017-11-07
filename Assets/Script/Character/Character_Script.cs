@@ -83,9 +83,18 @@ public class Character_Script : MonoBehaviour
         public float time;
         public Character_Script hitterClass;
         public Vector3 knockingStartPos;
-        public bool isKnockBackState;
+
+        public void Init_Func(float _power, float _height, float _time, Character_Script _hitterClass = null)
+        {
+            power = _power;
+            height = _height;
+            time = _time;
+
+            hitterClass = _hitterClass;
+        }
     }
     public KnockBackData knockBackData;
+    public bool isKnockBackState;
     [System.Serializable]
     public struct StunData
     {
@@ -95,7 +104,7 @@ public class Character_Script : MonoBehaviour
         public bool isStunState;
     }
     public StunData stunData;
-    private Character_Script hitterClass;
+    private Character_Script knockbackHitterClass;
 
     protected void Init_Func(GroupType _groupType)
     {
@@ -228,7 +237,7 @@ public class Character_Script : MonoBehaviour
                 {
                     // 목표대상이 살아있다면
 
-                    if (CheckRange_Func() == true)
+                    if (GetCollideCheck_Func() == true)
                     {
                         // 목표대상이 사정권 내에 있다면
 
@@ -300,9 +309,17 @@ public class Character_Script : MonoBehaviour
             yield return null;
         }
     }
-    protected bool CheckRange_Func(float _checkValue = -1f)
+    public bool GetCollideCheck_Func(float _checkValue = -1f)
     {
-        if(_checkValue == -1f)
+        Character_Script _charClass = GetCollideCharClass_Func(_checkValue);
+        if (_charClass == null)
+            return false;
+        else
+            return true;
+    }
+    public Character_Script GetCollideCharClass_Func(float _checkValue = -1f)
+    {
+        if (_checkValue == -1f)
         {
             _checkValue = attackRange;
         }
@@ -314,14 +331,14 @@ public class Character_Script : MonoBehaviour
         for (int i = 0; i < contactCharClassList.Count; i++)
         {
             // 지나친 대상일 경우 무시
-            if(groupType == GroupType.Ally)
+            if (groupType == GroupType.Ally)
             {
-                if(contactCharClassList[i].transform.position.x < this.transform.position.x)
+                if (contactCharClassList[i].transform.position.x < this.transform.position.x)
                 {
                     continue;
                 }
             }
-            else if(groupType == GroupType.Enemy)
+            else if (groupType == GroupType.Enemy)
             {
                 if (this.transform.position.x < contactCharClassList[i].transform.position.x)
                 {
@@ -354,10 +371,10 @@ public class Character_Script : MonoBehaviour
             contactCharClassList[0] = _closerCharClass;
             contactCharClassList[_closeCharID] = _tempClass;
 
-            return true;
+            return contactCharClassList[0];
         }
 
-        return false;
+        return null;
     }
     protected bool CheckTargetAlive_Func()
     {
@@ -406,13 +423,25 @@ public class Character_Script : MonoBehaviour
             SetState_Func(CharacterState.Die);
         }
     }
+    public void Heal_Func(float _healValue)
+    {
+        healthPoint_Recent += _healValue;
+
+        if(healthPoint_Max < healthPoint_Recent)
+        {
+            healthPoint_Recent = healthPoint_Max;
+        }
+
+        CalcHP_Func();
+    }
     public virtual void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
         charState = CharacterState.Die;
         contactCharClassList.Clear();
 
-        StopCoroutine("Move_Cor");
+        //StopCoroutine("Move_Cor");
+        StopAllCoroutines();
 
         hpRend_Group.gameObject.SetActive(false);
 
@@ -462,7 +491,7 @@ public class Character_Script : MonoBehaviour
                 {
                     // 목표대상이 살아있다면
 
-                    if (CheckRange_Func() == true)
+                    if (GetCollideCheck_Func() == true)
                     {
                         // 목표대상이 사정권 내에 있다면
 
@@ -490,7 +519,8 @@ public class Character_Script : MonoBehaviour
                 
                 if(isContactAttackTiming == false)
                 {
-                    targetPos = contactCharClassList[0].transform.position;
+                    Vector3 _contactCharPos = contactCharClassList[0].transform.position;
+                    targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
                 }
                 else if(isContactAttackTiming == true)
                 {
@@ -511,7 +541,7 @@ public class Character_Script : MonoBehaviour
                         {
                             // 목표대상이 살아있다면
 
-                            if (CheckRange_Func() == true)
+                            if (GetCollideCheck_Func() == true)
                             {
                                 // 목표대상이 사정권 내에 있다면
 
@@ -617,47 +647,55 @@ public class Character_Script : MonoBehaviour
     #region Skill Group
     void CheckKnockBack_Func(KnockBackData _knockbackData)
     {
-        if(isPlayer == false && isHouse == false)
+        if (_knockbackData.isHave == true)
         {
-            if (_knockbackData.isHave == true)
-            {
-                this.KnockBack_Func(_knockbackData);
-            }
+            this.KnockBack_Func(_knockbackData);
         }
     }
     public void KnockBack_Func(KnockBackData _knockbackData)
     {
+        if (isPlayer == true || isHouse == true || isKnockBackState == true || this.gameObject.activeSelf == false) return;
+        
         isControlOut = true;
         animator.SetBool("OnContact", false);
         animator.SetBool("AttackReady", false);
         attackRate_Recent = 0f;
-        knockBackData.isKnockBackState = true;
+        isKnockBackState = true;
 
-        hitterClass = _knockbackData.hitterClass;
+        knockbackHitterClass = _knockbackData.hitterClass;
 
         float _power = _knockbackData.power;
         if (groupType == GroupType.Enemy)
             _power *= 1f;
 
         Vector3 _powerPos = this.transform.position;
-        if(knockBackData.isKnockBackState == false)
-        {
-            knockBackData.knockingStartPos = this.transform.position;
-            _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y, _powerPos.z);
-        }
-        else
-        {
-            float _startPosY = this.transform.position.y - knockBackData.knockingStartPos.y;
-            _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y - _startPosY, _powerPos.z);
-        }
+        knockBackData.knockingStartPos = this.transform.position;
+        _powerPos = new Vector3(_powerPos.x + _power, _powerPos.y, _powerPos.z);
         
-        this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
+        if(_knockbackData.hitterClass != null)
+        {
+            this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time).OnComplete(CheckStun_Func);
+        }
+        else if(_knockbackData.hitterClass == null)
+        {
+            this.transform.DOJump(_powerPos, _knockbackData.height, 1, _knockbackData.time);
+
+            StopCoroutine("CheckKnockBackTime_Cor");
+            StartCoroutine("CheckKnockBackTime_Cor", _knockbackData.time);
+        }
+    }
+    IEnumerator CheckKnockBackTime_Cor(float _time)
+    {
+        yield return new WaitForSeconds(_time);
+
+        isKnockBackState = false;
+        RestoreControl_Func();
     }
     void CheckStun_Func()
     {
         if (isPlayer == false && isHouse == false)
         {
-            StunData _stunData = hitterClass.stunData;
+            StunData _stunData = knockbackHitterClass.stunData;
 
             if (_stunData.isHave == true)
             {
@@ -669,13 +707,11 @@ public class Character_Script : MonoBehaviour
             }
             else
             {
-                knockBackData.isKnockBackState = false;
                 RestoreControl_Func();
             }
         }
         else
         {
-            knockBackData.isKnockBackState = false;
             RestoreControl_Func();
         }
     }
@@ -697,11 +733,11 @@ public class Character_Script : MonoBehaviour
     }
     public void RestoreControl_Func()
     {
-        if(knockBackData.isKnockBackState == false && stunData.isStunState == false)
-        {
-            isControlOut = false;
-            animator.SetBool("OnContact", true);
-        }
+        isKnockBackState = false;
+        stunData.isStunState = false;
+
+        isControlOut = false;
+        animator.SetBool("OnContact", true);
     }
     #endregion
 }

@@ -8,4 +8,9 @@ public class GreatRaid_Script : Skill_Parent
     {
 
     }
+
+    public override void UseSkill_Func()
+    {
+
+    }
 }

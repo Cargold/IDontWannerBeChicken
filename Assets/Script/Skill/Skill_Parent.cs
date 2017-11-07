@@ -15,20 +15,30 @@ public abstract class Skill_Parent : MonoBehaviour
     public float manaCost;
     public int unlockLevel;
     public float upgradeCost;
-    public skillVar[] skillVarArr;
+    public SkillVar[] skillVarArr;
 
     public abstract void Init_Func();
 
-    protected skillVar GetSetVar_Func(skillVar _var)
+    protected SkillVar GetSetVar_Func(SkillVar _var)
     {
         _var.recentValue = _var.initValue + (_var.upgradeValue * (skillLevel - 1));
 
         return _var;
     }
+
+    public virtual void BattleEnter_Func()
+    {
+        for (int i = 0; i < skillVarArr.Length; i++)
+        {
+            skillVarArr[i] = GetSetVar_Func(skillVarArr[i]);
+        }
+    }
+
+    public abstract void UseSkill_Func();
 }
 
 [System.Serializable]
-public struct skillVar
+public struct SkillVar
 {
     public float initValue;
     public float upgradeValue;
