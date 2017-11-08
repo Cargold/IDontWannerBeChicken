@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-[System.Serializable]
-public struct EnemySpawnData
-{
-    public int enemyID;
-    public int enemyLevel;
-}
-
 public class Battle_Manager : MonoBehaviour
 {
     public static Battle_Manager Instance;
@@ -18,13 +11,20 @@ public class Battle_Manager : MonoBehaviour
     public SkillSystem_Manager skillSystemManager;
     public RectTransform battleUITrf;
     public BattleSpawn_Script[] spawnClassArr_Ally;
+    public List<BattleSpawn_Script> activeSapwnClassList_Ally;
     public Transform spawnPos_Ally;
     public Transform spawnTrf_Ally;
     public BattleSpawn_Script[] spawnClassArr_Enemy;
+    public List<BattleSpawn_Script> activeSpawnClassList_Enemy;
     public Transform spawnTrf_Enemy;
     public Transform spawnPos_Enemy;
-    [SerializeField]
-    public EnemySpawnData[] enemySpawnDataArr;
+    public List<int> spawnEnemyIDList;
+
+    public bool[] isSpawnWaveArr;
+    public int[] spawnWave_BonusValue_Normal;
+    public float[] spawnWave_BonusTime_Normal;
+    public int[] spawnWave_BonusValue_Special;
+    public float[] spawnWave_BonusTime_Special;
     public ChickenHouse_Script chickenHouseClass;
     public Sprite[] chickenHouseSpriteArr;
 
@@ -35,9 +35,6 @@ public class Battle_Manager : MonoBehaviour
     public float spawnJumpPower_Max;
     public float spawnDelay;
     public float jumpTime_Relative;
-
-    public ArrayList spawnUnitList_Ally = new ArrayList();
-    public ArrayList spawnUnitList_Enemy = new ArrayList();
 
     public Pause_Script pauseClass;
     public Result_Script resultClass;
@@ -75,27 +72,37 @@ public class Battle_Manager : MonoBehaviour
     {
         Instance = this;
 
-        spawnClassArr_Ally = new BattleSpawn_Script[5];
-        for (int i = 0; i < 5; i++)
+        int _allyUnitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
+        spawnClassArr_Ally = new BattleSpawn_Script[_allyUnitNum];
+        activeSapwnClassList_Ally = new List<BattleSpawn_Script>();
+        for (int i = 0; i < _allyUnitNum; i++)
         {
             GameObject _spawnAllyObj = new GameObject();
             _spawnAllyObj.transform.parent = this.transform;
-            _spawnAllyObj.name = "SpawnObjAlly_" + i;
+            _spawnAllyObj.name = "SpawnObjAlly_" + i + "_" + DataBase_Manager.Instance.GetUnitName_Func(i);
+
+            Unit_Script _playerUnitClass = Player_Data.Instance.playerUnitDataArr[i].unitClass;
 
             spawnClassArr_Ally[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
-            spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally, i);
+            spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally, i, _playerUnitClass);
         }
 
-        spawnClassArr_Enemy = new BattleSpawn_Script[10];
-        for (int i = 0; i < 10; i++)
+        int _enemyMonsterNum = DataBase_Manager.Instance.GetMonsterMaxNum_Func();
+        spawnClassArr_Enemy = new BattleSpawn_Script[_enemyMonsterNum];
+        activeSpawnClassList_Enemy = new List<BattleSpawn_Script>();
+        for (int i = 0; i < _enemyMonsterNum; i++)
         {
             GameObject _spawnAllyObj = new GameObject();
             _spawnAllyObj.transform.parent = this.transform;
-            _spawnAllyObj.name = "SpawnObjEnemy_" + i;
+            _spawnAllyObj.name = "SpawnObjEnemy_" + i + "_" + DataBase_Manager.Instance.GetMonsterName_Func(i);
+
+            Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(i);
 
             spawnClassArr_Enemy[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
-            spawnClassArr_Enemy[i].Init_Func(this, GroupType.Enemy, i);
+            spawnClassArr_Enemy[i].Init_Func(this, GroupType.Enemy, i, _monsterClass);
         }
+
+        isSpawnWaveArr = new bool[3];
 
         pauseClass.Init_Func();
         resultClass.Init_Func(this);
@@ -118,10 +125,94 @@ public class Battle_Manager : MonoBehaviour
     }
     IEnumerator BattleEnter_Cor()
     {
+        CheckSpawnMonsterID_Func();
         yield return DirectingStart_Cor();
         BattlePlay_Func();
 
         yield break;
+    }
+    void CheckSpawnMonsterID_Func()
+    {
+        int _monsterNum = DataBase_Manager.Instance.GetMonsterMaxNum_Func();
+        bool[] _isMonsterUnlock = new bool[_monsterNum];
+        int _monsterSpawnSetNum = 0;
+        int[] _spawnMonsterIDArr = new int[5];
+
+        // 현재 스테이지 중 해금된 몬스터ID 기록
+        for (int i = 0; i < _monsterNum; i++)
+        {
+            if(DataBase_Manager.Instance.monsterClassDic[i].unlockLevel <= battleID)
+            {
+                _isMonsterUnlock[i] = true;
+            }
+            else
+            {
+                _isMonsterUnlock[i] = false;
+            }
+        }
+
+        // 근접 몬스터 랜덤 1종 지정
+        int _randMonsterID = Random.Range(0, _monsterNum);
+        for (int i = 0; i < _monsterNum; i++)
+        {
+            if(_isMonsterUnlock[_randMonsterID] == true)
+            {
+                if(DataBase_Manager.Instance.GetMonsterType_Func(_randMonsterID) == MonsterType.Melee)
+                {
+                    _isMonsterUnlock[_randMonsterID] = false;
+
+                    _spawnMonsterIDArr[_monsterSpawnSetNum] = _randMonsterID;
+
+                    _monsterSpawnSetNum++;
+
+                    break;
+                }
+            }
+
+            _randMonsterID++;
+            if (_monsterNum <= _randMonsterID)
+                _randMonsterID = 0;
+        }
+        
+        // 나머지 스폰 몬스터 4종 다 채우기
+        while( _monsterSpawnSetNum < 5)
+        {
+            // 몬스터 중 랜덤ID 하나 지목
+            _randMonsterID = Random.Range(0, _monsterNum);
+
+            // 몬스터 전체를 뒤짐
+            bool _isSearchAll = true;
+            for (int i = 0; i < _monsterNum; i++)
+            {
+                if (_isMonsterUnlock[_randMonsterID] == true)
+                {
+                    _isMonsterUnlock[_randMonsterID] = false;
+
+                    _spawnMonsterIDArr[_monsterSpawnSetNum] = _randMonsterID;
+
+                    _monsterSpawnSetNum++;
+
+                    _isSearchAll = false;
+
+                    break;
+                }
+
+                // 반복하며 ID범위를 넘을 경우 처음부터
+                _randMonsterID++;
+                if (_monsterNum <= _randMonsterID)
+                    _randMonsterID = 0;
+            }
+
+            // 없을 경우 또는 모든 스폰ID가 준비된 경우 세팅 마무리
+            if(_isSearchAll == true || 5 <= _monsterSpawnSetNum)
+            {
+                for (int i = 0; i < _monsterSpawnSetNum; i++)
+                {
+                    spawnEnemyIDList.Add(_spawnMonsterIDArr[i]);
+                }
+                break;
+            }
+        }
     }
     IEnumerator DirectingStart_Cor()
     {
@@ -155,6 +246,7 @@ public class Battle_Manager : MonoBehaviour
 
         skillSystemManager.BattleStart_Func();
     }
+
     void OnSpawnAllyUnit_Func()
     {
         for (int i = 0; i < 5; i++)
@@ -162,28 +254,71 @@ public class Battle_Manager : MonoBehaviour
             int _partyUnitId = Player_Data.Instance.partyUnitIdArr[i];
             if (0 <= _partyUnitId)
             {
-                PlayerUnit_ClassData _playerUnitData = Player_Data.Instance.playerUnitDataArr[_partyUnitId];
-                spawnClassArr_Ally[i].ActiveSpawn_Func(_playerUnitData.unitClass, battleType, battleID);
+                activeSapwnClassList_Ally.Add(spawnClassArr_Ally[_partyUnitId]);
+
+                int _activeSpawnAllyID = activeSapwnClassList_Ally.Count - 1;
+
+                activeSapwnClassList_Ally[_activeSpawnAllyID]
+                    .ActiveSpawn_Func(battleType, battleID);
             }
         }
     }
+    public Unit_Script OnSpawnAllyUnit_Func(int _unitID)
+    {
+        // 스킬에 의한 호출
+
+        if(spawnClassArr_Ally[_unitID].isActive == false)
+        {
+            spawnClassArr_Ally[_unitID].ActiveSpawn_Func(battleType, battleID, true);
+        }
+
+        return spawnClassArr_Ally[_unitID].OnSpawningAlly_Func(false);
+    }
+
     void OnSpawnEnemyUnit_Func()
     {
-        for (int i = 0; i < enemySpawnDataArr.Length; i++)
+        for (int i = 0; i < spawnEnemyIDList.Count; i++)
         {
-            int _enemyID = enemySpawnDataArr[i].enemyID;
+            int _enemyID = spawnEnemyIDList[i];
+            if(0 <= _enemyID)
+            {
+                activeSpawnClassList_Enemy.Add(spawnClassArr_Enemy[_enemyID]);
 
-            Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(_enemyID);
+                int _activeSpawnEnemyID = activeSpawnClassList_Enemy.Count - 1;
 
-            float _hpValue = DataBase_Manager.Instance.monsterDataArr[_enemyID].healthPoint;
-            _monsterClass.healthPoint_Max = _hpValue * ((battleID * 0.05f) + 1f);
-
-            float _attackValue = DataBase_Manager.Instance.monsterDataArr[_enemyID].attackValue;
-            _monsterClass.attackValue = _attackValue * ((battleID * 0.05f) + 1f);
-
-            spawnClassArr_Enemy[i].ActiveSpawn_Func(_monsterClass, battleType, battleID);
+                activeSpawnClassList_Enemy[_activeSpawnEnemyID]
+                    .ActiveSpawn_Func(battleType, battleID);
+            }
         }
     }
+
+    public void SetMonsterSpawnBonus_Func(int _spawnWaveLevel)
+    {
+        if(isSpawnWaveArr[_spawnWaveLevel] == false)
+        {
+            isSpawnWaveArr[_spawnWaveLevel] = true;
+
+            int _bonusValue = 0;
+            float _bonusTime = 0f;
+
+            if (battleType == BattleType.Normal)
+            {
+                _bonusValue = spawnWave_BonusValue_Normal[_spawnWaveLevel];
+                _bonusTime = spawnWave_BonusTime_Normal[_spawnWaveLevel];
+            }
+            else if (battleType == BattleType.Special)
+            {
+                _bonusValue = spawnWave_BonusValue_Special[_spawnWaveLevel];
+                _bonusTime = spawnWave_BonusTime_Special[_spawnWaveLevel];
+            }
+
+            for (int i = 0; i < activeSpawnClassList_Enemy.Count; i++)
+            {
+                activeSpawnClassList_Enemy[i].SetTimerBonus_Func(_bonusValue, _bonusTime);
+            }
+        }
+    }
+
     IEnumerator OnBattleTimer_Cor()
     {
         battleTime = 0f;
@@ -233,11 +368,6 @@ public class Battle_Manager : MonoBehaviour
         }
     }
 
-    public void SetSpawnAllyUnit_Func(Unit_Script _unitClass)
-    {
-        spawnUnitList_Ally.Add(_unitClass);
-    }
-
     public void Pause_Func()
     {
         // Call : Btn Event
@@ -274,22 +404,19 @@ public class Battle_Manager : MonoBehaviour
             // 3. 적군 유닛 전원 사망
             for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
             {
-                if (spawnClassArr_Enemy[i].isActive == true)
-                    spawnClassArr_Enemy[i].KillUnitAll_Func(false);
-                else
-                    break;
+                spawnClassArr_Enemy[i].KillUnitAll_Func(false);
             }
 
             // 4. 플레이어 이동 불가
             playerClass.SetControlOut_Func(true);
 
-            // 4. 아군 이동 불가
-            for (int i = 0; i < 5; i++)
+            // 5. 아군 이동 불가
+            for (int i = 0; i < spawnClassArr_Ally.Length; i++)
             {
-                StartCoroutine(spawnClassArr_Ally[i].StopUnit_Cor());
+                spawnClassArr_Ally[i].StopUnit_Func();
             }
 
-            // 5. 스테이지 데이터 기록
+            // 6. 스테이지 데이터 기록
             if (battleType == BattleType.Normal)
             {
                 Player_Data.Instance.stageID_Normal = battleID;
@@ -307,7 +434,7 @@ public class Battle_Manager : MonoBehaviour
             playerClass.SetControlOut_Func(true); // 임시
 
             // 2. 아군 사망
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < spawnClassArr_Ally.Length; i++)
             {
                 spawnClassArr_Ally[i].KillUnitAll_Func(false);
             }
@@ -315,10 +442,7 @@ public class Battle_Manager : MonoBehaviour
             // 3. 적군 이동 불가
             for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
             {
-                if (spawnClassArr_Enemy[i].isActive == true)
-                    StartCoroutine(spawnClassArr_Enemy[i].StopUnit_Cor());
-                else
-                    break;
+                spawnClassArr_Enemy[i].StopUnit_Func();
             }
 
             // 4. 스테이지 데이터 기록
@@ -354,17 +478,14 @@ public class Battle_Manager : MonoBehaviour
         GetRewardFoodBox_Func(_isVictory);
 
         // 3. 스폰 비활성화
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < spawnClassArr_Ally.Length; i++)
         {
             spawnClassArr_Ally[i].DeactiveSpawn_Func();
         }
 
         for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
         {
-            if (spawnClassArr_Enemy[i].isActive == true)
-                spawnClassArr_Enemy[i].DeactiveSpawn_Func();
-            else
-                break;
+            spawnClassArr_Enemy[i].DeactiveSpawn_Func();
         }
 
         // 4. 스킬 시스템 작동 중지
@@ -474,7 +595,7 @@ public class Battle_Manager : MonoBehaviour
 
         if (battleType == BattleType.Normal)
         {
-            int _unitNum = DataBase_Manager.Instance.GetUnitCount_Func();
+            int _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
             int _unlockUnitID = -1;
             for (int i = 0; i < _unitNum; i++)
             {

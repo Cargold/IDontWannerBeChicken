@@ -48,7 +48,7 @@ public struct Unit_Data
         healthPoint     = _unitClass.healthPoint_Max;
         defenceValue    = _unitClass.defenceValue;
         attackValue     = _unitClass.attackValue;
-        attackRate      = _unitClass.attackRate_Max;
+        attackRate      = _unitClass.GetAttackSpeedMax_Func();
         attackRange     = _unitClass.attackRange;
         moveSpeed       = _unitClass.moveSpeed;
         criticalPercent = _unitClass.criticalPercent;

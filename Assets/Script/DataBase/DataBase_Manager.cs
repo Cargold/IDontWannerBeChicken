@@ -168,7 +168,7 @@ public class DataBase_Manager : MonoBehaviour
 
         return _unitClass;
     }
-    public int GetUnitCount_Func()
+    public int GetUnitMaxNum_Func()
     {
         return unitDataObjArr.Length;
     }
@@ -194,5 +194,13 @@ public class DataBase_Manager : MonoBehaviour
         }
 
         return _unitClass;
+    }
+    public int GetMonsterMaxNum_Func()
+    {
+        return monsterDataObjArr.Length;
+    }
+    public MonsterType GetMonsterType_Func(int _monsterID)
+    {
+        return monsterClassDic[_monsterID].monsterType;
     }
 }

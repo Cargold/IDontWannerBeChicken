@@ -11,7 +11,6 @@ public class BloodThirst_Script : Skill_Parent
     public float hasteRange;
     public float hasteTime;
     public Transform playerTrf;
-    public bool isActive;
     public List<Character_Script> hasteCharList;
     public List<float> hasteValueList;
 
@@ -24,21 +23,14 @@ public class BloodThirst_Script : Skill_Parent
         hasteCharList = new List<Character_Script>();
         hasteValueList = new List<float>();
     }
-    public override void BattleEnter_Func()
+    protected override void BattleEnterChild_Func()
     {
-        base.BattleEnter_Func();
-
-        hasteData = skillVarArr[0];
-
-        hasteData.initValue *= 0.01f;
-        hasteData.recentValue *= 0.01f;
-        hasteData.recentValue += 1f;
-        hasteData.upgradeValue *= 0.01f;
-
-        isActive = true;
+        hasteData = RevisionValue_Func(skillVarArr[0], 0.01f);
     }
     public override void UseSkill_Func()
     {
+        isActive = true;
+
         bloodThirstColClass.Active_Func();
 
         hasteObj.transform.position = new Vector3(playerTrf.position.x, 0f, 0f);
@@ -59,14 +51,15 @@ public class BloodThirst_Script : Skill_Parent
             }
         }
 
-        StartCoroutine(Healling_Cor());
+        StartCoroutine(Hasting_Cor());
     }
-    IEnumerator Healling_Cor()
+    IEnumerator Hasting_Cor()
     {
         for (int i = 0; i < hasteCharList.Count; i++)
         {
-            hasteValueList.Add(hasteCharList[i].attackRate_Max);
-            hasteCharList[i].attackRate_Max /= hasteData.recentValue;
+            hasteValueList.Add(hasteCharList[i].GetAttackSpeedMax_Func());
+            float _attackSpeed = hasteCharList[i].GetAttackSpeedMax_Func() / hasteData.recentValue;
+            hasteCharList[i].SetAttackSpeed_Func(_attackSpeed);
         }
 
         yield return new WaitForSeconds(hasteTime);
@@ -74,7 +67,7 @@ public class BloodThirst_Script : Skill_Parent
         for (int i = 0; i < hasteCharList.Count; i++)
         {
             if(hasteCharList[i].isAlive == true)
-                hasteCharList[i].attackRate_Max = hasteValueList[i];
+                hasteCharList[i].SetAttackSpeed_Func(hasteValueList[i]);
         }
 
         hasteCharList.Clear();
@@ -82,7 +75,7 @@ public class BloodThirst_Script : Skill_Parent
 
         Deactive_Func();
     }
-    void Deactive_Func()
+    protected override void Deactive_Func()
     {
         isActive = false;
 

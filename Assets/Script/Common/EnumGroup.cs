@@ -187,3 +187,14 @@ public enum CharacterCondition
     Stun,
     KnockBack,
 }
+
+public enum MonsterType
+{
+    None = -1,
+    Melee,
+    Range,
+    Shield,
+    Bomb,
+    Spread,
+    Boss,
+}

@@ -44,17 +44,7 @@ public class Shell_Script : MonoBehaviour
     {
         sphereCol.enabled = true;
 
-        if (effectData_ArriveTarget.isEffectOn == true)
-        {
-            GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_ArriveTarget.effectObj);
-            _effectObj.transform.position = effectData_ArriveTarget.effectPos.position;
-
-            if (effectData_ArriveTarget.isSetParentTrf == true)
-            {
-                _effectObj.transform.SetParent(effectData_ArriveTarget.effectPos);
-                _effectObj.transform.rotation = effectData_ArriveTarget.effectPos.rotation;
-            }
-        }
+        effectData_ArriveTarget.ActiveEffect_Func();
 
         yield return new WaitForFixedUpdate();
 
@@ -75,17 +65,7 @@ public class Shell_Script : MonoBehaviour
                 
                 if(_distanceValue < 1f)
                 {
-                    if (effectData_ContactTarget.isEffectOn == true)
-                    {
-                        GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_ContactTarget.effectObj);
-                        _effectObj.transform.position = effectData_ContactTarget.effectPos.position;
-
-                        if(effectData_ContactTarget.isSetParentTrf == true)
-                        {
-                            _effectObj.transform.SetParent(effectData_ContactTarget.effectPos);
-                            _effectObj.transform.rotation = effectData_ContactTarget.effectPos.rotation;
-                        }
-                    }
+                    effectData_ContactTarget.ActiveEffect_Func();
 
                     charClass.OnAttackPlural_Func(contactCharClassList[i], true);
 
@@ -107,6 +87,13 @@ public class Shell_Script : MonoBehaviour
         {
             Character_Script _targetCharClass = collision.gameObject.GetComponent<Character_Script>();
 
+            if(_targetCharClass == null || charClass == null)
+            {
+                Debug.Log("Test, This : " + this.gameObject.name);
+                Debug.Log("Test, Char : " + charClass);
+                Debug.Log("Test, _targetCharClass : " + _targetCharClass);
+            }
+
             if(isContactAttackTiming == false)
             {
                 if (groupType != _targetCharClass.groupType)
@@ -125,21 +112,7 @@ public class Shell_Script : MonoBehaviour
     }
     public void Deactive_Func()
     {
-        if (effectData_Deactive.isEffectOn == true)
-        {
-            GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Deactive.effectObj);
-            _effectObj.transform.position = effectData_Deactive.effectPos.position;
-
-            if (effectData_Deactive.isSetParentTrf == true)
-            {
-                _effectObj.transform.SetParent(effectData_Deactive.effectPos);
-            }
-
-            if(effectData_Deactive.isRotationSet == true)
-            {
-                _effectObj.transform.rotation = effectData_Deactive.effectPos.rotation;
-            }
-        }
+        effectData_Deactive.ActiveEffect_Func();
 
         sphereCol.enabled = false;
         StopAllCoroutines();

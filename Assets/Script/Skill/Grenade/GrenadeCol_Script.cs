@@ -49,12 +49,7 @@ public class GrenadeCol_Script : MonoBehaviour
         grenadeClass.SetTarget_Func(charClassList.ToArray());
         charClassList.Clear();
 
-        if (effectData_Bomb.isEffectOn == true)
-        {
-            GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Bomb.effectObj);
-            _effectObj.transform.position = effectData_Bomb.effectPos.position;
-            _effectObj.transform.rotation = effectData_Bomb.effectPos.rotation;
-        }
+        effectData_Bomb.ActiveEffect_Func();
 
         Deactive_Func();
     }

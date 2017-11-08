@@ -12,7 +12,6 @@ public class HealPack_Script : Skill_Parent
     public float healInterval;
     public float healRange;
     public Transform playerTrf;
-    public bool isActive;
 
     public override void Init_Func()
     {
@@ -20,16 +19,14 @@ public class HealPack_Script : Skill_Parent
 
         playerTrf = Player_Data.Instance.playerClass.transform;
     }
-    public override void BattleEnter_Func()
+    protected override void BattleEnterChild_Func()
     {
-        base.BattleEnter_Func();
-
         healData = skillVarArr[0];
-
-        isActive = true;
     }
     public override void UseSkill_Func()
     {
+        isActive = true;
+
         healpackColClass.Active_Func();
 
         StartCoroutine(Healling_Cor());
@@ -65,7 +62,7 @@ public class HealPack_Script : Skill_Parent
 
         Player_Data.Instance.playerClass.Heal_Func(healData.recentValue);
     }
-    void Deactive_Func()
+    protected override void Deactive_Func()
     {
         isActive = false;
 

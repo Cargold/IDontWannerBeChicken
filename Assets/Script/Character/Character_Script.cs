@@ -9,6 +9,7 @@ public class Character_Script : MonoBehaviour
     public int unitID;
     public string charName;
     public string charDesc;
+    public int charLevel;
 
     public bool isAlive = false;
     public float healthPoint_Max;
@@ -22,7 +23,8 @@ public class Character_Script : MonoBehaviour
     [SerializeField]
     private float attackValue_Calc;
     public float attackRate_Speed;
-    public float attackRate_Max;
+    [SerializeField]
+    protected float attackRate_Max;
     [SerializeField]
     protected float attackRate_Recent;
     public float attackRange;
@@ -252,17 +254,7 @@ public class Character_Script : MonoBehaviour
                             animator.SetBool("OnContact", true);
                             SetState_Func(CharacterState.Attack);
 
-                            if (effectData_AttackStart.isEffectOn == true)
-                            {
-                                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_AttackStart.effectObj);
-                                _effectObj.transform.position = effectData_AttackStart.effectPos.position;
-
-                                if (effectData_AttackStart.isSetParentTrf == true)
-                                {
-                                    _effectObj.transform.SetParent(effectData_AttackStart.effectPos);
-                                    _effectObj.transform.rotation = effectData_AttackStart.effectPos.rotation;
-                                }
-                            }
+                            effectData_AttackStart.ActiveEffect_Func();
                         }
                     }
                     else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
@@ -309,6 +301,19 @@ public class Character_Script : MonoBehaviour
             yield return null;
         }
     }
+    public void SetAttackSpeed_Func(float _hasteValue)
+    {
+        attackRate_Max = _hasteValue;
+        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / attackRate_Max;
+
+        if(charState == CharacterState.Attack)
+            animator.speed = attackRate_Speed;
+    }
+    public float GetAttackSpeedMax_Func()
+    {
+        return attackRate_Max;
+    }
+
     public bool GetCollideCheck_Func(float _checkValue = -1f)
     {
         Character_Script _charClass = GetCollideCharClass_Func(_checkValue);
@@ -447,12 +452,7 @@ public class Character_Script : MonoBehaviour
 
         if(_isImmediate == false)
         {
-            if (effectData_Die.isEffectOn == true)
-            {
-                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Die.effectObj);
-                _effectObj.transform.position = effectData_Die.effectPos.position;
-                _effectObj.transform.eulerAngles = new Vector3(270f, 0f, 0f);
-            }
+            effectData_Die.ActiveEffect_Func();
         }
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
@@ -473,17 +473,7 @@ public class Character_Script : MonoBehaviour
             animator.SetBool("AttackReady", false);
             attackRate_Recent = 0f;
 
-            if (effectData_AttackAniOn.isEffectOn == true)
-            {
-                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_AttackAniOn.effectObj);
-                _effectObj.transform.position = effectData_AttackAniOn.effectPos.position;
-
-                if (effectData_AttackAniOn.isSetParentTrf == true)
-                {
-                    _effectObj.transform.SetParent(effectData_AttackAniOn.effectPos);
-                    _effectObj.transform.rotation = effectData_AttackAniOn.effectPos.rotation;
-                }
-            }
+            effectData_AttackAniOn.ActiveEffect_Func();
 
             if (shootType == ShootType.RelativeAnimation)
             {

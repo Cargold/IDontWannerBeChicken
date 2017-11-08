@@ -38,12 +38,7 @@ public class HealPackCol_Script : MonoBehaviour
         healpackClass.SetTarget_Func(charClassList.ToArray());
         charClassList.Clear();
 
-        if (effectData_Heal.isEffectOn == true)
-        {
-            GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Heal.effectObj);
-            _effectObj.transform.position = effectData_Heal.effectPos.position;
-            _effectObj.transform.rotation = effectData_Heal.effectPos.rotation;
-        }
+        effectData_Heal.ActiveEffect_Func();
     }
     private void OnTriggerEnter(Collider other)
     {

@@ -7,6 +7,8 @@ public class Grenade_Script : Skill_Parent
 {
     [SerializeField]
     private SkillVar damageData;
+    private SkillVar damagePerData;
+    private float damageValue;
     public GameObject grenadeObj;
     public GrenadeCol_Script grenadeColClass;
     public float firePivotY;
@@ -15,7 +17,6 @@ public class Grenade_Script : Skill_Parent
     public float throwTime;
     public float bombRange;
     public Transform playerTrf;
-    public bool isActive;
 
     public override void Init_Func()
     {
@@ -23,16 +24,20 @@ public class Grenade_Script : Skill_Parent
 
         playerTrf = Player_Data.Instance.playerClass.transform;
     }
-    public override void BattleEnter_Func()
+    protected override void BattleEnterChild_Func()
     {
-        base.BattleEnter_Func();
-
         damageData = skillVarArr[0];
+        damagePerData = RevisionValue_Func(skillVarArr[1], 0.01f);
+        damagePerData.recentValue += 1f;
 
-        isActive = true;
+        damageValue
+            = damageData.recentValue
+            + Player_Data.Instance.playerClass.attackValue * damagePerData.recentValue;
     }
     public override void UseSkill_Func()
     {
+        isActive = true;
+
         grenadeColClass.Active_Func();
 
         grenadeObj.transform.position = new Vector3(playerTrf.position.x, firePivotY, 0f);
@@ -40,7 +45,10 @@ public class Grenade_Script : Skill_Parent
         Vector3 _throwPos = grenadeObj.transform.position;
         _throwPos = new Vector3(_throwPos.x + throwPower, 0f, 0f);
 
-        grenadeObj.transform.DOJump(_throwPos, throwHeight, 1, throwTime).OnComplete(grenadeColClass.Bomb_Func);
+        grenadeObj.transform
+            .DOJump(_throwPos, throwHeight, 1, throwTime)
+            .SetEase(Ease.Linear)
+            .OnComplete(grenadeColClass.Bomb_Func);
     }
     public void SetTarget_Func(Character_Script[] _charClassArr)
     {
@@ -53,13 +61,13 @@ public class Grenade_Script : Skill_Parent
 
             if(_distanceValue < bombRange)
             {
-                _charClassArr[i].Damaged_Func(damageData.recentValue);
+                _charClassArr[i].Damaged_Func(damageValue);
             }
         }
 
         Deactive_Func();
     }
-    void Deactive_Func()
+    protected override void Deactive_Func()
     {
         isActive = false;
     }

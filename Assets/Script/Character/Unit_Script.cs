@@ -5,6 +5,7 @@ using UnityEngine;
 public class Unit_Script : Character_Script
 {
     public MutantType mutantType;
+    public MonsterType monsterType;
 
     [SerializeField]
     private Vector3 moveDir;
@@ -33,7 +34,7 @@ public class Unit_Script : Character_Script
         defenceValue = _unitData.defenceValue;
         attackValue = _unitData.attackValue;
         attackRate_Max = _unitData.attackRate;
-        attackRange = _unitData.attackRange + 1f;
+        attackRange = _unitData.attackRange;
         moveSpeed = _unitData.moveSpeed;
         criticalPercent = _unitData.criticalPercent;
         criticalBonus = _unitData.criticalBonus;
@@ -82,7 +83,7 @@ public class Unit_Script : Character_Script
         defenceValue = _unitClass.defenceValue;
         attackValue = _unitClass.attackValue;
         attackRate_Max = _unitClass.attackRate_Max;
-        attackRange = _unitClass.attackRange + 1f;
+        attackRange = _unitClass.attackRange;
         moveSpeed = _unitClass.moveSpeed;
         criticalPercent = _unitClass.criticalPercent;
         
@@ -143,6 +144,7 @@ public class Unit_Script : Character_Script
     {
         if(charState != CharacterState.Move && isAlive == true)
         {
+            animator.speed = 1f;
             StopCoroutine("Move_Cor");
             StartCoroutine("Move_Cor");
         }
@@ -173,12 +175,7 @@ public class Unit_Script : Character_Script
 
         if (_isImmediate == false)
         {
-            if (effectData_Die.isEffectOn == true)
-            {
-                GameObject _effectObj = ObjectPool_Manager.Instance.Get_Func(effectData_Die.effectObj);
-                _effectObj.transform.position = effectData_Die.effectPos.position;
-                _effectObj.transform.eulerAngles = new Vector3(270f, 0f, 0f);
-            }
+            effectData_Die.ActiveEffect_Func();
         }
         
         spawnCalss.UnitDie_Func(this);

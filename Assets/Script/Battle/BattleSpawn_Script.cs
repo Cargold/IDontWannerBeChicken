@@ -15,35 +15,52 @@ public class BattleSpawn_Script : MonoBehaviour
     [SerializeField]
     private Unit_Script unitClass;
     public int spawnID;
-    public int spawnCheckCount;
+    public int spawnCheckAllCount;
+    public int spawnActiveUnitCount;
     public int spawnNumLimit;
+    public float spawnTimerBonus;
     
-    public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType,  int _spawnID)
+    public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType,  int _spawnID, Unit_Script _unitClass)
     {
         battleManagerClass = _battleManagerClass;
 
         spawnGroupType = _groupType;
 
         spawnID = _spawnID;
-    }
-
-    public void ActiveSpawn_Func(Unit_Script _unitClass, BattleType _battleType, int _battleID)
-    {
-        isActive = true;
 
         unitClass = _unitClass;
 
+        spawnNumLimit = _unitClass.spawnNum_Limit;
+    }
+
+    #region Spawn Group
+    public void ActiveSpawn_Func(BattleType _battleType, int _battleID, bool _isTemporarySpawn = false)
+    {
+        isActive = true;
+        
         battleType = _battleType;
 
         battleID = _battleID;
 
-        spawnCheckCount = 0;
+        spawnCheckAllCount = 0;
 
-        spawnNumLimit = _unitClass.spawnNum_Limit;
-            
-        StartCoroutine("CheckSpawnTimer_Cor");
+        spawnTimerBonus = 1f;
+
+        if (spawnGroupType == GroupType.Enemy)
+        {
+            int _monsterID = unitClass.unitID;
+
+            float _hpValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].healthPoint;
+            unitClass.healthPoint_Max = _hpValue * ((_battleID * 0.05f) + 1f);
+
+            float _attackValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].attackValue;
+            unitClass.attackValue = _attackValue * ((_battleID * 0.05f) + 1f);
+        }
+        
+        if(_isTemporarySpawn == false)
+            StartCoroutine("CheckSpawnTimer_Cor");
     }
-    IEnumerator CheckSpawnTimer_Cor()
+    private IEnumerator CheckSpawnTimer_Cor()
     {
         float _spawnCalcTime = 0f;
 
@@ -51,47 +68,116 @@ public class BattleSpawn_Script : MonoBehaviour
         {
             if (battleManagerClass.isTestSpawnAlly[spawnID] == true)
             {
-                OnSpawningAlly_Func();
+                // 테스트를 위해 시작부터 아군 유닛이 나오길 원하는 경우
+
+                _spawnCalcTime = unitClass.spawnInterval;
             }
         }
         if (spawnGroupType == GroupType.Enemy)
         {
+            // 적은 시작부터 등장
+            
             _spawnCalcTime = unitClass.spawnInterval;
         }
         
         while (isActive == true)
         {
-            if(_spawnCalcTime < unitClass.spawnInterval)
+            while (spawnNumLimit <= spawnActiveUnitCount)
             {
-                _spawnCalcTime += 0.02f;
+                // 활성화 유닛 최대치면은 잠시 대기
+
+                yield return null;
+            }
+
+            if (_spawnCalcTime < unitClass.spawnInterval)
+            {
+                _spawnCalcTime += (spawnTimerBonus * 0.02f);
                 yield return new WaitForFixedUpdate();
             }
             else
             {
-                _spawnCalcTime = 0f;
+                _spawnCalcTime -= unitClass.spawnInterval;
 
                 for (int i = 0; i < unitClass.spawnNum; i++)
                 {
                     if (spawnGroupType == GroupType.Ally)
+                    {
                         OnSpawningAlly_Func();
+                    }
                     else if (spawnGroupType == GroupType.Enemy)
+                    {
                         OnSpawningEnemy_Func();
+                    }
 
-                    yield return new WaitForSeconds(battleManagerClass.spawnDelay);
+                    if (spawnNumLimit <= spawnActiveUnitCount)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(battleManagerClass.spawnDelay);
+                    }
                 }
-
-                while(spawnNumLimit <= spawnUnitList.Count)
-                {
-                    yield return null;
-                }
-
+                
                 yield return null;
             }
         }
 
         yield break;
     }
-    void OnSpawningAlly_Func()
+    public void SetTimerBonus_Func(int _bonusValue, float _time)
+    {
+        StartCoroutine(CheckBonus_Cor(_bonusValue, _time));
+    }
+    private IEnumerator CheckBonus_Cor(int _bonusValue, float _time)
+    {
+        spawnTimerBonus += _bonusValue;
+        yield return new WaitForSeconds(_time);
+        spawnTimerBonus -= _bonusValue;
+    }
+
+    private void OnSpawnAllyDirection_Func(Unit_Script _spawnUnitClass)
+    {
+        Transform _spawnUnitTrf = _spawnUnitClass.transform;
+
+        float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);
+        float spawnPosY_Calc = Random.Range(-battleManagerClass.spawnPosY_Min, battleManagerClass.spawnPosY_Max);
+        float spawnJumpPower_Calc = Random.Range(battleManagerClass.spawnJumpPower_Min, battleManagerClass.spawnJumpPower_Max);
+        float spawnJumpTime_Calc = spawnJumpPower_Calc * battleManagerClass.jumpTime_Relative;
+
+        _spawnUnitTrf.position = battleManagerClass.spawnPos_Ally.position;
+        Vector3 _landingPos =
+            new Vector3
+            (
+                _spawnUnitTrf.position.x + spawnPosX_Calc - 3f,
+                _spawnUnitTrf.position.y + spawnPosY_Calc - 3f,
+                0f
+            );
+        _spawnUnitTrf.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
+            .OnComplete(_spawnUnitClass.OnLanding_Func);
+        
+        StartCoroutine(SpawnUnitRotate_Cor(_spawnUnitTrf, spawnJumpTime_Calc));
+
+        _spawnUnitTrf.localScale = Vector3.zero;
+        _spawnUnitTrf.DOScale(1f, spawnJumpTime_Calc);
+    }
+    private IEnumerator SpawnUnitRotate_Cor(Transform _targetTrf, float _spawnJumpTime_Calc)
+    {
+        _spawnJumpTime_Calc *= 0.8f;
+
+        float _calcTime = 0f;
+        float _rotateValue = 720f / _spawnJumpTime_Calc;
+        while (_calcTime <= _spawnJumpTime_Calc)
+        {
+            _targetTrf.localEulerAngles = Vector3.forward * _rotateValue * _calcTime;
+
+            _calcTime += 0.02f;
+            yield return new WaitForFixedUpdate();
+        }
+
+        _targetTrf.localEulerAngles = Vector3.zero;
+    }
+    public Unit_Script OnSpawningAlly_Func(bool _isDefaultDirection = true)
     {
         GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
 
@@ -105,32 +191,19 @@ public class BattleSpawn_Script : MonoBehaviour
         _spawnUnitClass.SetSpawner_Func(this);
         _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
 
-        float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);
-        float spawnPosY_Calc = Random.Range(-battleManagerClass.spawnPosY_Min, battleManagerClass.spawnPosY_Max);
-        float spawnJumpPower_Calc = Random.Range(battleManagerClass.spawnJumpPower_Min, battleManagerClass.spawnJumpPower_Max);
-        float spawnJumpTime_Calc = spawnJumpPower_Calc * battleManagerClass.jumpTime_Relative;
-
-        _spawnUnitClass.transform.position = battleManagerClass.spawnPos_Ally.position;
-        Vector3 _landingPos =
-            new Vector3
-            (
-                _spawnUnitClass.transform.position.x + spawnPosX_Calc - 3f,
-                _spawnUnitClass.transform.position.y + spawnPosY_Calc - 3f,
-                0f
-            );
-        _spawnUnitClass.transform.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
-            .OnComplete(_spawnUnitClass.OnLanding_Func);
-
-
-        StartCoroutine(SpawnUnitRotate_Cor(_spawnUnitClass.transform, spawnJumpTime_Calc));
-
-        _spawnUnitClass.transform.localScale = Vector3.zero;
-        _spawnUnitClass.transform.DOScale(1f, spawnJumpTime_Calc);
-
         spawnUnitList.Add(_spawnUnitClass);
-        spawnCheckCount++;
+        spawnCheckAllCount++;
+        
+        if (_isDefaultDirection == true)
+        {
+            spawnActiveUnitCount++;
+            OnSpawnAllyDirection_Func(_spawnUnitClass);
+        }
+
+        return _spawnUnitClass;
     }
-    void OnSpawningEnemy_Func()
+
+    private void OnSpawningEnemy_Func()
     {
         MutantType _mutantType = CheckMutant_Func();
 
@@ -157,26 +230,11 @@ public class BattleSpawn_Script : MonoBehaviour
                 0f
             );
 
-        _spawnUnitClass.OnLanding_Func();
-
         spawnUnitList.Add(_spawnUnitClass);
-        spawnCheckCount++;
-    }
-    private IEnumerator SpawnUnitRotate_Cor(Transform _targetTrf, float _spawnJumpTime_Calc)
-    {
-        _spawnJumpTime_Calc *= 0.8f;
+        spawnCheckAllCount++;
+        spawnActiveUnitCount++;
 
-        float _calcTime = 0f;
-        float _rotateValue = 720f / _spawnJumpTime_Calc;
-        while (_calcTime <= _spawnJumpTime_Calc)
-        {
-            _targetTrf.localEulerAngles = Vector3.forward * _rotateValue * _calcTime;
-
-            _calcTime += 0.02f;
-            yield return new WaitForFixedUpdate();
-        }
-
-        _targetTrf.localEulerAngles = Vector3.zero;
+        _spawnUnitClass.OnLanding_Func();
     }
     private MutantType CheckMutant_Func()
     {
@@ -215,31 +273,32 @@ public class BattleSpawn_Script : MonoBehaviour
 
         return _mutantType;
     }
-    public IEnumerator StopUnit_Cor()
+    #endregion
+
+    public void StopUnit_Func()
+    {
+        StartCoroutine(StopUnit_Cor());
+    }
+    private IEnumerator StopUnit_Cor()
     {
         for (int i = 0; i < spawnUnitList.Count; i++)
         {
             ((Unit_Script)spawnUnitList[i]).moveSpeed = 0f;
+
             yield return null;
         }
     }
+
     public void UnitDie_Func(Unit_Script _unitClass)
     {
+        spawnActiveUnitCount--;
         spawnUnitList.Remove(_unitClass);
-    }
-    public void DeactiveSpawn_Func()
-    {
-        isActive = false;
-
-        unitClass = null;
-
-        StopCoroutine("CheckSpawnTimer_Cor");
     }
     public void KillUnitAll_Func(bool _isUneffect)
     {
         StartCoroutine(KillUnitAll_Cor(_isUneffect));
     }
-    IEnumerator KillUnitAll_Cor(bool _isUneffect)
+    private IEnumerator KillUnitAll_Cor(bool _isUneffect)
     {
         while(0 < spawnUnitList.Count)
         {
@@ -249,6 +308,13 @@ public class BattleSpawn_Script : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void DeactiveSpawn_Func()
+    {
+        isActive = false;
+
+        StopCoroutine("CheckSpawnTimer_Cor");
     }
 
     public Unit_Script[] GetUnitClassArr_Func()

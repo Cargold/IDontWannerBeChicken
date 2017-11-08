@@ -12,12 +12,13 @@ public class Rush_Script : Skill_Parent
     [SerializeField]
     private SkillVar shieldValueData;
     [SerializeField]
-    private SkillVar rushSpeedData;
+    private float rushSpeed;
     [SerializeField]
-    private SkillVar rushMoveTimeData;
+    private float rushMoveTime;
+    [SerializeField]
+    private float collideDistance;
     [SerializeField]
     private float playerSpeedOriginal;
-    public bool isActive;
     private bool isMove;
     private bool isTime;
 
@@ -26,14 +27,10 @@ public class Rush_Script : Skill_Parent
         playerClass = Player_Data.Instance.playerClass;
         playerTrf = Player_Data.Instance.playerClass.transform;
     }
-    public override void BattleEnter_Func()
+    protected override void BattleEnterChild_Func()
     {
-        base.BattleEnter_Func();
-
         shieldTimeData = skillVarArr[0];
         shieldValueData = skillVarArr[1];
-        rushSpeedData = skillVarArr[2];
-        rushMoveTimeData = skillVarArr[3];
     }
     public override void UseSkill_Func()
     {
@@ -49,7 +46,7 @@ public class Rush_Script : Skill_Parent
         playerClass.SetControlOut_Func(true);
 
         playerSpeedOriginal = playerClass.moveSpeed;
-        playerClass.SetMove_Func(Player_Script.MoveDir.Right, playerSpeedOriginal * rushSpeedData.recentValue);
+        playerClass.SetMove_Func(Player_Script.MoveDir.Right, playerSpeedOriginal * rushSpeed);
 
         StartCoroutine(CalcRushTime_Cor());
     }
@@ -65,16 +62,16 @@ public class Rush_Script : Skill_Parent
     {
         if (isMove == false) return;
         
-        if (playerClass.GetCollideCheck_Func() == true)
+        if (playerClass.GetCollideCheck_Func(collideDistance) == true)
         {
             MoveOver_Func();
         }
     }
     IEnumerator CalcRushTime_Cor()
     {
-        float _rushTime = rushMoveTimeData.recentValue;
+        float _rushTime = rushMoveTime;
 
-        while (0f < _rushTime)
+        while (0f < _rushTime && isActive == true)
         {
             yield return new WaitForFixedUpdate();
             _rushTime -= 0.02f;
@@ -86,7 +83,7 @@ public class Rush_Script : Skill_Parent
     {
         float _rushTime = shieldTimeData.recentValue;
         
-        while(0f < _rushTime)
+        while(0f < _rushTime && isActive == true)
         {
             yield return new WaitForFixedUpdate();
             _rushTime -= 0.02f;
@@ -119,8 +116,7 @@ public class Rush_Script : Skill_Parent
             playerSpeedOriginal = 0f;
         }
     }
-
-    public void Deactive_Func()
+    protected override void Deactive_Func()
     {
         isActive = false;
     }

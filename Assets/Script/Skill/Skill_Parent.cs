@@ -16,8 +16,21 @@ public abstract class Skill_Parent : MonoBehaviour
     public int unlockLevel;
     public float upgradeCost;
     public SkillVar[] skillVarArr;
+    public bool isActive;
 
     public abstract void Init_Func();
+    public void BattleEnter_Func()
+    {
+        for (int i = 0; i < skillVarArr.Length; i++)
+        {
+            skillVarArr[i] = GetSetVar_Func(skillVarArr[i]);
+        }
+
+        BattleEnterChild_Func();
+    }
+    protected abstract void BattleEnterChild_Func();
+    public abstract void UseSkill_Func();
+    protected abstract void Deactive_Func();
 
     protected SkillVar GetSetVar_Func(SkillVar _var)
     {
@@ -25,16 +38,14 @@ public abstract class Skill_Parent : MonoBehaviour
 
         return _var;
     }
-
-    public virtual void BattleEnter_Func()
+    protected SkillVar RevisionValue_Func(SkillVar _var, float _value)
     {
-        for (int i = 0; i < skillVarArr.Length; i++)
-        {
-            skillVarArr[i] = GetSetVar_Func(skillVarArr[i]);
-        }
-    }
+        _var.initValue *= _value;
+        _var.recentValue *= _value;
+        _var.upgradeValue *= _value;
 
-    public abstract void UseSkill_Func();
+        return _var;
+    }
 }
 
 [System.Serializable]

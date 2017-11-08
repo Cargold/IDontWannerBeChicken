@@ -281,17 +281,17 @@ public class Player_Script : Character_Script
         {
             shieldValue_Max = _maxValue;
             shieldValue_Recent = shieldValue_Max;
-
-            shieldGaugeTrf.localScale = Vector2.one;
+            
             shieldGroupTrf.gameObject.SetActive(true);
         }
         else if(_maxValue == 0f)
         {
             shieldValue_Recent = 0f;
-
-            shieldGaugeTrf.localScale = Vector2.zero;
+            
             shieldGroupTrf.gameObject.SetActive(false);
         }
+
+        CalcShieldGauge_Func();
     }
     public void SetMove_Func(MoveDir _moveDir, float _setSpeed)
     {

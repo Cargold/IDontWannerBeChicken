@@ -25,7 +25,6 @@ public class Slam_Script : Skill_Parent
     private float pushTime;
 
     private float playerSpeedOriginal;
-    public bool isActive;
     private bool isSlam;
 
     private List<Character_Script> collideCharList;
@@ -37,10 +36,8 @@ public class Slam_Script : Skill_Parent
 
         collideCharList = new List<Character_Script>();
     }
-    public override void BattleEnter_Func()
+    protected override void BattleEnterChild_Func()
     {
-        base.BattleEnter_Func();
-
         collideNumData = skillVarArr[0];
         pushPowerData = skillVarArr[1];
     }
@@ -114,7 +111,7 @@ public class Slam_Script : Skill_Parent
 
         Deactive_Func();
     }
-    public void Deactive_Func()
+    protected override void Deactive_Func()
     {
         isActive = false;
     }
