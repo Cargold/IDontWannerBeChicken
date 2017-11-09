@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Player_Script : Character_Script
 {
     public Transform spawnPos;
+    public GameObject rendGroupObj;
     public enum MoveDir
     {
         None,
@@ -28,24 +29,35 @@ public class Player_Script : Character_Script
     public Transform shieldGaugeTrf;
     public float shieldValue_Max;
     public float shieldValue_Recent;
-
-    public void BattleEnter_Func()
+    
+    public void LobbyEnter_Func()
     {
-        base.Init_Func(GroupType.Ally);
-        InitPlayer_Func();
+        hpRend_Group.gameObject.SetActive(false);
+        rendGroupObj.SetActive(true);
+        shadowRend.gameObject.SetActive(true);
 
+        moveDir = MoveDir.None;
+        SetState_Func(CharacterState.Move);
         isControlOutCount_Player = 0;
     }
-
+    public void BattleEnter_Func()
+    {
+        InitPlayer_Func();
+    }
     void InitPlayer_Func()
     {
+        base.Init_Func(GroupType.Ally);
+
         // Set Renderer
+        rendGroupObj.SetActive(true);
         hpRend_Group.gameObject.SetActive(true);
         shadowRend.gameObject.SetActive(true);
 
         // Set Status
         isAlive = true;
+        moveDir = MoveDir.None;
         SetState_Func(CharacterState.Move);
+        isControlOutCount_Player = 0;
 
         // Set Attack
         attackRate_Speed = attackRate_Init / attackRate_Max;
@@ -160,7 +172,7 @@ public class Player_Script : Character_Script
                     {
                         // 목표대상이 사정권 내에 있다면
 
-                        if (animator.GetBool("AttackReady") == true && isAttackClear == true)
+                        if (animator.GetBool("AttackReady") == true /*&& isAttackClear == true*/)
                         {
                             isAttackClear = false;
 
@@ -199,6 +211,8 @@ public class Player_Script : Character_Script
                     {
                         _attackValue_Calc *= criticalBonus;
                     }
+
+                    effectData_AttackAniOn.ActiveEffect_Func();
 
                     contactCharClassList[0].Damaged_Func(_attackValue_Calc);
                     isAttackClear = true;
@@ -248,8 +262,28 @@ public class Player_Script : Character_Script
         contactCharClassList.Clear();
 
         hpRend_Group.gameObject.SetActive(false);
+        rendGroupObj.SetActive(false);
+        
+        StartCoroutine(DieEffect_Cor());
 
         Battle_Manager.Instance.GameOver_Func(false);
+    }
+    IEnumerator DieEffect_Cor()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector3 _effectPos = new Vector3
+                (
+                    this.transform.position.x + Random.Range(-1f, 1f),
+                    this.transform.position.y + Random.Range(-1f, 1f),
+                    0f
+                );
+
+            effectData_Die.SetEffectPos(_effectPos);
+            effectData_Die.ActiveEffect_Func();
+
+            yield return null;
+        }
     }
 
     public void AniEvnet_AttackEnd_Func()

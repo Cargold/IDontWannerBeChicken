@@ -100,7 +100,7 @@ public class GreatRaid_Script : Skill_Parent
                 .DOMove(_spawnPos, fallingTime)
                 .OnComplete(_spawnUnitClass.OnLanding_Func);
 
-            effectData_Spawn.SetEffectInfo(_spawnPos);
+            effectData_Spawn.SetEffectPos(_spawnPos);
             effectData_Spawn.SetActiveDelayTime_Func(fallingTime / 2f);
             effectData_Spawn.ActiveEffect_Func();
 

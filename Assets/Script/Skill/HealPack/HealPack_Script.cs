@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class HealPack_Script : Skill_Parent
 {
-    [SerializeField]
     private SkillVar healData;
     public GameObject healObj;
     public HealPackCol_Script healpackColClass;
@@ -12,7 +12,7 @@ public class HealPack_Script : Skill_Parent
     public float healInterval;
     public float healRange;
     public Transform playerTrf;
-
+    
     public override void Init_Func()
     {
         healpackColClass.Init_Func(this);
@@ -28,6 +28,8 @@ public class HealPack_Script : Skill_Parent
         isActive = true;
 
         healpackColClass.Active_Func();
+        healObj.transform.SetParent(playerTrf);
+        healObj.transform.localPosition = Vector3.zero;
 
         StartCoroutine(Healling_Cor());
     }
@@ -36,12 +38,13 @@ public class HealPack_Script : Skill_Parent
         int _count = healCount;
         while(0 < _count)
         {
-            healObj.transform.position = new Vector3(playerTrf.position.x, 0f, 0f);
             healpackColClass.Heal_Func();
+
             yield return new WaitForSeconds(healInterval);
             _count--;
         }
 
+        healObj.transform.SetParent(this.transform);
         Deactive_Func();
     }
 

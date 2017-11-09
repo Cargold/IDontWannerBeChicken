@@ -23,6 +23,8 @@ public class MainLobby_Script : LobbyUI_Parent
     {
         // Call : Btn Event
 
+        playerClass.LobbyEnter_Func();
+
         thisRTrf.DOSizeDelta(new Vector3(0f, 0f), 0.5f);
     }
     public override void Exit_Func()

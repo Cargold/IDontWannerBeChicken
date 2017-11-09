@@ -96,7 +96,7 @@ public class Necromancer_Script : Skill_Parent
                 .DOMove(_spawnPos, riseTime)
                 .OnComplete(_spawnUnitClass.OnLanding_Func);
 
-            effectData_Spawn.SetEffectInfo(_spawnPos);
+            effectData_Spawn.SetEffectPos(_spawnPos);
             effectData_Spawn.SetActiveDelayTime_Func(riseTime / 2f);
             effectData_Spawn.ActiveEffect_Func();
 

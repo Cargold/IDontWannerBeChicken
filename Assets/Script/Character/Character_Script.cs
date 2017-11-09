@@ -304,7 +304,10 @@ public class Character_Script : MonoBehaviour
     public void SetAttackSpeed_Func(float _hasteValue)
     {
         attackRate_Max = _hasteValue;
-        attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / attackRate_Max;
+        if(unitID == 999)
+            attackRate_Speed = DataBase_Manager.Instance.heroAttackRate / attackRate_Max;
+        else
+            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / attackRate_Max;
 
         if(charState == CharacterState.Attack)
             animator.speed = attackRate_Speed;

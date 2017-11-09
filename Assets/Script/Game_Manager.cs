@@ -87,13 +87,9 @@ public class Game_Manager : MonoBehaviour
     public void LobbyEnter_Func()
     {
         gameState = GameState.Lobby;
-
-        Loading_Func();
-
+        
         lobbyClass.Enter_Func(LobbyState.MainLobby);
         directionClass.EnterUI_Func(GameState.Lobby);
-
-        LoadingClear_Func();
     }
 
     public void Loading_Func()

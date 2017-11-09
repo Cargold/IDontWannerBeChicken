@@ -6,6 +6,9 @@ public class DataBase_Manager : MonoBehaviour
 {
     public static DataBase_Manager Instance;
 
+    // Hero Data
+    public float heroAttackRate;
+
     // Unit Data
     public GameObject[] unitDataObjArr;
     public Unit_Data[] unitDataArr

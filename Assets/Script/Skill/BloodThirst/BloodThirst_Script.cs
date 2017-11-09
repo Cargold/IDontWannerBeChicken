@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class BloodThirst_Script : Skill_Parent
 {
-    [SerializeField]
     private SkillVar hasteData;
-    public GameObject hasteObj;
-    public BloodThirstCol_Script bloodThirstColClass;
+    private GameObject hasteObj;
+    private BloodThirstCol_Script bloodThirstColClass;
     public float hasteRange;
     public float hasteTime;
-    public Transform playerTrf;
-    public List<Character_Script> hasteCharList;
-    public List<float> hasteValueList;
-
+    private Transform playerTrf;
+    [SerializeField]
+    private List<Character_Script> hasteCharList;
+    private List<float> hasteValueList;
+    
     public override void Init_Func()
     {
+        hasteObj = this.transform.GetChild(0).gameObject;
+        bloodThirstColClass = hasteObj.GetComponent<BloodThirstCol_Script>();
         bloodThirstColClass.Init_Func(this);
 
         playerTrf = Player_Data.Instance.playerClass.transform;
@@ -31,9 +33,10 @@ public class BloodThirst_Script : Skill_Parent
     {
         isActive = true;
 
+        hasteObj.transform.SetParent(playerTrf);
+        hasteObj.transform.localPosition = Vector3.zero;
         bloodThirstColClass.Active_Func();
 
-        hasteObj.transform.position = new Vector3(playerTrf.position.x, 0f, 0f);
         bloodThirstColClass.Haste_Func();
     }
     public void SetTarget_Func(Character_Script[] _charClassArr)
@@ -49,6 +52,11 @@ public class BloodThirst_Script : Skill_Parent
             {
                 hasteCharList.Add(_charClassArr[i]);
             }
+        }
+
+        if (hasteCharList.Contains(Player_Data.Instance.playerClass) == false)
+        {
+            hasteCharList.Add(Player_Data.Instance.playerClass);
         }
 
         StartCoroutine(Hasting_Cor());
@@ -73,6 +81,7 @@ public class BloodThirst_Script : Skill_Parent
         hasteCharList.Clear();
         hasteValueList.Clear();
 
+        hasteObj.transform.SetParent(this.transform);
         Deactive_Func();
     }
     protected override void Deactive_Func()

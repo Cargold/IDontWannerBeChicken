@@ -431,7 +431,7 @@ public class Battle_Manager : MonoBehaviour
             // 패배한 경우
 
             // 1. 플레이어 사망
-            playerClass.SetControlOut_Func(true); // 임시
+            playerClass.SetControlOut_Func(true);
 
             // 2. 아군 사망
             for (int i = 0; i < spawnClassArr_Ally.Length; i++)

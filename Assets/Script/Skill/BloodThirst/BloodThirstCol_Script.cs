@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BloodThirstCol_Script : MonoBehaviour
 {
@@ -8,21 +9,24 @@ public class BloodThirstCol_Script : MonoBehaviour
     public SphereCollider sphereCol;
     public List<Character_Script> charClassList;
     public bool isActive;
-    public CharEffectData effectData_Heal;
+    private Transform effectTrf;
 
     public void Init_Func(BloodThirst_Script _bloodThirstClass)
     {
         bloodThirstClass = _bloodThirstClass;
         sphereCol.enabled = false;
         charClassList = new List<Character_Script>();
-    }
 
+        effectTrf = this.transform.GetChild(0);
+    }
     public void Active_Func()
     {
         isActive = true;
         this.gameObject.SetActive(true);
-    }
 
+        effectTrf.transform.localPosition = new Vector3(-0.95f, 1.12f, 0.2f);
+        effectTrf.transform.DOMoveY(effectTrf.position.y - 2f, bloodThirstClass.hasteTime);
+    }
     public void Haste_Func()
     {
         StartCoroutine(Haste_Cor());
@@ -37,8 +41,6 @@ public class BloodThirstCol_Script : MonoBehaviour
 
         bloodThirstClass.SetTarget_Func(charClassList.ToArray());
         charClassList.Clear();
-
-        effectData_Heal.ActiveEffect_Func();
     }
     private void OnTriggerEnter(Collider other)
     {

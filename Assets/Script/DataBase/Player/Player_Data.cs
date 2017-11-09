@@ -105,6 +105,8 @@ public class Player_Data : MonoBehaviour
 
         //}
 
+        DataBase_Manager.Instance.heroAttackRate = playerClass.GetAttackSpeedMax_Func();
+
         yield break;
     }
     IEnumerator LoadInventory_Cor()
