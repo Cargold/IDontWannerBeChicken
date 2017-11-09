@@ -28,6 +28,9 @@ public class Slam_Script : Skill_Parent
     private bool isSlam;
 
     private List<Character_Script> collideCharList;
+    
+    private GameObject effectPivotObj;
+    private SlamEffect_Script slamEffectClass;
 
     public override void Init_Func()
     {
@@ -35,6 +38,11 @@ public class Slam_Script : Skill_Parent
         playerTrf = Player_Data.Instance.playerClass.transform;
 
         collideCharList = new List<Character_Script>();
+
+        effectPivotObj = this.transform.GetChild(0).gameObject;
+
+        slamEffectClass = effectPivotObj.GetComponent<SlamEffect_Script>();
+        slamEffectClass.Init_Func(this);
     }
     protected override void BattleEnterChild_Func()
     {
@@ -44,6 +52,8 @@ public class Slam_Script : Skill_Parent
     public override void UseSkill_Func()
     {
         isActive = true;
+        
+        slamEffectClass.Active_Func(pushTime + 2f, playerTrf);
 
         SetMove_Func();
     }
@@ -70,14 +80,16 @@ public class Slam_Script : Skill_Parent
     }
     void OnCollide_Func(Character_Script _collideCharClass)
     {
+        if (collideCharList.Contains(_collideCharClass) == true) return;
+
+        collideCharList.Add(_collideCharClass);
+
         Character_Script.KnockBackData knockBackData = new Character_Script.KnockBackData();
         knockBackData.Init_Func(pushPower, pushHeight, pushTime);
-        
-        collideCharList.Add(_collideCharClass);
 
         _collideCharClass.KnockBack_Func(knockBackData);
 
-        if(2 < collideCharList.Count)
+        if(collideNumData.recentValue < collideCharList.Count)
         {
             SlamOver_Func();
         }

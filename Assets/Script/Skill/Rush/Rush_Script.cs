@@ -22,10 +22,17 @@ public class Rush_Script : Skill_Parent
     private bool isMove;
     private bool isTime;
 
+    private Transform effectPivotTrf;
+    private RushEffect_Script rushEffectClass;
+
     public override void Init_Func()
     {
         playerClass = Player_Data.Instance.playerClass;
         playerTrf = Player_Data.Instance.playerClass.transform;
+
+        effectPivotTrf = this.transform.GetChild(0);
+        rushEffectClass = effectPivotTrf.GetComponent<RushEffect_Script>();
+        rushEffectClass.Init_Func(this);
     }
     protected override void BattleEnterChild_Func()
     {
@@ -35,6 +42,8 @@ public class Rush_Script : Skill_Parent
     public override void UseSkill_Func()
     {
         isActive = true;
+
+        rushEffectClass.Active_Func(rushMoveTime + 2f, playerTrf);
 
         SetMove_Func();
         SetTime_Func();

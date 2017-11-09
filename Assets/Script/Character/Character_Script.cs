@@ -355,7 +355,8 @@ public class Character_Script : MonoBehaviour
             }
 
             // 거리 체크
-            float _distanceValue = Vector3.Distance(this.transform.position, contactCharClassList[i].transform.position);
+            Vector3 _contactCharPos = new Vector3(contactCharClassList[i].transform.position.x, 0f, 0f);
+            float _distanceValue = Vector3.Distance(this.transform.position, _contactCharPos);
 
             // 처음 체크하는 대상이거나, 기존 최단 근접 대상보다 가까운 경우
             if (_closerCharClass == null || _distanceValue < _closerCharDistance)
