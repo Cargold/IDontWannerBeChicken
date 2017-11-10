@@ -25,6 +25,9 @@ public class Player_Data : MonoBehaviour
     // Hero
     public int heroLevel;
     public Player_Script playerClass;
+    public Player_Script playerHeroData;
+    public float heroHealthPoint_RelativeLevel;
+    public float heroAttackValue_RelativeLevel;
     public List<PlayerFood_ClassData> heroFoodDataList;
 
     // Inventory
@@ -82,13 +85,14 @@ public class Player_Data : MonoBehaviour
         for (int i = 0; i < playerUnitDataArr.Length; i++)
         {
             // Cargold : 캐릭터 정보 불러오기
-            bool _isUnlock = true;
-            _isUnlock = playerUnitDataArr[i].isHave; // Test
+            bool _isUnlock = playerUnitDataArr[i].isHave; // Test
+
+            int _unitLevel = 1; // Test
+
             Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
 
             playerUnitDataArr[i] = new PlayerUnit_ClassData();
-
-            yield return playerUnitDataArr[i].Init_Cor(_isUnlock, _unitClass);
+            yield return playerUnitDataArr[i].Init_Cor(_isUnlock, i, _unitLevel, _unitClass);
         }
 
         yield break;
@@ -112,7 +116,7 @@ public class Player_Data : MonoBehaviour
     IEnumerator LoadInventory_Cor()
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 10; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
@@ -121,7 +125,7 @@ public class Player_Data : MonoBehaviour
             //_playerFoodData.foodID = Random.Range(0, _foodIDMax);
             //_playerFoodData.remainExp = Random.Range(0f, 99f);
 
-            _playerFoodData.level = 1;
+            _playerFoodData.level = 10;
             _playerFoodData.foodID = 1;
             _playerFoodData.remainExp = 0f;
 
@@ -161,37 +165,6 @@ public class Player_Data : MonoBehaviour
         yield break;
     } // UnComplete
     
-    #region Party Group
-    public void UnlockUnit_Func(int _unitID)
-    {
-        playerUnitDataArr[_unitID].isHave = true;
-        Lobby_Manager.Instance.partySettingClass.UnlockCard_Func(_unitID);
-        //Debug.Log("Cargold : 유닛 해금 보상은 미구현됨, Unit ID : " + _unitID);
-    }
-    public void JoinParty_Func(int _partySlotId, int _unitId)
-    {
-        partyUnitIdArr[_partySlotId] = _unitId;
-    }
-    public void DisbandParty_Func(int _partySlotId, int _unitId)
-    {
-        if(partyUnitIdArr[_partySlotId] < 0)
-        {
-
-        }
-        else if(partyUnitIdArr[_partySlotId] == _unitId)
-        {
-            partyUnitIdArr[_partySlotId] = -1;
-        }
-        else
-        {
-            Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
-        }
-    }
-    public void AddPopulationPoint_Func()
-    {
-        populationPoint++;
-    }
-    #endregion
     #region Wealth Group
     public void AddWealth_Func(WealthType _wealthType, int _value)
     {
@@ -263,6 +236,43 @@ public class Player_Data : MonoBehaviour
         playerWealthClass.Deactive_Func();
     }
     #endregion
+    #region Party Group
+    public void UnlockUnit_Func(int _unitID)
+    {
+        playerUnitDataArr[_unitID].isHave = true;
+        Lobby_Manager.Instance.partySettingClass.UnlockCard_Func(_unitID);
+        //Debug.Log("Cargold : 유닛 해금 보상은 미구현됨, Unit ID : " + _unitID);
+    }
+    public void JoinParty_Func(int _partySlotId, int _unitId)
+    {
+        partyUnitIdArr[_partySlotId] = _unitId;
+    }
+    public void DisbandParty_Func(int _partySlotId, int _unitId)
+    {
+        if(partyUnitIdArr[_partySlotId] < 0)
+        {
+
+        }
+        else if(partyUnitIdArr[_partySlotId] == _unitId)
+        {
+            partyUnitIdArr[_partySlotId] = -1;
+        }
+        else
+        {
+            Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
+        }
+    }
+    public void AddPopulationPoint_Func()
+    {
+        populationPoint++;
+    }
+    #endregion
+    #region Unit Group
+    public void CalcUnitData_Func(int _unitID)
+    {
+        //playerUnitDataArr[_unitID]
+    }
+    #endregion
     #region Food Group
     public void AddFood_Func(int _foodID, int _foodLevel = -1)
     {
@@ -330,7 +340,6 @@ public class Player_Data : MonoBehaviour
     public void OutFood_Func(Food_Script _foodClass, int _unitID)
     {
         playerUnitDataArr[_unitID].OutFood_Func(_foodClass);
-
     }
 
     public void SetFoodData_Func(Food_Script _foodClass, bool _isInventoryFood, int _unitID = -1)
@@ -383,9 +392,10 @@ public class Player_Data : MonoBehaviour
 
     public void SetUnitDataByFood_Func(int _unitID, Food_Script _foodClass, bool _isFeed)
     {
-        SetUnitDataByFood_Func(playerUnitDataArr[_unitID].unitClass, _foodClass, _isFeed);
+        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(_unitID);
+        SetUnitDataByFood_Func(_unitClass, _foodClass, _isFeed);
     }
-    public void SetUnitDataByFood_Func(Unit_Script _unitClass, Food_Script _foodClass, bool _isFeed)
+    public void SetUnitDataByFood_Func(Unit_Script _unitClass, Food_Script _foodClass, bool _isFeed, bool _isPrintUI = true)
     {
         float _feedingCalc = 0f;
         if (_isFeed == true)
@@ -399,7 +409,8 @@ public class Player_Data : MonoBehaviour
         if(FoodEffect_Sub.None < _foodClass.effectSub)
             SetUnitDataByFoodSubEffect_Func(_unitClass, _foodClass, _feedingCalc);
 
-        Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+        if(_isPrintUI == true)
+            Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
     }
     void SetUnitDataByFoodMainEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
     {
@@ -408,13 +419,13 @@ public class Player_Data : MonoBehaviour
         switch (_foodClass.effectMain)
         {
             case FoodEffect_Main.AttackPower:
-                float _attackValue = DataBase_Manager.Instance.unitDataArr[_charID].attackValue;
+                float _attackValue = playerUnitDataArr[_charID].attackValue_RelativeLevel;
                 _attackValue = _attackValue * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
                 _unitClass.attackValue += _attackValue;
                 break;
 
             case FoodEffect_Main.HealthPoint:
-                float _healthPoint = DataBase_Manager.Instance.unitDataArr[_charID].healthPoint;
+                float _healthPoint = playerUnitDataArr[_charID].healthPoint_RelativeLevel;
                 _healthPoint = _healthPoint * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
                 _unitClass.healthPoint_Max += _healthPoint;
                 break;
@@ -433,14 +444,14 @@ public class Player_Data : MonoBehaviour
                 break;
 
             case FoodEffect_Sub.SpawnInterval:
-                _value = DataBase_Manager.Instance.unitDataArr[_charID].spawnInterval;
+                _value = _unitClass.spawnInterval;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.spawnInterval -= _value;
                 break;
 
             case FoodEffect_Sub.DecreaseHP:
-                _value = DataBase_Manager.Instance.unitDataArr[_charID].healthPoint;
+                _value = _unitClass.healthPoint_Max;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.healthPoint_Max -= _value;
@@ -452,7 +463,7 @@ public class Player_Data : MonoBehaviour
                 break;
 
             case FoodEffect_Sub.DecreaseAttack:
-                _value = DataBase_Manager.Instance.unitDataArr[_charID].attackValue;
+                _value = _unitClass.attackValue;
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
                 _unitClass.attackValue -= _value;
@@ -463,6 +474,12 @@ public class Player_Data : MonoBehaviour
     public void AddFoodBoxLevel_Func()
     {
         foodBoxLevel++;
+    }
+    #endregion
+    #region Trophy Group
+    public void AddTrophy_Func(int _trophyID)
+    {
+        trophyDataArr[_trophyID].AddTrophy_Func();
     }
     #endregion
     #region Skill Group
@@ -482,12 +499,6 @@ public class Player_Data : MonoBehaviour
         {
             selectSkillIDArr[_grade]++;
         }
-    }
-    #endregion
-    #region Trophy Group
-    public void AddTrophy_Func(int _trophyID)
-    {
-        trophyDataArr[_trophyID].AddTrophy_Func();
     }
     #endregion
 }

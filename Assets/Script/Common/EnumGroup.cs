@@ -198,3 +198,12 @@ public enum MonsterType
     Spread,
     Boss,
 }
+
+public enum BoostType
+{
+    None = -1,
+    Gold,
+    Mana,
+    Health,
+    Critical,
+}

@@ -47,7 +47,8 @@ public class UnitCard_Script : MonoBehaviour
         {
             case CardState.Lock:
                 cardStateObjArr[0].SetActive(true);
-                unlockConditionText.text = "Stage " + DataBase_Manager.Instance.unitUnlockConditionArr[cardId];
+                int _unlockStageLevel = DataBase_Manager.Instance.GetUnitClass_Func(cardId).unlockLevel;
+                unlockConditionText.text = "Stage " + _unlockStageLevel;
                 break;
             case CardState.Active:
                 cardStateObjArr[0].SetActive(false);

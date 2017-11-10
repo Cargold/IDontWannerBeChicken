@@ -20,15 +20,16 @@ public class Player_Script : Character_Script
     public float limitPos_Right;
 
     public float attackRate_Init;
-    public bool isAttackClear;
 
     [SerializeField]
     private int isControlOutCount_Player;
 
-    public Transform shieldGroupTrf;
-    public Transform shieldGaugeTrf;
-    public float shieldValue_Max;
-    public float shieldValue_Recent;
+    private Transform shieldGroupTrf;
+    private Transform shieldGaugeTrf;
+    private float shieldValue_Max;
+    private float shieldValue_Recent;
+
+    public float manaRegen;
     
     public void LobbyEnter_Func()
     {
@@ -68,9 +69,7 @@ public class Player_Script : Character_Script
     protected override void Idle_Func()
     {
         charState = CharacterState.Idle;
-
-        isAttackClear = true;
-
+        
         animator.speed = 1f;
         animator.Play("Idle");
     }
@@ -156,8 +155,6 @@ public class Player_Script : Character_Script
     }
     protected override IEnumerator CheckAttack_Cor()
     {
-        isAttackClear = true;
-
         while (isAlive == true)
         {
             // 내가 살아있다면
@@ -172,10 +169,8 @@ public class Player_Script : Character_Script
                     {
                         // 목표대상이 사정권 내에 있다면
 
-                        if (animator.GetBool("AttackReady") == true /*&& isAttackClear == true*/)
+                        if (animator.GetBool("AttackReady") == true)
                         {
-                            isAttackClear = false;
-
                             SetState_Func(CharacterState.Attack);
                         }
                     }
@@ -215,7 +210,6 @@ public class Player_Script : Character_Script
                     effectData_AttackAniOn.ActiveEffect_Func();
 
                     contactCharClassList[0].Damaged_Func(_attackValue_Calc);
-                    isAttackClear = true;
                 }
                 else
                     SetState_Func(CharacterState.Idle);

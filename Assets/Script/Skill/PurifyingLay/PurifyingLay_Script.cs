@@ -29,7 +29,7 @@ public class PurifyingLay_Script : Skill_Parent
 
         damageValue
             = damageData.recentValue
-            + Player_Data.Instance.playerClass.charLevel * damagePerData.recentValue;
+            + Player_Data.Instance.heroLevel * damagePerData.recentValue;
     }
     public override void UseSkill_Func()
     {

@@ -9,7 +9,7 @@ public class Character_Script : MonoBehaviour
     public int unitID;
     public string charName;
     public string charDesc;
-    public int charLevel;
+    public int charGrade;
 
     public bool isAlive = false;
     public float healthPoint_Max;

@@ -6,14 +6,20 @@ using UnityEngine;
 public class PlayerUnit_ClassData
 {
     public bool isHave;
-    public int level;
-    public Unit_Script unitClass;
+    public int unitID;
+    public int unitLevel;
+    public float healthPoint_RelativeLevel;
+    public float attackValue_RelativeLevel;
+    [SerializeField]
+    private Unit_Script unitClass;
 
     private List<PlayerFood_ClassData> playerFoodDataList;
 
-    public IEnumerator Init_Cor(bool _isUnlock, Unit_Script _unitClass)
+    public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass)
     {
         isHave = _isUnlock;
+        unitID = _unitID;
+        unitLevel = _unitLevel;
         unitClass = _unitClass;
         playerFoodDataList = new List<PlayerFood_ClassData>();
 
@@ -22,6 +28,8 @@ public class PlayerUnit_ClassData
         {
             
         }
+
+        SetLevel_Func(_unitLevel, true);
 
         yield break;
     }
@@ -69,5 +77,45 @@ public class PlayerUnit_ClassData
     public PlayerFood_ClassData[] GetPlayerFoodDataArr_Func()
     {
         return playerFoodDataList.ToArray();
+    }
+    public void SetLevel_Func(float _levelValue, bool _isInit = false)
+    {
+        SetLevel_InitUnitData_Func();
+        SetLevel_Level_Func(_levelValue);
+        SetLevel_Food_Func();
+        SetLevel_Trophy_Func();
+
+        // 유닛 레벨업은 파티창에서만 가능하니까?
+        if(_isInit == false)
+            Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+    }
+    void SetLevel_InitUnitData_Func()
+    {
+        Unit_Data _unitData = DataBase_Manager.Instance.unitDataArr[unitID];
+        unitClass.SetData_Func(_unitData);
+    }
+    void SetLevel_Level_Func(float _levelValue)
+    {
+        unitLevel = (int)_levelValue;
+
+        float _healthPoint = DataBase_Manager.Instance.unitDataArr[unitID].healthPoint;
+        healthPoint_RelativeLevel = ((_levelValue * 0.05f) + 1f) * _healthPoint;
+        unitClass.healthPoint_Max = healthPoint_RelativeLevel;
+        
+        float _attackValue = DataBase_Manager.Instance.unitDataArr[unitID].attackValue;
+        attackValue_RelativeLevel = ((_levelValue * 0.05f) + 1f) * _attackValue;
+        unitClass.attackValue = attackValue_RelativeLevel;
+    }
+    void SetLevel_Food_Func()
+    {
+        for (int i = 0; i < playerFoodDataList.Count; i++)
+        {
+            Food_Script _foodClass = playerFoodDataList[i].foodClass;
+            Player_Data.Instance.SetUnitDataByFood_Func(unitClass, _foodClass, true, false);
+        }
+    }
+    void SetLevel_Trophy_Func()
+    {
+
     }
 }

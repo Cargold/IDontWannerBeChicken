@@ -6,10 +6,13 @@ public class DataBase_Manager : MonoBehaviour
 {
     public static DataBase_Manager Instance;
 
-    // Hero Data
+    [Header("Hero Data")]
+    public GameObject heroObj;
+    public Hero_Data heroData;
     public float heroAttackRate;
+    public float manaRegen;
 
-    // Unit Data
+    [Header("Unit Data")]
     public GameObject[] unitDataObjArr;
     public Unit_Data[] unitDataArr
     {
@@ -20,10 +23,9 @@ public class DataBase_Manager : MonoBehaviour
     }
     [SerializeField]
     private Unit_Data[] m_UnitDataArr;
-    public Dictionary<int, Unit_Script> unitClassDic;
-    public int[] unitUnlockConditionArr;
+    private Dictionary<int, Unit_Script> unitClassDic;
 
-    // Monster Data
+    [Header("Monster Data")]
     public GameObject[] monsterDataObjArr;
     public Unit_Data[] monsterDataArr
     {
@@ -37,7 +39,7 @@ public class DataBase_Manager : MonoBehaviour
     public Dictionary<int, Unit_Script> monsterClassDic;
     public float chickenHouseHp_Default;
 
-    // Food Data
+    [Header("Food Data")]
     public GameObject[] foodDataObjArr;
     public Food_Data[] foodDataArr
     {
@@ -49,7 +51,7 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Food_Data[] m_FoodDataArr;
 
-    // Skill Data
+    [Header("Skill Data")]
     public GameObject[] skillDataObjArr;
     public Skill_Data[] skillDataArr
     {
@@ -60,8 +62,9 @@ public class DataBase_Manager : MonoBehaviour
     }
     [SerializeField]
     private Skill_Data[] m_SkillDataArr;
-    
-    // Trophy Data
+
+    [Header("Trophy Data")]
+    public GameObject[] trophyObjArr;
     public Trophy_Data[] trophyDataArr
     {
         get
@@ -72,13 +75,16 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Trophy_Data[] m_TrophyDataArr;
 
-    // Shell Data
+    [Header("Shell Data")]
     public GameObject[] shellObjArr;
 
-    // Effect Data
+    [Header("Effect Data")]
     public GameObject[] effectObjArr;
 
-    // Reference Data
+    [Header("Boost Data")]
+    public GameObject[] boostObjArr;
+    
+    [Header("Reference Data")]
     public Sprite populationPointSprite;
     public Sprite[] wealthSpriteArr;
     public Sprite[] populationSpriteArr;
@@ -156,6 +162,10 @@ public class DataBase_Manager : MonoBehaviour
     }
 
     // Unit
+    public void SetUnitClass_Func(int _unitID, Unit_Script _unitClass)
+    {
+        unitClassDic.Add(_unitID, _unitClass);
+    }
     public string GetUnitName_Func(int _unitID)
     {
         return m_UnitDataArr[_unitID].unitName;
@@ -174,6 +184,18 @@ public class DataBase_Manager : MonoBehaviour
     public int GetUnitMaxNum_Func()
     {
         return unitDataObjArr.Length;
+    }
+    public int GetUnitLevelUpCost_Func(int _recentLevel)
+    {
+        int _initCost = 1000;
+        int _cost = _initCost;
+
+        for (int i = 1; i < _recentLevel; i++)
+        {
+            _cost += (_initCost * i);
+        }
+
+        return _cost;
     }
 
     // Food

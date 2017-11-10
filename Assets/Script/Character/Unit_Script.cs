@@ -25,6 +25,8 @@ public class Unit_Script : Character_Script
 
     public void SetData_Func(Unit_Data _unitData)
     {
+        // 풀링 될 때의 첫 데이터 세팅
+
         unitID = _unitData.unitId;
         charName = _unitData.unitName;
         charDesc = _unitData.unitDesc;

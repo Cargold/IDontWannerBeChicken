@@ -81,7 +81,7 @@ public class Battle_Manager : MonoBehaviour
             _spawnAllyObj.transform.parent = this.transform;
             _spawnAllyObj.name = "SpawnObjAlly_" + i + "_" + DataBase_Manager.Instance.GetUnitName_Func(i);
 
-            Unit_Script _playerUnitClass = Player_Data.Instance.playerUnitDataArr[i].unitClass;
+            Unit_Script _playerUnitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
 
             spawnClassArr_Ally[i] = _spawnAllyObj.AddComponent<BattleSpawn_Script>();
             spawnClassArr_Ally[i].Init_Func(this, GroupType.Ally, i, _playerUnitClass);
@@ -599,7 +599,8 @@ public class Battle_Manager : MonoBehaviour
             int _unlockUnitID = -1;
             for (int i = 0; i < _unitNum; i++)
             {
-                if(battleID == DataBase_Manager.Instance.unitUnlockConditionArr[i])
+                int _unlockStageLevel = DataBase_Manager.Instance.GetUnitClass_Func(i).unlockLevel;
+                if(battleID == _unlockStageLevel)
                 {
                     _unlockUnitID = i;
                     break;

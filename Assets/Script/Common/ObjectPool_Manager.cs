@@ -59,7 +59,7 @@ public class ObjectPool_Manager : MonoBehaviour
 
             poolList[_poolListCount].name = _unitClass.charName;
 
-            DataBase_Manager.Instance.unitClassDic.Add(i, _unitClass);
+            DataBase_Manager.Instance.SetUnitClass_Func(i, _unitClass);
         }
 
         yield break;

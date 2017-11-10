@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class FeedingRoom_Script : LobbyUI_Parent
 {
@@ -40,6 +41,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
         ChooseUpgrade,
     }
     public FeedingRoomState feedingRoomState;
+
+    [Header("Unit Upgrade")]
+    public RectTransform unitLevelUpBtnRTrf;
+    public Text unitLevelUpText;
+    private int unitLevelUpCost;
 
     #region Override Group
     protected override void InitUI_Func()
@@ -92,6 +98,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             PointUp_Func(_foodClass);
         }
+
+        PrintUnitUpgradeCost_Func();
 
         anim["FeedingRoom"].speed = 1f;
         anim.Play("FeedingRoom");
@@ -346,7 +354,60 @@ public class FeedingRoom_Script : LobbyUI_Parent
         }
     }
 
-    #region Upgrade Group
+    #region Unit Upgrade Group
+    void PrintUnitUpgradeCost_Func(int _charLevel = -1)
+    {
+        if(_charLevel == -1)
+        {
+            if (selectUnitID == 999)
+            {
+                _charLevel = Player_Data.Instance.heroLevel;
+            }
+            else
+            {
+                _charLevel = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitLevel;
+            }
+        }
+
+        int _charGrade = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID).charGrade;
+        unitLevelUpCost = DataBase_Manager.Instance.GetUnitLevelUpCost_Func(_charLevel + _charGrade);
+        unitLevelUpText.text = unitLevelUpCost.ToString();
+    }
+    public void OnUnitLevelUp_Func()
+    {
+        bool _isCorrect = Player_Data.Instance.PayWealth_Func(WealthType.Gold, unitLevelUpCost, true);
+        if(_isCorrect == true)
+        {
+            int _charLevel = 0;
+            if (selectUnitID == 999)
+            {
+
+            }
+            else
+            {
+                _charLevel = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitLevel;
+                _charLevel++;
+
+                Player_Data.Instance.playerUnitDataArr[selectUnitID].SetLevel_Func(_charLevel);
+
+                Player_Data.Instance.PayWealth_Func(WealthType.Gold, unitLevelUpCost);
+            }
+
+            PrintUnitUpgradeCost_Func(_charLevel);
+        }
+        else
+        {
+            unitLevelUpText.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
+        }
+    }
+    void ResetLevelUpBtn_Func()
+    {
+        Color _color = DataBase_Manager.Instance.textColor;
+        unitLevelUpText.DOColor(_color, 0.2f);
+    }
+    #endregion
+
+    #region Food Upgrade Group
     private void PrintUpgradeInfo_Func()
     {
         float _expTotal = materialFoodClass.GetMaterialExp_Func();
@@ -496,7 +557,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         stomachClass.FeedFoodByChain_Func(_foodClass);
     }
     #endregion
-
     #region Animation Group
     public void AnimationStart_Func()
     {

@@ -5,15 +5,14 @@ using DG.Tweening;
 
 public class Test_Script : MonoBehaviour
 {
-    public Nature_Script natureClass;
-
-    private void Awake()
-    {
-        natureClass = this.GetComponent<Nature_Script>();
-    }
-
+    public int level;
+    public bool isTest = false;
     void Update()
     {
-        
+        if (isTest == false) return;
+        isTest = false;
+
+        int _cost = DataBase_Manager.Instance.GetUnitLevelUpCost_Func(level);
+        Debug.Log("Test, Cost : " + _cost);
     }
 }

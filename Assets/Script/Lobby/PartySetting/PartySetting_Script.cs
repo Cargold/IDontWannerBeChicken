@@ -294,7 +294,7 @@ public class PartySetting_Script : LobbyUI_Parent
     #region Print Group
     public void PrintInfoUI_Func()
     {
-        Unit_Script _unitClass = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitClass;
+        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);
 
         unitInfoTextArr[0].text = ((int)_unitClass.attackValue).ToString();
         unitInfoTextArr[1].text = ((int)_unitClass.healthPoint_Max).ToString();
@@ -307,7 +307,7 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public void ReadyUnitImage_Func()
     {
-        Unit_Script _unitClass = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitClass;
+        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);
         changeUnitSprite = _unitClass.cardSprite;
         unitImagePivotAxisY = _unitClass.imagePivotAxisY * 100f;
         unitShadowSize = _unitClass.shadowSize;
