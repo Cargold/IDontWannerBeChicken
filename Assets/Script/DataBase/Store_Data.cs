@@ -13,7 +13,7 @@ public struct Store_Data
 
     public StoreGoodsType storeGoodsType;
     public string goodsTitle;
-    public string goodsDesc;
+    public string[] goodsDescArr;
     public int goodsID;
     public int goodsAmount;
 }

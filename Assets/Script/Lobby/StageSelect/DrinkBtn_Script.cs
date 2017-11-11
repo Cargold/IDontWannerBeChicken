@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Boost_Data
+public class DrinkBtn_Script : MonoBehaviour
 {
     
 }

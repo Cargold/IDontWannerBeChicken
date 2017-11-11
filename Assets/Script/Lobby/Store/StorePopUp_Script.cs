@@ -30,7 +30,12 @@ public class StorePopUp_Script : MonoBehaviour
 
         titleText.text = "구매?";
 
-        contentText.text = _storeData.goodsDesc;
+        string _desc = "";
+        for (int i = 0; i < _storeData.goodsDescArr.Length; i++)
+        {
+            _desc += _storeData.goodsDescArr[i] + "\n";
+        }
+        contentText.text = _desc;
 
         goodsText.text = _storeData.goodsTitle + " " + string.Format("{0:N0}", _storeData.goodsAmount);
 
@@ -42,7 +47,7 @@ public class StorePopUp_Script : MonoBehaviour
     public void OnPayButton_Func()
     {
         bool _isPayable
-            = Player_Data.Instance.PayWealth_Func(storeData.costType, storeData.costValue, true);
+            = Player_Data.Instance.PayWealth_Func(storeData.costType, storeData.costValue);
         
         if (_isPayable == true)
         {

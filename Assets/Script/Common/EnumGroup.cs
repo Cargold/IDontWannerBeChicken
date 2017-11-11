@@ -148,6 +148,7 @@ public enum NatureWorkType
 
 public enum TrophyType
 {
+    Random = -2,
     None = -1,
     HealthPoint_Hero,
     AttackValue_Hero,
@@ -200,7 +201,7 @@ public enum MonsterType
     Boss,
 }
 
-public enum BoostType
+public enum DrinkType
 {
     None = -1,
     Gold,

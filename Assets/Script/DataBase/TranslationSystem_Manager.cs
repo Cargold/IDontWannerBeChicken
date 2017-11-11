@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TranslateSystem_Manager : MonoBehaviour
+public class TranslationSystem_Manager : MonoBehaviour
 {
-    public static TranslateSystem_Manager Instance;
+    public static TranslationSystem_Manager Instance;
 
     public LanguageType languageType;
 

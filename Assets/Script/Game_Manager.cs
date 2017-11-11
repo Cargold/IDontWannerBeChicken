@@ -7,7 +7,7 @@ public class Game_Manager : MonoBehaviour
 {
     public static Game_Manager Instance;
 
-    public TranslateSystem_Manager translateSystem;
+    public TranslationSystem_Manager translationSystem;
     public DataBase_Manager databaseClass;
     public Player_Data playerDataClass;
     public Battle_Manager battleClass;
@@ -28,7 +28,7 @@ public class Game_Manager : MonoBehaviour
     IEnumerator Init_Cor()
     {
         yield return InitMain_Cor();
-        yield return translateSystem.Init_Cor();    // 1. 언어 설정
+        yield return translationSystem.Init_Cor();  // 1. 언어 설정
         yield return databaseClass.Init_Cor();      // 2. DB에서 고정 데이터 불러오기
         yield return objectPoolManager.Init_Cor();  // 3. DB 정보를 바탕으로 풀링 생성
         yield return playerDataClass.Init_Cor();    // 4. 생성된 풀링들 중 샘플에 플레이어 데이터 적용

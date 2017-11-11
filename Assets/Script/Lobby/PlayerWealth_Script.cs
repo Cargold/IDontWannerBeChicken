@@ -12,11 +12,11 @@ public class PlayerWealth_Script : MonoBehaviour
     {
         if(_wealthType == WealthType.Gold)
         {
-            goldText.text = _value.ToString();
+            goldText.text = string.Format("{0:N0}", _value);
         }
         else if(_wealthType == WealthType.Mineral)
         {
-            mineralText.text = _value.ToString();
+            mineralText.text = string.Format("{0:N0}", _value);
         }
     }
 

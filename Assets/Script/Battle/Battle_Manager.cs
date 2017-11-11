@@ -556,37 +556,10 @@ public class Battle_Manager : MonoBehaviour
         // 아이템 획득 확률 비교
         if (_calcFoodGetPer < Random.Range(0f, 100f)) return;
 
-        FoodGrade _foodGrade = FoodGrade.None;
-        int _randValue = Random.Range(0, 100);
-        if(0 <= _randValue && _randValue < 70)
-        {
-            _foodGrade = FoodGrade.Common;
-        }
-        else if (70 <= _randValue && _randValue < 95)
-        {
-            _foodGrade = FoodGrade.Rare;
-        }
-        else
-        {
-            _foodGrade = FoodGrade.Legend;
-        }
-
-        int _foodNum = DataBase_Manager.Instance.foodDataArr.Length;
-        int _randFoodID = Random.Range(0, _foodNum);
-        while(true)
-        {
-            if(_foodGrade == DataBase_Manager.Instance.foodDataArr[_randFoodID].foodGrade)
-            {
-                break;
-            }
-
-            _randFoodID++;
-            if (_foodNum <= _randFoodID)
-                _randFoodID = 0;
-        }
+        int _foodID = Lobby_Manager.Instance.storeRoomClass.GetFoodID_Func();
 
         Reward_Data _rewardData = new Reward_Data();
-        _rewardData.SetData_Func(RewardType.Food, _randFoodID, 1);
+        _rewardData.SetData_Func(RewardType.Food, _foodID, 1);
         rewardDataList.Add(_rewardData);
     }
     void GetRewardUnit_Func(bool _isVictory)
@@ -816,7 +789,7 @@ public class Battle_Manager : MonoBehaviour
     }
     void SetRewardOnPlayerTrophy_Func(int _rewardID, int _rewardAmount)
     {
-        Player_Data.Instance.CheckTrophyAdd_Func(_rewardID, true);
+        Player_Data.Instance.AddTrophy_Func(_rewardID, true);
     }
     #endregion
 }

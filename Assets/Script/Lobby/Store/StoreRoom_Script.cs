@@ -145,8 +145,14 @@ public class StoreRoom_Script : LobbyUI_Parent
             {
                 int _storeDataID = (_listID * 4) + _cardID;
 
-                storeCardTitleTextArr[_storeDataID].text = storeDataArr[_storeDataID].goodsTitle;
-
+                storeCardTitleTextArr[_storeDataID].text
+                    = storeDataArr[_storeDataID].goodsTitle;
+                if(0 < storeDataArr[_storeDataID].goodsAmount)
+                {
+                    storeCardTitleTextArr[_storeDataID].text
+                        += " " + string.Format("{0:N0}", storeDataArr[_storeDataID].goodsAmount);
+                }
+                
                 storeCardImageArr[_storeDataID].sprite = storeDataArr[_storeDataID].storeCardSprite;
                 storeCardImageArr[_storeDataID].SetNativeSize();
                 
@@ -209,13 +215,66 @@ public class StoreRoom_Script : LobbyUI_Parent
                 Player_Data.Instance.AddWealth_Func((WealthType)_storeData.goodsID, _storeData.goodsAmount);
                 break;
             case StoreGoodsType.FoodBox:
+                FoodGrade _foodGrade = FoodGrade.Common;
+                if (_storeData.goodsID == 1)
+                    _foodGrade = FoodGrade.Rare;
+
+                for (int i = 0; i < _storeData.goodsAmount; i++)
+                {
+                    int _foodID = GetFoodID_Func(_foodGrade);
+                    Player_Data.Instance.AddFood_Func(_foodID);
+                }
                 break;
             case StoreGoodsType.Trophy:
+                for (int i = 0; i < _storeData.goodsAmount; i++)
+                {
+                    Player_Data.Instance.AddTrophy_Func(TrophyType.Random, true);
+                }
                 break;
             case StoreGoodsType.Drink:
                 break;
             case StoreGoodsType.Package:
                 break;
         }
+    }
+
+    public int GetFoodID_Func(FoodGrade _checkFoodGrade = FoodGrade.Common)
+    {
+        int _perBonos = 0;
+        if (_checkFoodGrade == FoodGrade.Rare)
+            _perBonos = 70;
+        else if (_checkFoodGrade == FoodGrade.Legend)
+            _perBonos = 95;
+
+        FoodGrade _foodGrade = FoodGrade.None;
+        int _randValue = Random.Range(_perBonos, 100);
+        if (0 <= _randValue && _randValue < 70)
+        {
+            _foodGrade = FoodGrade.Common;
+        }
+        else if (70 <= _randValue && _randValue < 95)
+        {
+            _foodGrade = FoodGrade.Rare;
+        }
+        else
+        {
+            _foodGrade = FoodGrade.Legend;
+        }
+
+        int _foodNum = DataBase_Manager.Instance.foodDataArr.Length;
+        int _randFoodID = Random.Range(0, _foodNum);
+        while (true)
+        {
+            if (_foodGrade == DataBase_Manager.Instance.foodDataArr[_randFoodID].foodGrade)
+            {
+                break;
+            }
+
+            _randFoodID++;
+            if (_foodNum <= _randFoodID)
+                _randFoodID = 0;
+        }
+
+        return _randFoodID;
     }
 }

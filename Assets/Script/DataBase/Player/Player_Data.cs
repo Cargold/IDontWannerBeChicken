@@ -45,6 +45,9 @@ public class Player_Data : MonoBehaviour
     public int stageID_Normal;
     public int stageID_Special;
 
+    [Header("Drink")]
+    public PlayerDrink_Data[] drinkDataArr;
+
     public IEnumerator Init_Cor()
     {
         Instance = this;
@@ -58,6 +61,7 @@ public class Player_Data : MonoBehaviour
         yield return LoadInventory_Cor();
         yield return LoadSkill_Cor();
         yield return LoadStage_Cor();
+        yield return LoadDrink_Cor();
 
         yield break;
     }
@@ -168,6 +172,10 @@ public class Player_Data : MonoBehaviour
         
         yield break;
     } // UnComplete
+    IEnumerator LoadDrink_Cor()
+    {
+        yield break;
+    }
     
     #region Wealth Group
     public void AddWealth_Func(WealthType _wealthType, int _value)
@@ -267,13 +275,17 @@ public class Player_Data : MonoBehaviour
             return _effectValue;
         }
     }
-    public bool CheckTrophyAdd_Func(TrophyType _trophyType, bool _isAdd = false)
+    public bool AddTrophy_Func(TrophyType _trophyType, bool _isAdd = false)
     {
-        int _trophyID = (int)_trophyType;
+        int _trophyID = -1;
+        if (_trophyType == TrophyType.Random)
+            _trophyID = Random.Range(0, trophyDataArr.Length);
+        else 
+            _trophyID = (int)_trophyType;
 
-        return CheckTrophyAdd_Func(_trophyID, _isAdd);
+        return AddTrophy_Func(_trophyID, _isAdd);
     }
-    public bool CheckTrophyAdd_Func(int _trophyID, bool _isAdd = false)
+    public bool AddTrophy_Func(int _trophyID, bool _isAdd = false)
     {
         int _haveNum = trophyDataArr[_trophyID].haveNum;
         bool _isReturnValue = false;
@@ -650,6 +662,68 @@ public class Player_Data : MonoBehaviour
         {
             selectSkillIDArr[_grade]++;
         }
+    }
+    #endregion
+    #region Drink Group
+    public void AddDrink_Func(DrinkType _drinkType)
+    {
+        int _drinkID = (int)_drinkType;
+
+        AddDrink_Func(_drinkID);
+    }
+    public void AddDrink_Func(int _drinkID)
+    {
+        drinkDataArr[_drinkID].haveNum++;
+    }
+    public bool SetDrinkUse_Func(DrinkType _drinkType, bool _isOn)
+    {
+        int _drinkID = (int)_drinkType;
+
+        return SetDrinkUse_Func(_drinkID, _isOn);
+    }
+    public bool SetDrinkUse_Func(int _drinkID, bool _isOn)
+    {
+        if(_isOn == true)
+        {
+            if (0 < drinkDataArr[_drinkID].haveNum)
+            {
+                drinkDataArr[_drinkID].isUse = true;
+                return true;
+            }
+            else
+            {
+                drinkDataArr[_drinkID].isUse = false;
+                return false;
+            }
+        }
+        else
+        {
+            drinkDataArr[_drinkID].isUse = false;
+            return true;
+        }
+    }
+    public void UseDrink_Func(DrinkType _drinkType)
+    {
+        int _drinkID = (int)_drinkType;
+
+        if (drinkDataArr[_drinkID].haveNum <= 0)
+            Debug.LogError("Bug : 다음 드링크의 재고가 없습니다." + _drinkType);
+        else
+            drinkDataArr[_drinkID].haveNum--;
+    }
+    public bool CheckDrinkUse_Func(int _drinkID)
+    {
+        return drinkDataArr[_drinkID].isUse;
+    }
+    public int GetDrinkNum_Func(DrinkType _drinkType)
+    {
+        int _drinkID = (int)_drinkType;
+
+        return GetDrinkNum_Func(_drinkID);
+    }
+    public int GetDrinkNum_Func(int _drinkID)
+    {
+        return drinkDataArr[_drinkID].haveNum;
     }
     #endregion
 }

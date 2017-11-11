@@ -83,8 +83,17 @@ public class DataBase_Manager : MonoBehaviour
     [Header("Effect Data")]
     public GameObject[] effectObjArr;
 
-    [Header("Boost Data")]
-    public GameObject[] boostObjArr;
+    [Header("Drink Data")]
+    public GameObject[] drinkObjArr;
+    public Drink_Data[] drinkDataArr
+    {
+        get
+        {
+            return m_DrinkDataArr;
+        }
+    }
+    [SerializeField]
+    private Drink_Data[] m_DrinkDataArr;
 
     [Header("Reference Data")]
     public Sprite populationPointSprite;
@@ -104,7 +113,8 @@ public class DataBase_Manager : MonoBehaviour
         yield return InitFoodData_Cor();
         yield return InitTrophyData_Cor();
         yield return InitSkillData_Cor();
-        
+        yield return InitDrinkData_Cor();
+
         yield break;
     }
     IEnumerator InitUnitData_Cor()
@@ -115,11 +125,11 @@ public class DataBase_Manager : MonoBehaviour
         {
             Unit_Script _unitClass = unitDataObjArr[i].GetComponent<Unit_Script>();
             m_UnitDataArr[i].SetData_Func(_unitClass, i);
-
-            yield return null;
         }
 
         unitClassDic = new Dictionary<int, Unit_Script>();
+
+        yield break;
     }
     IEnumerator InitMonsterData_Cor()
     {
@@ -129,8 +139,6 @@ public class DataBase_Manager : MonoBehaviour
         {
             Unit_Script _monsterClass = monsterDataObjArr[i].GetComponent<Unit_Script>();
             m_MonsterDataArr[i].SetData_Func(_monsterClass, i);
-
-            yield return null;
         }
 
         monsterClassDic = new Dictionary<int, Unit_Script>();
@@ -146,9 +154,9 @@ public class DataBase_Manager : MonoBehaviour
             Food_Script _foodClass = foodDataObjArr[i].GetComponent<Food_Script>();
             _foodClass.foodId = i;
             m_FoodDataArr[i].SetData_Func(_foodClass);
-
-            yield return null;
         }
+
+        yield break;
     }
     IEnumerator InitTrophyData_Cor()
     {
@@ -159,9 +167,9 @@ public class DataBase_Manager : MonoBehaviour
             Trophy_Script _trophyClass = trophyObjArr[i].GetComponent<Trophy_Script>();
             _trophyClass.trophyID = i;
             m_TrophyDataArr[i].SetData_Func(_trophyClass);
-
-            yield return null;
         }
+
+        yield break;
     }
     IEnumerator InitSkillData_Cor()
     {
@@ -171,9 +179,21 @@ public class DataBase_Manager : MonoBehaviour
         {
             Skill_Parent _skillClass = skillDataObjArr[i].GetComponent<Skill_Parent>();
             m_SkillDataArr[i].SetData_Func(_skillClass);
-
-            yield return null;
         }
+
+        yield break;
+    }
+    IEnumerator InitDrinkData_Cor()
+    {
+        int _drinkDataNum = drinkObjArr.Length;
+        m_DrinkDataArr = new Drink_Data[_drinkDataNum];
+        for (int i = 0; i < _drinkDataNum; i++)
+        {
+            Drink_Script _drinkClass = drinkObjArr[i].GetComponent<Drink_Script>();
+            m_DrinkDataArr[i].SetData_Func(_drinkClass);
+        }
+
+        yield break;
     }
 
     // Unit
