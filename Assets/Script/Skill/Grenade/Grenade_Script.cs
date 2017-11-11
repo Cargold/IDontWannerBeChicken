@@ -22,7 +22,7 @@ public class Grenade_Script : Skill_Parent
     {
         grenadeColClass.Init_Func(this);
 
-        playerTrf = Player_Data.Instance.playerClass.transform;
+        playerTrf = Player_Data.Instance.playerHeroData.transform;
     }
     protected override void BattleEnterChild_Func()
     {
@@ -32,7 +32,7 @@ public class Grenade_Script : Skill_Parent
 
         damageValue
             = damageData.recentValue
-            + Player_Data.Instance.playerClass.attackValue * damagePerData.recentValue;
+            + Player_Data.Instance.playerHeroData.attackValue * damagePerData.recentValue;
     }
     public override void UseSkill_Func()
     {

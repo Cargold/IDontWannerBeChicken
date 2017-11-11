@@ -24,6 +24,8 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Unit_Data[] m_UnitDataArr;
     private Dictionary<int, Unit_Script> unitClassDic;
+    public float allyUnit_LevelPerBonus;
+    public float enemyMonster_LevelPerBonus;
 
     [Header("Monster Data")]
     public GameObject[] monsterDataObjArr;
@@ -83,17 +85,16 @@ public class DataBase_Manager : MonoBehaviour
 
     [Header("Boost Data")]
     public GameObject[] boostObjArr;
-    
+
     [Header("Reference Data")]
     public Sprite populationPointSprite;
     public Sprite[] wealthSpriteArr;
-    public Sprite[] populationSpriteArr;
     public Sprite[] manaCostSpriteArr;
-
+    public Sprite[] rewardCardSpriteArr;
     public Color textColor;
-
     public float[] foodGradePenaltyValue;
 
+    // Init
     public IEnumerator Init_Cor()
     {
         Instance = this;
@@ -101,6 +102,7 @@ public class DataBase_Manager : MonoBehaviour
         yield return InitUnitData_Cor();
         yield return InitMonsterData_Cor();
         yield return InitFoodData_Cor();
+        yield return InitTrophyData_Cor();
         yield return InitSkillData_Cor();
         
         yield break;
@@ -144,6 +146,19 @@ public class DataBase_Manager : MonoBehaviour
             Food_Script _foodClass = foodDataObjArr[i].GetComponent<Food_Script>();
             _foodClass.foodId = i;
             m_FoodDataArr[i].SetData_Func(_foodClass);
+
+            yield return null;
+        }
+    }
+    IEnumerator InitTrophyData_Cor()
+    {
+        int _trophyDataObjNum = trophyObjArr.Length;
+        m_TrophyDataArr = new Trophy_Data[_trophyDataObjNum];
+        for (int i = 0; i < _trophyDataObjNum; i++)
+        {
+            Trophy_Script _trophyClass = trophyObjArr[i].GetComponent<Trophy_Script>();
+            _trophyClass.trophyID = i;
+            m_TrophyDataArr[i].SetData_Func(_trophyClass);
 
             yield return null;
         }

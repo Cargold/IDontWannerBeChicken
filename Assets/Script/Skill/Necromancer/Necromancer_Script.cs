@@ -22,7 +22,7 @@ public class Necromancer_Script : Skill_Parent
 
     public override void Init_Func()
     {
-        playerTrf = Player_Data.Instance.playerClass.transform;
+        playerTrf = Player_Data.Instance.playerHeroData.transform;
     }
     protected override void BattleEnterChild_Func()
     {

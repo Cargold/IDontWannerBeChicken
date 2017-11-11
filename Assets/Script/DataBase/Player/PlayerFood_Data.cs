@@ -5,9 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerFood_ClassData
 {
+    public int foodID;
     public int level;
     public float remainExp;
-    public int foodID;
     public string foodName;
     public Vector3 pos;
     public Vector3 rot;

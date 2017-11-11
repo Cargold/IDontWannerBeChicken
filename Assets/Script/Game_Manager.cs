@@ -7,6 +7,7 @@ public class Game_Manager : MonoBehaviour
 {
     public static Game_Manager Instance;
 
+    public TranslateSystem_Manager translateSystem;
     public DataBase_Manager databaseClass;
     public Player_Data playerDataClass;
     public Battle_Manager battleClass;
@@ -27,13 +28,14 @@ public class Game_Manager : MonoBehaviour
     IEnumerator Init_Cor()
     {
         yield return InitMain_Cor();
-        yield return databaseClass.Init_Cor();      // 1. DB에서 고정 데이터 불러오기
-        yield return objectPoolManager.Init_Cor();  // 2. DB 정보를 바탕으로 풀링 생성
-        yield return playerDataClass.Init_Cor();    // 3. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
-        yield return lobbyClass.Init_Cor();         // 4. 플레이어 데이터를 바탕으로 로비 구성
-        yield return directionClass.Init_Cor();     // 5. 메인로비의 Idle 애니메이션 연출 시작
-        yield return battleClass.Init_Cor();        // 6. 스폰매니저 등 전투 관련 데이터 활성화
-        yield return enviromentClass.Init_Cor();    // 7. 환경 생성
+        yield return translateSystem.Init_Cor();    // 1. 언어 설정
+        yield return databaseClass.Init_Cor();      // 2. DB에서 고정 데이터 불러오기
+        yield return objectPoolManager.Init_Cor();  // 3. DB 정보를 바탕으로 풀링 생성
+        yield return playerDataClass.Init_Cor();    // 4. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
+        yield return lobbyClass.Init_Cor();         // 5. 플레이어 데이터를 바탕으로 로비 구성
+        yield return directionClass.Init_Cor();     // 6. 메인로비의 Idle 애니메이션 연출 시작
+        yield return battleClass.Init_Cor();        // 7. 스폰매니저 등 전투 관련 데이터 활성화
+        yield return enviromentClass.Init_Cor();    // 8. 환경 생성
 
         yield return Loading_Cor(true);
 

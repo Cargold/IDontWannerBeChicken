@@ -662,12 +662,12 @@ public class Battle_Manager : MonoBehaviour
                 int _randTrophyID = Random.Range(0, _trophyDataNum);
                 while (true)
                 {
-                    PlayerTrophy_Data _playerTrophyData = Player_Data.Instance.trophyDataArr[_randTrophyID];
-                    if (_playerTrophyData.haveNumLimit == 0)
+                    int _amountLimit = DataBase_Manager.Instance.trophyDataArr[_randTrophyID].amountLimit;
+                    if (_amountLimit == 0)
                     {
                         break;
                     }
-                    else if (_playerTrophyData.haveNum < _playerTrophyData.haveNumLimit)
+                    else if (Player_Data.Instance.trophyDataArr[_randTrophyID].haveNum < _amountLimit)
                     {
                         break;
                     }
@@ -816,7 +816,7 @@ public class Battle_Manager : MonoBehaviour
     }
     void SetRewardOnPlayerTrophy_Func(int _rewardID, int _rewardAmount)
     {
-        Player_Data.Instance.AddTrophy_Func(_rewardID);
+        Player_Data.Instance.CheckTrophyAdd_Func(_rewardID, true);
     }
     #endregion
 }

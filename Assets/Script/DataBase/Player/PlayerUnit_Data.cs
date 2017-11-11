@@ -11,8 +11,8 @@ public class PlayerUnit_ClassData
     public float healthPoint_RelativeLevel;
     public float attackValue_RelativeLevel;
     [SerializeField]
-    private Unit_Script unitClass;
-
+    public Unit_Script unitClass;
+    [SerializeField]
     private List<PlayerFood_ClassData> playerFoodDataList;
 
     public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass)
@@ -23,13 +23,13 @@ public class PlayerUnit_ClassData
         unitClass = _unitClass;
         playerFoodDataList = new List<PlayerFood_ClassData>();
 
+        SetLevel_Func(_unitLevel, true);
+
         // 유닛의 음식 정보 불러오기
         for (int i = 0; i < playerFoodDataList.Count; i++)
         {
             
         }
-
-        SetLevel_Func(_unitLevel, true);
 
         yield break;
     }
@@ -97,14 +97,34 @@ public class PlayerUnit_ClassData
     void SetLevel_Level_Func(float _levelValue)
     {
         unitLevel = (int)_levelValue;
+        _levelValue -= 1f;
 
-        float _healthPoint = DataBase_Manager.Instance.unitDataArr[unitID].healthPoint;
-        healthPoint_RelativeLevel = ((_levelValue * 0.05f) + 1f) * _healthPoint;
-        unitClass.healthPoint_Max = healthPoint_RelativeLevel;
+        if (unitClass.groupType == GroupType.Ally)
+        {
+            float _levelPerBonus = DataBase_Manager.Instance.allyUnit_LevelPerBonus;
+            _levelPerBonus *= 0.01f;
+
+            float _healthPoint = DataBase_Manager.Instance.unitDataArr[unitID].healthPoint;
+            healthPoint_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _healthPoint;
+            unitClass.healthPoint_Max = healthPoint_RelativeLevel;
         
-        float _attackValue = DataBase_Manager.Instance.unitDataArr[unitID].attackValue;
-        attackValue_RelativeLevel = ((_levelValue * 0.05f) + 1f) * _attackValue;
-        unitClass.attackValue = attackValue_RelativeLevel;
+            float _attackValue = DataBase_Manager.Instance.unitDataArr[unitID].attackValue;
+            attackValue_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _attackValue;
+            unitClass.attackValue = attackValue_RelativeLevel;
+        }
+        else if(unitClass.groupType == GroupType.Enemy)
+        {
+            float _levelPerBonus = DataBase_Manager.Instance.enemyMonster_LevelPerBonus;
+            _levelPerBonus *= 0.01f;
+
+            float _healthPoint = DataBase_Manager.Instance.unitDataArr[unitID].healthPoint;
+            healthPoint_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _healthPoint;
+            unitClass.healthPoint_Max = healthPoint_RelativeLevel;
+
+            float _attackValue = DataBase_Manager.Instance.unitDataArr[unitID].attackValue;
+            attackValue_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _attackValue;
+            unitClass.attackValue = attackValue_RelativeLevel;
+        }
     }
     void SetLevel_Food_Func()
     {
@@ -116,6 +136,13 @@ public class PlayerUnit_ClassData
     }
     void SetLevel_Trophy_Func()
     {
+        float _hpTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.HealthPoint_Unit, true);
+        float _dmgTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.AttackValue_Unit, true);
 
+        _hpTrophyEffectValue *= DataBase_Manager.Instance.unitDataArr[unitID].healthPoint * 0.01f;
+        _dmgTrophyEffectValue *= DataBase_Manager.Instance.unitDataArr[unitID].attackValue * 0.01f;
+        
+        unitClass.healthPoint_Max += _hpTrophyEffectValue;
+        unitClass.attackValue += _dmgTrophyEffectValue;
     }
 }

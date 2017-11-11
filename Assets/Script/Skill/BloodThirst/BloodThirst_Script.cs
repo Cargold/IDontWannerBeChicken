@@ -20,7 +20,7 @@ public class BloodThirst_Script : Skill_Parent
         bloodThirstColClass = hasteObj.GetComponent<BloodThirstCol_Script>();
         bloodThirstColClass.Init_Func(this);
 
-        playerTrf = Player_Data.Instance.playerClass.transform;
+        playerTrf = Player_Data.Instance.playerHeroData.transform;
 
         hasteCharList = new List<Character_Script>();
         hasteValueList = new List<float>();
@@ -54,9 +54,9 @@ public class BloodThirst_Script : Skill_Parent
             }
         }
 
-        if (hasteCharList.Contains(Player_Data.Instance.playerClass) == false)
+        if (hasteCharList.Contains(Player_Data.Instance.playerHeroData) == false)
         {
-            hasteCharList.Add(Player_Data.Instance.playerClass);
+            hasteCharList.Add(Player_Data.Instance.playerHeroData);
         }
 
         StartCoroutine(Hasting_Cor());

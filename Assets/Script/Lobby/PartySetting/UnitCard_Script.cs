@@ -17,7 +17,6 @@ public class UnitCard_Script : MonoBehaviour
     }
     public CardState cardState;
     
-    public Image populationImage;
     public Image unitImage;
     public GameObject[] cardStateObjArr;
     public Text unlockConditionText;

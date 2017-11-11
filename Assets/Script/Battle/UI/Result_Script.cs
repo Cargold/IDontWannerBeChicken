@@ -183,7 +183,7 @@ public class Result_Script : MonoBehaviour
     }
     void SetRewardFoodBox_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
-
+        Debug.Log("Cargold : 가챠박스 보상 쪽 미작업");
     }
     void SetRewardUnit_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
@@ -200,7 +200,7 @@ public class Result_Script : MonoBehaviour
     }
     void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
-        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationSpriteArr[0];
+        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationPointSprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();
         resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
 
@@ -222,7 +222,7 @@ public class Result_Script : MonoBehaviour
         resultRewardImageArr[_rewardObjID].sprite = _trophyData.trophySprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();                                                                                 
 
-        resultRewardTextArr[_rewardObjID].text = _trophyData.trophyName;
+        resultRewardTextArr[_rewardObjID].text = "트로피";
     }
 
     public void OnButton_Func(bool _isLeft)

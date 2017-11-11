@@ -29,6 +29,7 @@ public class Player_Script : Character_Script
     private float shieldValue_Max;
     private float shieldValue_Recent;
 
+    public float manaStart;
     public float manaRegen;
     
     public void LobbyEnter_Func()

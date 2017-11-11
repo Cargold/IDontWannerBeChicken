@@ -35,6 +35,7 @@ public enum WealthType
     None = -1,
     Gold,
     Mineral,
+    Real,
 }
 
 public enum FoodGrade
@@ -206,4 +207,31 @@ public enum BoostType
     Mana,
     Health,
     Critical,
+}
+
+public enum StoreState
+{
+    None = -1,
+    Mineral,
+    Gold,
+    Box,
+    Drink,
+    Package,
+}
+
+public enum StoreGoodsType
+{
+    None = -1,
+    Wealth,
+    FoodBox, // 0 : 일반, 1 : 고급
+    Trophy,
+    Drink,
+    Package,
+}
+
+public enum LanguageType
+{
+    None = -1,
+    Korea,
+    English,
 }

@@ -295,14 +295,14 @@ public class PartySetting_Script : LobbyUI_Parent
     public void PrintInfoUI_Func()
     {
         Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);
-
-        unitInfoTextArr[0].text = ((int)_unitClass.attackValue).ToString();
-        unitInfoTextArr[1].text = ((int)_unitClass.healthPoint_Max).ToString();
-        unitInfoTextArr[2].text = _unitClass.defenceValue.ToString() + "%";
-        unitInfoTextArr[3].text = _unitClass.criticalPercent.ToString() + "%";
-        unitInfoTextArr[4].text = _unitClass.spawnNum.ToString();
-        unitInfoTextArr[5].text = _unitClass.spawnInterval.ToString() + "s";
-        unitInfoTextArr[6].text = _unitClass.charName;
+        
+        unitInfoTextArr[0].text = string.Format("{0:N0}", (int)_unitClass.attackValue);
+        unitInfoTextArr[1].text = string.Format("{0:N0}", (int)_unitClass.healthPoint_Max);
+        unitInfoTextArr[2].text = string.Format("{0:N0}", _unitClass.defenceValue) + "%";
+        unitInfoTextArr[3].text = string.Format("{0:N0}", _unitClass.criticalPercent) + "%";
+        unitInfoTextArr[4].text = string.Format("{0:N0}", _unitClass.spawnNum_Limit);
+        unitInfoTextArr[5].text = string.Format("{0:N0}", _unitClass.spawnInterval) + "s";
+        unitInfoTextArr[6].text = "Lv." + Player_Data.Instance.playerUnitDataArr[_unitClass.unitID].unitLevel + " " + _unitClass.charName;
         unitInfoTextArr[7].text = _unitClass.charDesc;
     }
     public void ReadyUnitImage_Func()

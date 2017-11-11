@@ -30,6 +30,8 @@ public class Food_Script : MonoBehaviour
     public float remainExp;
     [SerializeField]
     private float materialExp;
+    public Vector3 stomachPos;
+    public Vector3 stomachRot;
     
     public bool isDragState;
 

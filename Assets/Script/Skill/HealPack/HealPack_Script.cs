@@ -17,7 +17,7 @@ public class HealPack_Script : Skill_Parent
     {
         healpackColClass.Init_Func(this);
 
-        playerTrf = Player_Data.Instance.playerClass.transform;
+        playerTrf = Player_Data.Instance.playerHeroData.transform;
     }
     protected override void BattleEnterChild_Func()
     {
@@ -63,7 +63,7 @@ public class HealPack_Script : Skill_Parent
             }
         }
 
-        Player_Data.Instance.playerClass.Heal_Func(healData.recentValue);
+        Player_Data.Instance.playerHeroData.Heal_Func(healData.recentValue);
     }
     protected override void Deactive_Func()
     {

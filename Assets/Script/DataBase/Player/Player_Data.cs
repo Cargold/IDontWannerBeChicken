@@ -14,6 +14,9 @@ public class Player_Data : MonoBehaviour
     [SerializeField]
     private PlayerWealth_Script playerWealthClass;
 
+    // Trophy
+    public PlayerTrophy_Data[] trophyDataArr;
+
     // Party
     public int[] partyUnitIdArr;
     public int populationPoint;
@@ -24,7 +27,6 @@ public class Player_Data : MonoBehaviour
 
     // Hero
     public int heroLevel;
-    public Player_Script playerClass;
     public Player_Script playerHeroData;
     public float heroHealthPoint_RelativeLevel;
     public float heroAttackValue_RelativeLevel;
@@ -33,9 +35,6 @@ public class Player_Data : MonoBehaviour
     // Inventory
     public List<PlayerFood_ClassData> inventoryFoodDataList;
     public int foodBoxLevel;
-
-    // Trophy
-    public PlayerTrophy_Data[] trophyDataArr;
 
     // Skill
     public PlayerSkill_Data[] skillDataArr;
@@ -52,11 +51,11 @@ public class Player_Data : MonoBehaviour
 
         Debug.Log("Cargold : 데이터 불러오기, 미작업");
         yield return LoadWealth_Cor();
+        yield return LoadTrophy_Cor();
         yield return LoadParty_Cor();
         yield return LoadUnit_Cor();
         yield return LoadHero_Cor();
         yield return LoadInventory_Cor();
-        yield return LoadTrophy_Cor();
         yield return LoadSkill_Cor();
         yield return LoadStage_Cor();
 
@@ -71,6 +70,17 @@ public class Player_Data : MonoBehaviour
 
         yield break;
     }
+    IEnumerator LoadTrophy_Cor()
+    {
+        for (int i = 0; i < trophyDataArr.Length; i++)
+        {
+            trophyDataArr[i].trophyID = i;
+            trophyDataArr[i].trophyType = (TrophyType)i;
+            //trophyDataArr[i].haveNum = 0;
+        }
+
+        yield break;
+    } // UnComplete
     IEnumerator LoadParty_Cor()
     {
         //for (int i = 0; i < 5; i++)
@@ -109,7 +119,7 @@ public class Player_Data : MonoBehaviour
 
         //}
 
-        DataBase_Manager.Instance.heroAttackRate = playerClass.GetAttackSpeedMax_Func();
+        DataBase_Manager.Instance.heroAttackRate = playerHeroData.GetAttackSpeedMax_Func();
 
         yield break;
     }
@@ -120,22 +130,16 @@ public class Player_Data : MonoBehaviour
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
-            //_playerFoodData.level = Random.Range(1, 4);
-            //int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
-            //_playerFoodData.foodID = Random.Range(0, _foodIDMax);
-            //_playerFoodData.remainExp = Random.Range(0f, 99f);
+            int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
+            _playerFoodData.foodID = Random.Range(0, _foodIDMax);
+            _playerFoodData.level = Random.Range(1, 4);
+            _playerFoodData.remainExp = Random.Range(0f, 99f);
 
-            _playerFoodData.level = 10;
-            _playerFoodData.foodID = 1;
-            _playerFoodData.remainExp = 0f;
+            //_playerFoodData.foodID = 1;
 
             inventoryFoodDataList.Add(_playerFoodData);
         }
 
-        yield break;
-    } // UnComplete
-    IEnumerator LoadTrophy_Cor()
-    {
         yield break;
     } // UnComplete
     IEnumerator LoadSkill_Cor()
@@ -221,6 +225,10 @@ public class Player_Data : MonoBehaviour
                 return false;
             }
         }
+        else if(_wealthType == WealthType.Real)
+        {
+            return true;
+        }
         else
         {
             Debug.LogError("Bug : 재화 종류 선택이 잘못되었습니다.");
@@ -234,6 +242,161 @@ public class Player_Data : MonoBehaviour
     public void DeactiveWealthUI_Func()
     {
         playerWealthClass.Deactive_Func();
+    }
+    #endregion
+    #region Trophy Group
+    public float GetCalcTrophyEffect_Func(TrophyType _trophyType, bool _isAll = false)
+    {
+        int _trophyID = (int)_trophyType;
+
+        return GetCalcTrophyEffect_Func(_trophyID, _isAll);
+    }
+    public float GetCalcTrophyEffect_Func(int _trophyID, bool _isAll = false)
+    {
+        int _haveNum = trophyDataArr[_trophyID].haveNum;
+        float _effectValue = DataBase_Manager.Instance.trophyDataArr[_trophyID].effectValue;
+
+        if (_isAll == true)
+        {
+            float _calcValue = _effectValue * _haveNum;
+            return _calcValue;
+        }
+        else
+        {
+
+            return _effectValue;
+        }
+    }
+    public bool CheckTrophyAdd_Func(TrophyType _trophyType, bool _isAdd = false)
+    {
+        int _trophyID = (int)_trophyType;
+
+        return CheckTrophyAdd_Func(_trophyID, _isAdd);
+    }
+    public bool CheckTrophyAdd_Func(int _trophyID, bool _isAdd = false)
+    {
+        int _haveNum = trophyDataArr[_trophyID].haveNum;
+        bool _isReturnValue = false;
+
+        if (DataBase_Manager.Instance.trophyDataArr[_trophyID].amountLimit == 0)
+        {
+            _isReturnValue = true;
+        }
+        else if (_haveNum + 1 <= DataBase_Manager.Instance.trophyDataArr[_trophyID].amountLimit)
+        {
+            _isReturnValue = true;
+        }
+        else
+        {
+            _isReturnValue = false;
+        }
+
+        if(_isAdd == true)
+        {
+            if(_isReturnValue == true)
+            {
+                trophyDataArr[_trophyID].haveNum++;
+                SetTrophyEffect_Func(_trophyID);
+            }
+        }
+
+        return _isReturnValue;
+    }
+    public int GetTrophyNum_Func(TrophyType _trophyType)
+    {
+        int _trophyID = (int)_trophyType;
+
+        return GetTrophyNum_Func(_trophyID);
+    }
+    public int GetTrophyNum_Func(int _trophyID)
+    {
+        return trophyDataArr[_trophyID].haveNum;
+    }
+    public void SetTrophyEffect_Func(TrophyType _trophyType, int _calcNum = 1)
+    {
+        int _trophyID = (int)_trophyType;
+
+        SetTrophyEffect_Func(_trophyID, _calcNum);
+    }
+    public void SetTrophyEffect_Func(int _trophyID, int _calcNum = 1)
+    {
+        TrophyType _trophyType = (TrophyType)_trophyID;
+        float _effectValue = DataBase_Manager.Instance.trophyDataArr[_trophyID].effectValue * _calcNum;
+        float _calcValue = 0f;
+        int _unitNum = 0;
+
+        switch (_trophyType)
+        {
+            case TrophyType.HealthPoint_Hero:
+                _calcValue = heroHealthPoint_RelativeLevel * _effectValue;
+                playerHeroData.healthPoint_Max += _calcValue;
+                break;
+            case TrophyType.AttackValue_Hero:
+                _calcValue = heroAttackValue_RelativeLevel * _effectValue;
+                playerHeroData.healthPoint_Max += _calcValue;
+                break;
+            case TrophyType.CriticalPercent_Hero:
+                playerHeroData.criticalPercent += _effectValue;
+                break;
+            case TrophyType.CriticalBonus_Hero:
+                playerHeroData.criticalBonus += _effectValue;
+                break;
+            case TrophyType.ManaRegen:
+                playerHeroData.manaRegen += _effectValue;
+                break;
+            case TrophyType.ManaStart:
+                playerHeroData.manaStart += _effectValue;
+                break;
+            case TrophyType.HealthPoint_Unit:
+                _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
+                for (int i = 0; i < _unitNum; i++)
+                {
+                    float _hp = playerUnitDataArr[i].healthPoint_RelativeLevel;
+                    _calcValue = _hp * _effectValue;
+
+                    playerUnitDataArr[i].unitClass.healthPoint_Max += _calcValue;
+                }
+                break;
+            case TrophyType.AttackValue_Unit:
+                _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
+                for (int i = 0; i < _unitNum; i++)
+                {
+                    float _dmg = Player_Data.Instance.playerUnitDataArr[i].attackValue_RelativeLevel;
+                    _calcValue = _dmg * _effectValue;
+
+                    Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
+                    _unitClass.attackValue += _calcValue;
+                }
+                break;
+            case TrophyType.CriticalPercent_Unit:
+                _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
+                for (int i = 0; i < _unitNum; i++)
+                {
+                    Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
+                    _unitClass.criticalPercent += _effectValue;
+                }
+                break;
+            case TrophyType.CriticalBonus_Unit:
+                _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
+                for (int i = 0; i < _unitNum; i++)
+                {
+                    Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
+                    _unitClass.criticalBonus += _effectValue;
+                }
+                break;
+            case TrophyType.HealthPoint_Monster:
+                break;
+            case TrophyType.AttackValue_Monster:
+                break;
+            case TrophyType.HealthPoint_House:
+                break;
+            case TrophyType.GoldBonus:
+                break;
+            case TrophyType.ItemDropPer:
+                break;
+            case TrophyType.UpgradeExp:
+                break;
+        }
     }
     #endregion
     #region Party Group
@@ -268,10 +431,6 @@ public class Player_Data : MonoBehaviour
     }
     #endregion
     #region Unit Group
-    public void CalcUnitData_Func(int _unitID)
-    {
-        //playerUnitDataArr[_unitID]
-    }
     #endregion
     #region Food Group
     public void AddFood_Func(int _foodID, int _foodLevel = -1)
@@ -280,9 +439,7 @@ public class Player_Data : MonoBehaviour
 
         if (_foodLevel == -1)
             _foodLevel = foodBoxLevel;
-        _playerFoodData.level = _foodLevel;
         _playerFoodData.foodID = _foodID;
-        _playerFoodData.remainExp = 0f;
 
         inventoryFoodDataList.Add(_playerFoodData);
     }
@@ -474,12 +631,6 @@ public class Player_Data : MonoBehaviour
     public void AddFoodBoxLevel_Func()
     {
         foodBoxLevel++;
-    }
-    #endregion
-    #region Trophy Group
-    public void AddTrophy_Func(int _trophyID)
-    {
-        trophyDataArr[_trophyID].AddTrophy_Func();
     }
     #endregion
     #region Skill Group

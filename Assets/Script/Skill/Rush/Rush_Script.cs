@@ -27,8 +27,8 @@ public class Rush_Script : Skill_Parent
 
     public override void Init_Func()
     {
-        playerClass = Player_Data.Instance.playerClass;
-        playerTrf = Player_Data.Instance.playerClass.transform;
+        playerClass = Player_Data.Instance.playerHeroData;
+        playerTrf = Player_Data.Instance.playerHeroData.transform;
 
         effectPivotTrf = this.transform.GetChild(0);
         rushEffectClass = effectPivotTrf.GetComponent<RushEffect_Script>();
