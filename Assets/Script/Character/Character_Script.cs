@@ -151,6 +151,26 @@ public class Character_Script : MonoBehaviour
         if(isPlayer == false)
             StartCoroutine(CheckAttack_Cor());
     }
+    public void SetDrinkBonus_Func(DrinkType _drinkType, bool _isOn)
+    {
+        int _drinkID = (int)_drinkType;
+        float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[_drinkID].effectValue;
+        if (_isOn == false)
+            _drinkEffectValue *= -1f;
+
+        switch (_drinkType)
+        {
+            case DrinkType.Health:
+                float _bonusHP = Player_Data.Instance.playerUnitDataArr[unitID].healthPoint_RelativeLevel * _drinkEffectValue;
+                healthPoint_Max += _bonusHP;
+                healthPoint_Recent = healthPoint_Max;
+                break;
+            case DrinkType.Critical:
+                float _bonusCriPer = DataBase_Manager.Instance.heroData.criticalPercent * _drinkEffectValue;
+                criticalPercent += _bonusCriPer;
+                break;
+        }
+    }
 
     protected void SetState_Func(CharacterState _charState)
     {

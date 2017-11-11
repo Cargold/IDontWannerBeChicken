@@ -47,6 +47,8 @@ public class Battle_Manager : MonoBehaviour
     public float foodGetPer;
     public bool[] isTestSpawnAlly;
 
+    public GameObject[] drinkObjArr;
+
     public enum BattleState
     {
         None = -1,
@@ -121,15 +123,14 @@ public class Battle_Manager : MonoBehaviour
 
         battleID = _stageID;
         
-        StartCoroutine(BattleEnter_Cor());
+        BattleEnter_Func();
     }
-    IEnumerator BattleEnter_Cor()
+    void BattleEnter_Func()
     {
         CheckSpawnMonsterID_Func();
-        yield return DirectingStart_Cor();
+        DirectingStart_Func();
+        CheckDrink_Func();
         BattlePlay_Func();
-
-        yield break;
     }
     void CheckSpawnMonsterID_Func()
     {
@@ -214,13 +215,27 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
-    IEnumerator DirectingStart_Cor()
+    void DirectingStart_Func()
     {
         // 전투 시작 연출
 
         battleUITrf.DOSizeDelta(Vector2.zero, 0.5f);
+    }
+    void CheckDrink_Func()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            bool _isDrinkUse = Player_Data.Instance.CheckDrinkUse_Func(i);
 
-        yield break;
+            drinkObjArr[i].SetActive(_isDrinkUse);
+
+            if (_isDrinkUse == true)
+            {
+                int _drinkNum = Player_Data.Instance.GetDrinkNum_Func(i);
+                if(_drinkNum <= 0)
+                    Debug.LogError("Bug : 다음 드링크의 재고가 없습니다." + (DrinkType)i);
+            }
+        }
     }
     #endregion
     #region Play State
@@ -239,12 +254,15 @@ public class Battle_Manager : MonoBehaviour
         else if (battleType == BattleType.Special)
             chickenHouseClass.unitRend.sprite = chickenHouseSpriteArr[1];
 
+        if (Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Critical) == true)
+            playerClass.SetDrinkBonus_Func(DrinkType.Critical, true);
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
 
-        skillSystemManager.BattleStart_Func();
+        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
+            skillSystemManager.BattleStart_Func(_isManaDrinkOn);
     }
 
     void OnSpawnAllyUnit_Func()
@@ -254,12 +272,14 @@ public class Battle_Manager : MonoBehaviour
             int _partyUnitId = Player_Data.Instance.partyUnitIdArr[i];
             if (0 <= _partyUnitId)
             {
+                int _activeSpawnAllyID = activeSapwnClassList_Ally.Count;
+
                 activeSapwnClassList_Ally.Add(spawnClassArr_Ally[_partyUnitId]);
 
-                int _activeSpawnAllyID = activeSapwnClassList_Ally.Count - 1;
+                bool _isHpDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Health);
 
                 activeSapwnClassList_Ally[_activeSpawnAllyID]
-                    .ActiveSpawn_Func(battleType, battleID);
+                    .ActiveSpawn_Func(battleType, battleID, _isHpDrinkOn);
             }
         }
     }
@@ -291,9 +311,10 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
-
     public void SetMonsterSpawnBonus_Func(int _spawnWaveLevel)
     {
+        // 스테이지 스폰 레벨 디자인
+
         if(isSpawnWaveArr[_spawnWaveLevel] == false)
         {
             isSpawnWaveArr[_spawnWaveLevel] = true;
@@ -482,24 +503,36 @@ public class Battle_Manager : MonoBehaviour
         {
             spawnClassArr_Ally[i].DeactiveSpawn_Func();
         }
+        activeSapwnClassList_Ally.Clear();
 
         for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
         {
             spawnClassArr_Enemy[i].DeactiveSpawn_Func();
         }
+        activeSpawnClassList_Enemy.Clear();
 
         // 4. 스킬 시스템 작동 중지
         skillSystemManager.Deactive_Func();
 
-        // 5. UI 출력
-        StartCoroutine(ResultUI_Cor(_isVictory));
-    }
-    IEnumerator ResultUI_Cor(bool _isVictory)
-    {
-        yield return new WaitForSeconds(1f);
+        // 5. 드링크 사용
+        for (int i = 0; i < 4; i++)
+        {
+            bool _isDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(i);
+            if (_isDrinkOn == true)
+            {
+                Player_Data.Instance.UseDrink_Func(i);
 
-        resultClass.Active_Func(battleType, _isVictory, rewardDataList.ToArray());
-        yield break;
+                switch ((DrinkType)i)
+                {
+                    case DrinkType.Critical:
+                        playerClass.SetDrinkBonus_Func(DrinkType.Critical, false);
+                        break;
+                }
+            }
+        }
+
+        // 6. UI 출력
+        StartCoroutine(ResultUI_Cor(_isVictory));
     }
     void GetRewardGold_Func(bool _isVictory)
     {
@@ -520,6 +553,12 @@ public class Battle_Manager : MonoBehaviour
         else if(_isVictory == false)
         {
             _wealthAmount = (int)(goldBonus / 2f);
+        }
+
+        if(Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Gold) == true)
+        {
+            float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Gold].effectValue;
+            _wealthAmount = (int)((float)_wealthAmount * _drinkEffectValue);
         }
 
         Reward_Data _rewardData = new Reward_Data();
@@ -674,16 +713,23 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
+    
+    IEnumerator ResultUI_Cor(bool _isVictory)
+    {
+        yield return new WaitForSeconds(1f);
+
+        resultClass.Active_Func(battleType, _isVictory, rewardDataList.ToArray());
+        yield break;
+    }
     public int GetGoldByWatchedAD_Func()
     {
         int _adValue = rewardDataList[0].rewardAmount * 2;
         rewardDataList[0].SetRewardAmount_Func(_adValue);
-        
+
         // 광고 연출
 
         return _adValue;
     }
-
     public void NextStage_Func()
     {
         ClearBattleData_Func();
@@ -701,29 +747,20 @@ public class Battle_Manager : MonoBehaviour
         // Reward Get
 
         ClearBattleData_Func();
-
+        
         Game_Manager.Instance.LobbyEnter_Func();
 
         battleUITrf.DOSizeDelta(new Vector2(0f, 600f), 1f);
     }
-    
     void ClearBattleData_Func()
     {
-        for (int i = 0; i < 5; i++)
-        {
-            spawnClassArr_Ally[i].KillUnitAll_Func(true);
-        }
-        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
-        {
-            spawnClassArr_Enemy[i].KillUnitAll_Func(true);
-        }
-
         Enviroment_Manager.Instance.NatureReset_Func();
 
         SetRewardOnPlayer_Func();
         
         goldBonus = 0f;
     }
+    
     void SetRewardOnPlayer_Func()
     {
         for (int i = 0; i < rewardDataList.Count; i++)

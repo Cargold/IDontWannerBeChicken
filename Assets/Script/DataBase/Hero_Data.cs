@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hero_Data : MonoBehaviour
+[System.Serializable]
+public struct Hero_Data
 {
     public int unitId;
     public string unitName;

@@ -232,6 +232,9 @@ public class StoreRoom_Script : LobbyUI_Parent
                 }
                 break;
             case StoreGoodsType.Drink:
+                int _drinkID = _storeData.goodsID;
+                int _drinkNum = _storeData.goodsAmount;
+                Player_Data.Instance.AddDrink_Func(_drinkID, _drinkNum);
                 break;
             case StoreGoodsType.Package:
                 break;

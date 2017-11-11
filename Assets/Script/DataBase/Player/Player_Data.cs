@@ -665,15 +665,15 @@ public class Player_Data : MonoBehaviour
     }
     #endregion
     #region Drink Group
-    public void AddDrink_Func(DrinkType _drinkType)
+    public void AddDrink_Func(DrinkType _drinkType, int _addNum = 1)
     {
         int _drinkID = (int)_drinkType;
 
-        AddDrink_Func(_drinkID);
+        AddDrink_Func(_drinkID, _addNum);
     }
-    public void AddDrink_Func(int _drinkID)
+    public void AddDrink_Func(int _drinkID, int _addNum = 1)
     {
-        drinkDataArr[_drinkID].haveNum++;
+        drinkDataArr[_drinkID].haveNum += _addNum;
     }
     public bool SetDrinkUse_Func(DrinkType _drinkType, bool _isOn)
     {
@@ -706,10 +706,27 @@ public class Player_Data : MonoBehaviour
     {
         int _drinkID = (int)_drinkType;
 
+        UseDrink_Func(_drinkID);
+    }
+    public void UseDrink_Func(int _drinkID)
+    {
         if (drinkDataArr[_drinkID].haveNum <= 0)
-            Debug.LogError("Bug : 다음 드링크의 재고가 없습니다." + _drinkType);
+            Debug.LogError("Bug : 다음 드링크의 재고가 없습니다." + (DrinkType)_drinkID);
         else
+        {
             drinkDataArr[_drinkID].haveNum--;
+
+            if (drinkDataArr[_drinkID].haveNum <= 0)
+            {
+                drinkDataArr[_drinkID].isUse = false;
+            }
+        }
+    }
+    public bool CheckDrinkUse_Func(DrinkType _drinkType)
+    {
+        int _drinkID = (int)_drinkType;
+
+        return CheckDrinkUse_Func(_drinkID);
     }
     public bool CheckDrinkUse_Func(int _drinkID)
     {

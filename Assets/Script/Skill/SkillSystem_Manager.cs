@@ -13,11 +13,12 @@ public class SkillSystem_Manager : MonoBehaviour
     public SkillBtn_Script[] skillBtnClassArr;
     public Color skillBtnCoolTimeColor;
 
+    public bool isActive = false;
     public float mana_StartValue;
     public float mana_Max;
     public float mana_Recent;
     public float mana_RegenValue;
-    public bool isActive = false;
+    public bool isManaDrinkOn = false;
 
     public Image manaImage;
 
@@ -40,7 +41,7 @@ public class SkillSystem_Manager : MonoBehaviour
         yield break;
     }
 
-    public void BattleStart_Func()
+    public void BattleStart_Func(bool _isManaDrinkOn)
     {
         isActive = true;
 
@@ -65,15 +66,34 @@ public class SkillSystem_Manager : MonoBehaviour
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
 
-        mana_Recent = mana_StartValue;
+        float _trophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.ManaStart, true);
+        mana_Recent = mana_StartValue + (mana_StartValue * _trophyEffectValue);
+
+        isManaDrinkOn = _isManaDrinkOn;
+
         StartCoroutine("ManaRegen_Cor");
     }
 
     IEnumerator ManaRegen_Cor()
     {
-        while(isActive == true)
+        float _mana_RegenValue = mana_RegenValue;
+
+        if (isManaDrinkOn == true)
         {
-            SetMana_Func(mana_RegenValue * 0.02f);
+            float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Mana].effectValue;
+            _mana_RegenValue = mana_RegenValue * _drinkEffectValue;
+        }
+
+        float _manaRegenTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.ManaRegen, true);
+        if(0f < _manaRegenTrophyEffectValue)
+        {
+            _manaRegenTrophyEffectValue *= mana_RegenValue;
+            _mana_RegenValue += _manaRegenTrophyEffectValue;
+        }
+        
+        while (isActive == true)
+        {
+            SetMana_Func(_mana_RegenValue * 0.02f);
             
             yield return new WaitForFixedUpdate();
         }
@@ -132,6 +152,11 @@ public class SkillSystem_Manager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             skillBtnClassArr[i].Deactive_Func();
+        }
+
+        if (Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana) == true)
+        {
+            Player_Data.Instance.UseDrink_Func(DrinkType.Mana);
         }
     }
 }

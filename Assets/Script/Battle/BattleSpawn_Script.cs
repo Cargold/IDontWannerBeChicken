@@ -19,6 +19,8 @@ public class BattleSpawn_Script : MonoBehaviour
     public int spawnActiveUnitCount;
     public int spawnNumLimit;
     public float spawnTimerBonus;
+
+    public bool isDrinkHpOn = false;
     
     public void Init_Func(Battle_Manager _battleManagerClass, GroupType _groupType,  int _spawnID, Unit_Script _unitClass)
     {
@@ -34,7 +36,7 @@ public class BattleSpawn_Script : MonoBehaviour
     }
 
     #region Spawn Group
-    public void ActiveSpawn_Func(BattleType _battleType, int _battleID, bool _isTemporarySpawn = false)
+    public void ActiveSpawn_Func(BattleType _battleType, int _battleID, bool _isDrinkHpOn = false, bool _isTemporarySpawn = false)
     {
         isActive = true;
         
@@ -46,15 +48,17 @@ public class BattleSpawn_Script : MonoBehaviour
 
         spawnTimerBonus = 1f;
 
+        isDrinkHpOn = _isDrinkHpOn;
+
         if (spawnGroupType == GroupType.Enemy)
         {
             int _monsterID = unitClass.unitID;
 
             float _hpValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].healthPoint;
-            unitClass.healthPoint_Max = _hpValue * ((_battleID * 0.05f) + 1f);
+            unitClass.healthPoint_Max = _hpValue * (((_battleID - 1) * 0.05f) + 1f);
 
             float _attackValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].attackValue;
-            unitClass.attackValue = _attackValue * ((_battleID * 0.05f) + 1f);
+            unitClass.attackValue = _attackValue * (((_battleID - 1) * 0.05f) + 1f);
         }
         
         if(_isTemporarySpawn == false)
@@ -73,7 +77,7 @@ public class BattleSpawn_Script : MonoBehaviour
                 _spawnCalcTime = unitClass.spawnInterval;
             }
         }
-        if (spawnGroupType == GroupType.Enemy)
+        else if (spawnGroupType == GroupType.Enemy)
         {
             // 적은 시작부터 등장
             
@@ -136,6 +140,32 @@ public class BattleSpawn_Script : MonoBehaviour
         spawnTimerBonus -= _bonusValue;
     }
 
+    public Unit_Script OnSpawningAlly_Func(bool _isDefaultDirection = true)
+    {
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
+
+        _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Ally);
+        _charObj.transform.localScale = Vector3.one;
+        _charObj.transform.localEulerAngles = Vector3.zero;
+
+        Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
+        _spawnUnitClass.Init_Func(spawnGroupType);
+        _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
+        if(isDrinkHpOn == true)
+            _spawnUnitClass.SetDrinkBonus_Func(DrinkType.Health, true);
+        _spawnUnitClass.SetSpawner_Func(this);
+        _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
+        spawnUnitList.Add(_spawnUnitClass);
+        spawnCheckAllCount++;
+        
+        if (_isDefaultDirection == true)
+        {
+            spawnActiveUnitCount++;
+            OnSpawnAllyDirection_Func(_spawnUnitClass);
+        }
+
+        return _spawnUnitClass;
+    }
     private void OnSpawnAllyDirection_Func(Unit_Script _spawnUnitClass)
     {
         Transform _spawnUnitTrf = _spawnUnitClass.transform;
@@ -176,31 +206,6 @@ public class BattleSpawn_Script : MonoBehaviour
         }
 
         _targetTrf.localEulerAngles = Vector3.zero;
-    }
-    public Unit_Script OnSpawningAlly_Func(bool _isDefaultDirection = true)
-    {
-        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
-
-        _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Ally);
-        _charObj.transform.localScale = Vector3.one;
-        _charObj.transform.localEulerAngles = Vector3.zero;
-
-        Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
-        _spawnUnitClass.Init_Func(spawnGroupType);
-        _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
-        _spawnUnitClass.SetSpawner_Func(this);
-        _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);
-
-        spawnUnitList.Add(_spawnUnitClass);
-        spawnCheckAllCount++;
-        
-        if (_isDefaultDirection == true)
-        {
-            spawnActiveUnitCount++;
-            OnSpawnAllyDirection_Func(_spawnUnitClass);
-        }
-
-        return _spawnUnitClass;
     }
 
     private void OnSpawningEnemy_Func()

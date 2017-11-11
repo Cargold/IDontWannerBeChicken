@@ -9,12 +9,14 @@ public struct Drink_Data
     public DrinkType drinkType;
     public float effectValue;
     public Sprite drinkSprite;
+    public Sprite drinkBtnSprite;
 
     public void SetData_Func(Drink_Script _drinkClass)
     {
-        drinkID     = _drinkClass.drinkID;
-        drinkType   = _drinkClass.drinkType;
-        effectValue = _drinkClass.effectValue;
-        drinkSprite = _drinkClass.drinkSprite;
+        drinkID        = _drinkClass.drinkID;
+        drinkType      = _drinkClass.drinkType;
+        effectValue = _drinkClass.effectValue * 0.01f;
+        drinkSprite    = _drinkClass.drinkSprite;
+        drinkBtnSprite = _drinkClass.drinkBtnSprite;
     }
 }

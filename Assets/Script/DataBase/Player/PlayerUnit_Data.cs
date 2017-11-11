@@ -139,8 +139,8 @@ public class PlayerUnit_ClassData
         float _hpTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.HealthPoint_Unit, true);
         float _dmgTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.AttackValue_Unit, true);
 
-        _hpTrophyEffectValue *= DataBase_Manager.Instance.unitDataArr[unitID].healthPoint * 0.01f;
-        _dmgTrophyEffectValue *= DataBase_Manager.Instance.unitDataArr[unitID].attackValue * 0.01f;
+        _hpTrophyEffectValue *= healthPoint_RelativeLevel * 0.01f;
+        _dmgTrophyEffectValue *= attackValue_RelativeLevel * 0.01f;
         
         unitClass.healthPoint_Max += _hpTrophyEffectValue;
         unitClass.attackValue += _dmgTrophyEffectValue;

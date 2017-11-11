@@ -108,12 +108,20 @@ public class DataBase_Manager : MonoBehaviour
     {
         Instance = this;
 
+        yield return InitHeroData_Cor();
         yield return InitUnitData_Cor();
         yield return InitMonsterData_Cor();
         yield return InitFoodData_Cor();
         yield return InitTrophyData_Cor();
         yield return InitSkillData_Cor();
         yield return InitDrinkData_Cor();
+
+        yield break;
+    }
+    IEnumerator InitHeroData_Cor()
+    {
+        Player_Script _playerClass = heroObj.GetComponent<Player_Script>();
+        heroData.SetData_Func(_playerClass);
 
         yield break;
     }
