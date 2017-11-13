@@ -21,7 +21,7 @@ public class Character_Script : MonoBehaviour
     protected float defenceValue_Calc;
     public float attackValue;
     [SerializeField]
-    private float attackValue_Calc;
+    protected float attackValue_Calc;
     public float attackRate_Speed;
     [SerializeField]
     protected float attackRate_Max;
@@ -60,9 +60,12 @@ public class Character_Script : MonoBehaviour
     // Rendering Data
     public Animator animator;
     public SpriteRenderer unitRend;
+    private int sortingOrderID;
     public SpriteRenderer shadowRend;
     public Transform hpRend_Group;
     public Transform hpTrf;
+    public SpriteRenderer hpRend_BG;
+    public SpriteRenderer hpRend_Gauge;
     public Sprite unitSprite;
     public float imagePivotAxisY;
     public Vector2 shadowSize;
@@ -117,6 +120,8 @@ public class Character_Script : MonoBehaviour
         hpTrf = this.transform.Find("Pivot").Find("HP_Group").Find("Gauge");
         hpRend_Group = this.transform.Find("Pivot").Find("HP_Group");
         hpRend_Group.gameObject.SetActive(false);
+        hpRend_BG = hpRend_Group.Find("BG").GetComponent<SpriteRenderer>();
+        hpRend_Gauge = hpRend_Group.Find("Gauge").GetComponent<SpriteRenderer>();
         shadowRend = this.transform.Find("Pivot").Find("Shadow").GetComponent<SpriteRenderer>();
         shadowRend.gameObject.SetActive(false);
 
@@ -138,9 +143,14 @@ public class Character_Script : MonoBehaviour
         hpRend_Group.gameObject.SetActive(true);
         shadowRend.gameObject.SetActive(true);
         if(isHouse == false && isPlayer == false)
-            unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
-        if (isHouse == false && isPlayer == false)
+        {
+            sortingOrderID = (int)(this.transform.position.y * -100f) + 210;
+            unitRend.sortingOrder = sortingOrderID;
+
             shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
+        }
+        hpRend_BG.sortingOrder = (int)(this.transform.position.y * -100f) + 211;
+        hpRend_Gauge.sortingOrder = (int)(this.transform.position.y * -100f) + 212;
 
         // Set Status
         isAlive = true;
@@ -375,8 +385,12 @@ public class Character_Script : MonoBehaviour
             }
 
             // 거리 체크
+            //Vector3 _contactCharPos = new Vector3(contactCharClassList[i].transform.position.x, 0f, 0f);
+            //float _distanceValue = Vector3.Distance(this.transform.position, _contactCharPos);
+
+            Vector3 _thisPos = new Vector3(this.transform.position.x, 0f, 0f);
             Vector3 _contactCharPos = new Vector3(contactCharClassList[i].transform.position.x, 0f, 0f);
-            float _distanceValue = Vector3.Distance(this.transform.position, _contactCharPos);
+            float _distanceValue = Vector3.Distance(_thisPos, _contactCharPos);
 
             // 처음 체크하는 대상이거나, 기존 최단 근접 대상보다 가까운 경우
             if (_closerCharClass == null || _distanceValue < _closerCharDistance)
@@ -521,8 +535,7 @@ public class Character_Script : MonoBehaviour
                 _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
 
                 spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
-                int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
-                spawnShellClass.Init_Func(this, _sortingOrder);
+                spawnShellClass.Init_Func(this, sortingOrderID);
 
                 //float _shootTime = shootTime;
                 //if (shootHeight == 0)
@@ -598,7 +611,7 @@ public class Character_Script : MonoBehaviour
                     _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
 
                     spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
-                    spawnShellClass.Init_Func(this, 0);
+                    spawnShellClass.Init_Func(this, sortingOrderID);
                             
                     spawnShellClass.OnAttack_Func();
                 }
@@ -648,8 +661,11 @@ public class Character_Script : MonoBehaviour
             {
                 _targetCharClass.Damaged_Func(attackValue_Calc);
 
-                knockBackData.hitterClass = this;
-                _targetCharClass.CheckKnockBack_Func(knockBackData);
+                if (knockBackData.isHave == true)
+                {
+                    knockBackData.hitterClass = this;
+                    _targetCharClass.CheckKnockBack_Func(knockBackData);
+                }
             }
         }
     }

@@ -305,7 +305,9 @@ public class BattleSpawn_Script : MonoBehaviour
     }
     private IEnumerator KillUnitAll_Cor(bool _isUneffect)
     {
-        while(0 < spawnUnitList.Count)
+        spawnActiveUnitCount = 0;
+
+        while (0 < spawnUnitList.Count)
         {
             Unit_Script _unitClass = (Unit_Script)spawnUnitList[0];
             spawnUnitList.RemoveAt(0);
@@ -318,7 +320,7 @@ public class BattleSpawn_Script : MonoBehaviour
     public void DeactiveSpawn_Func()
     {
         isActive = false;
-
+        
         StopCoroutine("CheckSpawnTimer_Cor");
     }
 

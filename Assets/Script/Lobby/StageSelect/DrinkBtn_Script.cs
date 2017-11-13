@@ -29,7 +29,6 @@ public class DrinkBtn_Script : MonoBehaviour
     }
     public void OnSelect_Func(bool _isOn)
     {
-        Debug.Log("Test, IsOn : " + _isOn);
         selectImageObj.SetActive(_isOn);
     }
     public void OnButton_Func()

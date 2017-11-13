@@ -45,6 +45,7 @@ public class StageSelect_Script : LobbyUI_Parent
         {
             GameObject _drinkBtnObj = Instantiate(drinkBtnObj);
             _drinkBtnObj.transform.SetParent(drinkGroupRTrf);
+            _drinkBtnObj.transform.localScale = Vector3.one;
 
             DrinkBtn_Script _drinkBtnClass = _drinkBtnObj.GetComponent<DrinkBtn_Script>();
             _drinkBtnClass.Init_Func(this, i);

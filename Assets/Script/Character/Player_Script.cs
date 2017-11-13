@@ -24,10 +24,10 @@ public class Player_Script : Character_Script
     [SerializeField]
     private int isControlOutCount_Player;
 
-    private Transform shieldGroupTrf;
-    private Transform shieldGaugeTrf;
-    private float shieldValue_Max;
-    private float shieldValue_Recent;
+    public Transform shieldGroupTrf;
+    public Transform shieldGaugeTrf;
+    public float shieldValue_Max;
+    public float shieldValue_Recent;
 
     public float manaStart;
     public float manaRegen;
@@ -202,15 +202,22 @@ public class Player_Script : Character_Script
                     animator.SetBool("AttackReady", false);
                     attackRate_Recent = 0f;
 
-                    float _attackValue_Calc = attackValue;
+                    attackValue_Calc = attackValue;
                     if (Random.Range(0f, 100f) < criticalPercent)
                     {
-                        _attackValue_Calc *= criticalBonus;
+                        attackValue_Calc *= criticalBonus;
                     }
 
                     effectData_AttackAniOn.ActiveEffect_Func();
 
-                    contactCharClassList[0].Damaged_Func(_attackValue_Calc);
+                    GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+                    _spawnShellObj.transform.position = shellPivotTrf.position;
+                    _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
+
+                    spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+                    spawnShellClass.Init_Func(this, 0);
+
+                    spawnShellClass.OnAttack_Func();
                 }
                 else
                     SetState_Func(CharacterState.Idle);

@@ -71,6 +71,7 @@ public class PartySetting_Script : LobbyUI_Parent
 
                     GameObject _unitCardObj = Instantiate(unitCardObj);
                     _unitCardObj.transform.SetParent(unitCardGroupTrf);
+                    _unitCardObj.transform.localScale = Vector3.one;
 
                     UnitCard_Script.CardState _cardState = UnitCard_Script.CardState.Lock;
                     if (Player_Data.Instance.playerUnitDataArr[_cardCount].isHave == true)
