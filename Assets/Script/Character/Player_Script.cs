@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Player_Script : Character_Script
 {
@@ -202,15 +203,25 @@ public class Player_Script : Character_Script
                     animator.SetBool("AttackReady", false);
                     attackRate_Recent = 0f;
 
-                    float _attackValue_Calc = attackValue;
+                    attackValue_Calc = attackValue;
                     if (Random.Range(0f, 100f) < criticalPercent)
                     {
-                        _attackValue_Calc *= criticalBonus;
+                        attackValue_Calc *= criticalBonus;
                     }
 
                     effectData_AttackAniOn.ActiveEffect_Func();
 
-                    contactCharClassList[0].Damaged_Func(_attackValue_Calc);
+                    // 범위 공격이라는 전제...
+                    Vector3 _contactCharPos = contactCharClassList[0].transform.position;
+                    targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
+
+                    GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+                    _spawnShellObj.transform.position = targetPos;
+
+                    spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+                    int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
+                    spawnShellClass.Init_Func(this, _sortingOrder);
+                    spawnShellClass.OnAttack_Func();
                 }
                 else
                     SetState_Func(CharacterState.Idle);

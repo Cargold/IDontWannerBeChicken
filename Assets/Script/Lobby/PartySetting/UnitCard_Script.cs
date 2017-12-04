@@ -14,6 +14,7 @@ public class UnitCard_Script : MonoBehaviour
         None = -1,
         Lock,
         Active,
+        Active_Party,
     }
     public CardState cardState;
     
@@ -55,10 +56,10 @@ public class UnitCard_Script : MonoBehaviour
         }
     }
 
-    public void OnSelect_Func()
+    public void OnSelect_Func(bool _isTouchOn)
     {
-        if (cardState == CardState.Active)
-            partySettingClass.SelectUnit_Func(this);
+        if (CardState.Active <= cardState)
+            partySettingClass.SelectUnit_Func(this, _isTouchOn);
         else if (cardState == CardState.Lock)
         {
             this.transform.DOPunchScale(Vector3.one * 0.1f, 0.5f, 15).OnComplete(ResetScale_Func);
@@ -71,19 +72,17 @@ public class UnitCard_Script : MonoBehaviour
 
     public void DragBegin_Func()
     {
-        if (cardState == CardState.Active)
+        if (CardState.Active <= cardState)
             partySettingClass.DragBegin_Func(this);
     }
-
     public void Dragging_Func()
     {
-        if (cardState == CardState.Active)
+        if (CardState.Active <= cardState)
             partySettingClass.Dragging_Func(this);
     }
-
     public void DragEnd_Func()
     {
-        if (cardState == CardState.Active)
+        if (CardState.Active <= cardState)
             partySettingClass.DragEnd_Func(this);
     }
 

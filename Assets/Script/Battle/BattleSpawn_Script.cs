@@ -70,11 +70,14 @@ public class BattleSpawn_Script : MonoBehaviour
 
         if(spawnGroupType == GroupType.Ally)
         {
-            if (battleManagerClass.isTestSpawnAlly[spawnID] == true)
+            for (int i = 0; i < 5; i++)
             {
-                // 테스트를 위해 시작부터 아군 유닛이 나오길 원하는 경우
+                if (battleManagerClass.isTestSpawnAlly[i] == true)
+                {
+                    // 테스트를 위해 시작부터 아군 유닛이 나오길 원하는 경우
 
-                _spawnCalcTime = unitClass.spawnInterval;
+                    _spawnCalcTime = unitClass.spawnInterval;
+                }
             }
         }
         else if (spawnGroupType == GroupType.Enemy)

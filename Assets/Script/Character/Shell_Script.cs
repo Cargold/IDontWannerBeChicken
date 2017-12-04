@@ -67,7 +67,8 @@ public class Shell_Script : MonoBehaviour
                 {
                     effectData_ContactTarget.ActiveEffect_Func();
 
-                    charClass.OnAttackPlural_Func(contactCharClassList[i], true);
+                    // 투사체와 충돌된 상황이므로 거리 계산할 필요 없음
+                    charClass.OnAttackPlural_Func(contactCharClassList[i], false);
 
                     sphereCol.enabled = false;
 
@@ -87,12 +88,12 @@ public class Shell_Script : MonoBehaviour
         {
             Character_Script _targetCharClass = collision.gameObject.GetComponent<Character_Script>();
 
-            if(_targetCharClass == null || charClass == null)
-            {
-                Debug.Log("Test, This : " + this.gameObject.name);
-                Debug.Log("Test, Char : " + charClass);
-                Debug.Log("Test, _targetCharClass : " + _targetCharClass);
-            }
+            //if(_targetCharClass == null || charClass == null)
+            //{
+            //    Debug.Log("Test, This : " + this.gameObject.name);
+            //    Debug.Log("Test, Char : " + charClass);
+            //    Debug.Log("Test, _targetCharClass : " + _targetCharClass);
+            //}
 
             if(isContactAttackTiming == false)
             {

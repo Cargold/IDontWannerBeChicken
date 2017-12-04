@@ -64,7 +64,7 @@ public class Unit_Script : Character_Script
             cardSprite = unitSprite;
     }
 
-    public void Init_Func(GroupType _groupType)
+    public void Init_Func(GroupType _groupType, bool _isLobbyPrint = false)
     {
         base.Init_Func(_groupType);
 
@@ -73,10 +73,19 @@ public class Unit_Script : Character_Script
         unitRend.sprite = unitSprite;
         unitRend.color = Color.white;
 
-        unitRend.sortingOrder = -6;
-        shadowRend.sortingOrder = -7;
+        if (isHouse == false && isPlayer == false)
+            unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+        if (isHouse == false && isPlayer == false)
+            shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
+
+        hpRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
 
         InitMove_Func();
+
+        if(_isLobbyPrint == true)
+        {
+            OnPrintLobby_Func();
+        }
     }
     public void SetDataByPlayerUnit_Func(Unit_Script _unitClass)
     {

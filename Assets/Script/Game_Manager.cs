@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Game_Manager : MonoBehaviour
 {
     public static Game_Manager Instance;
-
+    
     public TranslationSystem_Manager translationSystem;
     public DataBase_Manager databaseClass;
     public Player_Data playerDataClass;

@@ -19,14 +19,69 @@ public class PartySlot_Script : MonoBehaviour
         Joined,
     }
     public SlotState slotState;
-    public UnitCard_Script joinUnitCardClass;
-    public GameObject joinUnitCardObj;
+
+    public class JoinUnitData
+    {
+        public UnitCard_Script joinUnitCardClass
+        {
+            get
+            {
+                return m_JoinUnitCardClass;
+            }
+
+        }
+        public GameObject joinUnitCardObj
+        {
+            get
+            {
+                return m_JoinUnitCardObj;
+            }
+        }
+        public bool isDataOn
+        {
+            get
+            {
+                return m_IsDataOn;
+            }
+        }
+        private UnitCard_Script m_JoinUnitCardClass;
+        private GameObject m_JoinUnitCardObj;
+        private bool m_IsDataOn;
+
+        public void Init_Func(UnitCard_Script _joinUnitCardClass)
+        {
+            if(_joinUnitCardClass == null)
+            {
+                m_IsDataOn = false;
+
+                if(m_JoinUnitCardClass != null)
+                {
+                    m_JoinUnitCardClass.cardState = UnitCard_Script.CardState.Active;
+                }
+                m_JoinUnitCardClass = null;
+                m_JoinUnitCardObj = null;
+            }
+            else
+            {
+                m_IsDataOn = true;
+
+                m_JoinUnitCardClass = _joinUnitCardClass;
+                _joinUnitCardClass.cardState = UnitCard_Script.CardState.Active_Party;
+
+                m_JoinUnitCardObj = _joinUnitCardClass.gameObject;
+            }
+        }
+    }
+    public JoinUnitData joinUnitData;
 
     public void Init_Func(PartySetting_Script _partySettingClass, int _slotId, SlotState _cardState)
     {
         partySettingClass = _partySettingClass;
 
         slotId = _slotId;
+
+        joinUnitData = new JoinUnitData();
+        joinUnitData.Init_Func(null);
 
         if (_cardState == SlotState.Empty)
         {
@@ -40,25 +95,24 @@ public class PartySlot_Script : MonoBehaviour
         {
             partySettingClass.ContactCard_Func(this);
             
-            if(joinUnitCardObj != null)
+            if(joinUnitData.isDataOn == true)
             {
-                if(col.gameObject == joinUnitCardObj)
+                if(col.gameObject == joinUnitData.joinUnitCardObj)
                 {
                     partySettingClass.OnDisbandPartySlot_Func(null);
                 }
             }
         }
     }
-    
     void OnTriggerExit2D(Collider2D col)
     {
         if (col.tag == "UnitCard")
         {
             if (slotState == SlotState.Joined)
             {
-                if (joinUnitCardObj != null)
+                if (joinUnitData.isDataOn == true)
                 {
-                    if (col.gameObject == joinUnitCardObj)
+                    if (col.gameObject == joinUnitData.joinUnitCardObj)
                     {
                         partySettingClass.OnDisbandPartySlot_Func(this);
                     }
@@ -75,53 +129,37 @@ public class PartySlot_Script : MonoBehaviour
     {
         OnDecontact_Func();
 
-        if (joinUnitCardClass != null)
+        if (joinUnitData.isDataOn == true)
         {
-            int _unitID = joinUnitCardClass.cardId;
+            int _unitID = joinUnitData.joinUnitCardClass.cardId;
             Player_Data.Instance.DisbandParty_Func(slotId, _unitID);
 
-            joinUnitCardClass.InitPos_Func();
-            joinUnitCardClass = null;
-            joinUnitCardObj = null;
+            joinUnitData.joinUnitCardClass.InitPos_Func();
+            joinUnitData.Init_Func(null);
         }
 
         slotState = SlotState.Empty;
     }
-
     public void OnDecontact_Func()
     {
         isContactState = false;
         contactCheckTrf.localScale = Vector3.one;
     }
-
     public void OnContact_Func()
     {
         isContactState = true;
         contactCheckTrf.localScale = Vector3.one * 1.2f;
     }
-
     public void JoinParty_Func(UnitCard_Script _unitCardClass, bool _isSwap)
     {
         isContactState = false;
         contactCheckTrf.localScale = Vector3.zero;
 
-        if (_isSwap == true)
-        {
-            // 조건에 부합하여 유닛이 파티에 합류하는 경우
-            // 조건 1 : 파티슬롯 내 서로 교체할 때
+        joinUnitData.Init_Func(_unitCardClass);
+        joinUnitData.joinUnitCardObj.transform.position = this.transform.position;
 
-            joinUnitCardObj = _unitCardClass.gameObject;
-            joinUnitCardObj.transform.position = this.transform.position;
-
-            joinUnitCardClass = _unitCardClass;
-
-            slotState = SlotState.Joined;
-
-            partySettingClass.JoinParty_Func(slotId, joinUnitCardClass.cardId);
-        }
-        else
-        {
-            _unitCardClass.InitPos_Func();
-        }
+        slotState = SlotState.Joined;
+        
+        partySettingClass.JoinParty_Func(slotId, joinUnitData.joinUnitCardClass.cardId);
     }
 }

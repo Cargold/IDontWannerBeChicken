@@ -16,14 +16,14 @@ public class MainLobby_Script : LobbyUI_Parent
         thisRTrf = this.GetComponent<RectTransform>();
 
         partyMemberObjList = new List<GameObject>();
-
-        PrintPartyMember_Func();
     }
     protected override void EnterUI_Func()
     {
         // Call : Btn Event
 
         playerClass.LobbyEnter_Func();
+
+        PrintPartyMember_Func();
 
         thisRTrf.DOSizeDelta(new Vector3(0f, 0f), 0.5f);
     }
@@ -49,7 +49,8 @@ public class MainLobby_Script : LobbyUI_Parent
                 _unitObj.transform.localEulerAngles = Vector3.zero;
                 _unitObj.transform.localScale = Vector3.one;
 
-                _unitObj.GetComponent<Unit_Script>().Init_Func(GroupType.Ally);
+                Unit_Script _unitClass = _unitObj.GetComponent<Unit_Script>();
+                _unitClass.Init_Func(GroupType.Ally, true);
 
                 partyMemberObjList.Add(_unitObj);
             }

@@ -21,7 +21,7 @@ public class Character_Script : MonoBehaviour
     protected float defenceValue_Calc;
     public float attackValue;
     [SerializeField]
-    private float attackValue_Calc;
+    protected float attackValue_Calc;
     public float attackRate_Speed;
     [SerializeField]
     protected float attackRate_Max;
@@ -40,7 +40,7 @@ public class Character_Script : MonoBehaviour
     public AttackType attackType;
     public bool isContactAttackTiming;
     public float pluralRange;
-    private Vector3 targetPos;
+    protected Vector3 targetPos;
     [SerializeField]
     protected List<Character_Script> contactCharClassList = new List<Character_Script>();
 
@@ -60,7 +60,9 @@ public class Character_Script : MonoBehaviour
     // Rendering Data
     public Animator animator;
     public SpriteRenderer unitRend;
+    public SpriteRenderer[] unitRendArr;
     public SpriteRenderer shadowRend;
+    public SpriteRenderer hpRend;
     public Transform hpRend_Group;
     public Transform hpTrf;
     public Sprite unitSprite;
@@ -114,9 +116,10 @@ public class Character_Script : MonoBehaviour
         
         // Init Renderer
         animator = this.GetComponent<Animator>();
-        hpTrf = this.transform.Find("Pivot").Find("HP_Group").Find("Gauge");
         hpRend_Group = this.transform.Find("Pivot").Find("HP_Group");
         hpRend_Group.gameObject.SetActive(false);
+        hpTrf = hpRend_Group.Find("Gauge");
+        hpRend = hpTrf.GetComponent<SpriteRenderer>();
         shadowRend = this.transform.Find("Pivot").Find("Shadow").GetComponent<SpriteRenderer>();
         shadowRend.gameObject.SetActive(false);
 
@@ -136,11 +139,21 @@ public class Character_Script : MonoBehaviour
 
         // Set Renderer
         hpRend_Group.gameObject.SetActive(true);
+        hpRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+
         shadowRend.gameObject.SetActive(true);
         if(isHouse == false && isPlayer == false)
+        {
             unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+
+            //for (int i = 0; i < unitRendArr.Length; i++)
+            //{
+            //    unitRendArr[i].sortingOrder = (int)(this.transform.position.y * -100f) + 210 - i;
+            //}
+        }
         if (isHouse == false && isPlayer == false)
             shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
+
 
         // Set Status
         isAlive = true;
@@ -150,6 +163,21 @@ public class Character_Script : MonoBehaviour
         StartCoroutine(CheckAttackRate_Cor());
         if(isPlayer == false)
             StartCoroutine(CheckAttack_Cor());
+    }
+    protected void OnPrintLobby_Func()
+    {
+        if (isHouse == true)
+        {
+            Debug.LogError("Bug : 적 건물은 로비에 배치될 수 없습니다.");
+        }
+
+        shadowRend.gameObject.SetActive(true);
+        unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+        shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
+
+        isAlive = true;
+        moveSpeed = 0f;
+        SetState_Func(CharacterState.Move);
     }
     public void SetDrinkBonus_Func(DrinkType _drinkType, bool _isOn)
     {
@@ -616,11 +644,11 @@ public class Character_Script : MonoBehaviour
         knockBackData.hitterClass = this;
         contactCharClassList[0].CheckKnockBack_Func(knockBackData);
     }
-    public void OnAttackPlural_Func(Character_Script _targetCharClass, bool _isDistanceClear = false)
+    public void OnAttackPlural_Func(Character_Script _targetCharClass, bool _isDistanceCalc = true)
     {
         if(shootType == ShootType.Projectile)
         {
-            if(_isDistanceClear == false)
+            if(_isDistanceCalc == true)
             {
                 Vector3 _targetPos = _targetCharClass.transform.position;
                 _targetPos = new Vector3(_targetPos.x, 0f, 0f);
@@ -631,7 +659,7 @@ public class Character_Script : MonoBehaviour
                     _targetCharClass.Damaged_Func(attackValue_Calc);
                 }
             }
-            else if(_isDistanceClear == true)
+            else if(_isDistanceCalc == false)
             {
                 _targetCharClass.Damaged_Func(attackValue_Calc);
             }

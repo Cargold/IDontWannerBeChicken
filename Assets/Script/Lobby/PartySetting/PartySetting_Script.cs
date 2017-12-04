@@ -14,6 +14,7 @@ public class PartySetting_Script : LobbyUI_Parent
     public UnitCard_Script selectCardClass;
     public int selectUnitID;
 
+    public bool isTouchOn;
     public PartySlot_Script[] partySlotClassArr;
     public PartySlot_Script contactCardClass;
     public PartySlot_Script disbandCardClass;
@@ -40,8 +41,26 @@ public class PartySetting_Script : LobbyUI_Parent
         InitPartySlot_Func();
         InitPartymember_Func();
 
+        isTouchOn = false;
         this.gameObject.SetActive(false);
     }
+    protected override void EnterUI_Func()
+    {
+        this.gameObject.SetActive(true);
+
+        isActive = true;
+
+        unitImage.SetNaturalAlphaColor_Func(0f);
+        unitShadowImage.SetNaturalAlphaColor_Func(0f);
+
+        unitCardClassArr[0].OnSelect_Func(false);
+    }
+    public override void Exit_Func()
+    {
+        this.gameObject.SetActive(false);
+    }
+    #endregion
+    #region Init Group
     void InitUnitCardSlot_Func()
     {
         int _cardNum = DataBase_Manager.Instance.unitDataArr.Length;
@@ -108,27 +127,12 @@ public class PartySetting_Script : LobbyUI_Parent
             }
         }
     }
-
-    protected override void EnterUI_Func()
-    {
-        this.gameObject.SetActive(true);
-
-        isActive = true;
-
-        unitImage.SetNaturalAlphaColor_Func(0f);
-        unitShadowImage.SetNaturalAlphaColor_Func(0f);
-
-        unitCardClassArr[0].OnSelect_Func();
-    }
-
-    public override void Exit_Func()
-    {
-        this.gameObject.SetActive(false);
-    }
     #endregion
     #region Card Control Group
-    public void SelectUnit_Func(UnitCard_Script _unitCardClass)
+    public void SelectUnit_Func(UnitCard_Script _unitCardClass, bool _isTouchOn)
     {
+        isTouchOn = _isTouchOn;
+
         selectCardClass = _unitCardClass;
 
         selectUnitID = selectCardClass.cardId;
@@ -152,6 +156,8 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public void DragEnd_Func(UnitCard_Script _unitCardClass)
     {
+        isTouchOn = false;
+
         if(contactCardClass != null)
         {
             // 파티 슬롯에 닿은 경우
@@ -166,7 +172,7 @@ public class PartySetting_Script : LobbyUI_Parent
                 {
                     // 닿아있는 파티 슬롯에 이미 유닛카드가 있는 경우
 
-                    disbandCardClass.JoinParty_Func(contactCardClass.joinUnitCardClass, true);
+                    disbandCardClass.JoinParty_Func(contactCardClass.joinUnitData.joinUnitCardClass, true);
                     _isSwap = true;
                 }
                 else if(contactCardClass.slotState == PartySlot_Script.SlotState.Empty)
@@ -189,7 +195,7 @@ public class PartySetting_Script : LobbyUI_Parent
                     _isSwap = true;
                     contactCardClass.OnEmpty_Func();
                 }
-                else if(contactCardClass.slotState == PartySlot_Script.SlotState.Empty)
+                else if (contactCardClass.slotState == PartySlot_Script.SlotState.Empty)
                 {
                     // 닿아있는 파티 슬롯에 유닛카드가 없는 경우
 
@@ -206,17 +212,49 @@ public class PartySetting_Script : LobbyUI_Parent
         {
             // 파티 슬롯에 닿지 않은 경우
 
-            if(disbandCardClass != null)
+            if (selectCardClass.cardState == UnitCard_Script.CardState.Active)
             {
-                // 파티에서 이탈하는 경우
+                if (disbandCardClass != null)
+                {
+                    // 파티에서 이탈하는 경우
 
-                disbandCardClass.OnEmpty_Func();
-                disbandCardClass = null;
+                    disbandCardClass.OnEmpty_Func();
+                    disbandCardClass = null;
+                }
+
+                int _cardId = selectCardClass.cardId;
+                selectCardClass.InitPos_Func();
+                selectCardClass = null;
             }
+            else if (selectCardClass.cardState == UnitCard_Script.CardState.Active_Party)
+            {
+                // 파티카드 슬롯에서 옮긴 경우
 
-            int _cardId = selectCardClass.cardId;
-            selectCardClass.InitPos_Func();
-            selectCardClass = null;
+                if (disbandCardClass == null)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (partySlotClassArr[i].joinUnitData.isDataOn == true)
+                        {
+                            if(partySlotClassArr[i].joinUnitData.joinUnitCardClass == selectCardClass)
+                            {
+                                selectCardClass.gameObject.transform.position = partySlotClassArr[i].transform.position;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // 파티에서 이탈하는 경우
+
+                    disbandCardClass.OnEmpty_Func();
+                    disbandCardClass = null;
+
+                    int _cardId = selectCardClass.cardId;
+                    selectCardClass.InitPos_Func();
+                    selectCardClass = null;
+                }
+            }
         }
     }
     #endregion
@@ -240,12 +278,15 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public void ContactCard_Func(PartySlot_Script _partySlotClass)
     {
-        if(contactCardClass != null)
-            contactCardClass.OnDecontact_Func();
+        if (isTouchOn == true)
+        {
+            if (contactCardClass != null)
+                contactCardClass.OnDecontact_Func();
 
-        contactCardClass = _partySlotClass;
+            contactCardClass = _partySlotClass;
 
-        contactCardClass.OnContact_Func();
+            contactCardClass.OnContact_Func();
+        }
     }
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
