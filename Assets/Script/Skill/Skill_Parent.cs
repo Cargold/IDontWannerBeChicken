@@ -8,13 +8,12 @@ public abstract class Skill_Parent : MonoBehaviour
     public string skillName;
     public string skillDesc;
     public Sprite skillSprite;
-
-    public int skillLevel;
+    
     public int slotOrder;
     public float coolTime;
     public float manaCost;
     public int unlockLevel;
-    public float upgradeCost;
+    public int upgradeInitCost;
     public SkillVar[] skillVarArr;
     public bool isActive;
 
@@ -34,7 +33,9 @@ public abstract class Skill_Parent : MonoBehaviour
 
     protected SkillVar GetSetVar_Func(SkillVar _var)
     {
-        _var.recentValue = _var.initValue + (_var.upgradeValue * (skillLevel - 1));
+        int _skillLevel = Player_Data.Instance.skillDataArr[skillID].skillLevel;
+
+        _var.recentValue = _var.initValue + (_var.upgradeValue * (_skillLevel - 1));
 
         return _var;
     }

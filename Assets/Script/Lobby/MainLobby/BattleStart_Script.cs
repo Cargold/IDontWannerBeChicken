@@ -6,6 +6,6 @@ public class BattleStart_Script : MonoBehaviour
 {
     public void BattleStart_Func()
     {
-        Lobby_Manager.Instance.mainLobbyClass.HidePartyMember_Func();
+        Battle_Manager.Instance.HeroEnterStage_Func();
     }
 }

@@ -127,7 +127,8 @@ public class Battle_Manager : MonoBehaviour
         CheckSpawnMonsterID_Func();
         DirectingStart_Func();
         CheckDrink_Func();
-        BattlePlay_Func();
+        Player_Data.Instance.OnBattleWealthUI_Func();
+        OnSkillSystem_Func();
     }
     void CheckSpawnMonsterID_Func()
     {
@@ -234,8 +235,18 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
+    void OnSkillSystem_Func()
+    {
+        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
+        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
+    }
     #endregion
     #region Play State
+    public void HeroEnterStage_Func()
+    {
+        Lobby_Manager.Instance.mainLobbyClass.HidePartyMember_Func();
+        BattlePlay_Func();
+    }
     void BattlePlay_Func()
     {
         m_BattleState = BattleState.Play;
@@ -258,9 +269,6 @@ public class Battle_Manager : MonoBehaviour
         OnSpawnEnemyUnit_Func();
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
-
-        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
-        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
     }
 
     void OnSpawnAllyUnit_Func()

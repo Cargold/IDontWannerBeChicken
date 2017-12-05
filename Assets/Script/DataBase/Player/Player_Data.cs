@@ -27,23 +27,23 @@ public class Player_Data : MonoBehaviour
 
     // Hero
     public int heroLevel;
-    public Player_Script playerHeroData;
-    public float heroHealthPoint_RelativeLevel;
-    public float heroAttackValue_RelativeLevel;
+    public float hero_healthPoint_RelativeLevel;
+    public float hero_attackValue_RelativeLevel;
+    public Player_Script heroClass;
     public List<PlayerFood_ClassData> heroFoodDataList;
 
     // Inventory
     public List<PlayerFood_ClassData> inventoryFoodDataList;
     public int foodBoxLevel;
 
+    // Stage
+    public int stageID_Normal;
+    public int stageID_Special;
+
     // Skill
     public PlayerSkill_Data[] skillDataArr;
     public int[] selectSkillIDArr;
     public int[] test_SkillLevel;
-
-    // Stage
-    public int stageID_Normal;
-    public int stageID_Special;
 
     [Header("Drink")]
     public PlayerDrink_Data[] drinkDataArr;
@@ -59,8 +59,8 @@ public class Player_Data : MonoBehaviour
         yield return LoadUnit_Cor();
         yield return LoadHero_Cor();
         yield return LoadInventory_Cor();
-        yield return LoadSkill_Cor();
         yield return LoadStage_Cor();
+        yield return LoadSkill_Cor();
         yield return LoadDrink_Cor();
 
         yield break;
@@ -115,7 +115,6 @@ public class Player_Data : MonoBehaviour
     {
         //heroLevel = 0;
 
-
         // 영웅의 음식 정보 불러오기
         //heroFoodDataList = new List<PlayerFood_ClassData>();
         //for (int i = 0; i < heroFoodDataList.Count; i++)
@@ -123,7 +122,9 @@ public class Player_Data : MonoBehaviour
 
         //}
 
-        DataBase_Manager.Instance.heroAttackRate = playerHeroData.GetAttackSpeedMax_Func();
+        Hero_SetLevel_Func(heroLevel, true);
+
+        DataBase_Manager.Instance.heroAttackRate = heroClass.GetAttackSpeedMax_Func();
 
         yield break;
     }
@@ -146,16 +147,30 @@ public class Player_Data : MonoBehaviour
 
         yield break;
     } // UnComplete
+    IEnumerator LoadStage_Cor()
+    {
+        // Cargold : 스테이지 데이터 불러오기
+        
+        yield break;
+    } // UnComplete
     IEnumerator LoadSkill_Cor()
     {
-        // Test
         skillDataArr = new PlayerSkill_Data[10];
         for (int i = 0; i < 10; i++)
         {
             skillDataArr[i].Init_Func(i);
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < skillDataArr.Length; i++)
+        {
+            if(skillDataArr[i].skillParentClass.unlockLevel <= stageID_Normal)
+            {
+                skillDataArr[i].UnlockSkill_Func();
+            }
+        }
+
+        // Test
+        for (int i = 0; i < test_SkillLevel.Length; i++)
         {
             if(0 < test_SkillLevel[i])
             {
@@ -164,12 +179,6 @@ public class Player_Data : MonoBehaviour
             }
         }
 
-        yield break;
-    } // UnComplete
-    IEnumerator LoadStage_Cor()
-    {
-        // Cargold : 스테이지 데이터 불러오기
-        
         yield break;
     } // UnComplete
     IEnumerator LoadDrink_Cor()
@@ -250,6 +259,14 @@ public class Player_Data : MonoBehaviour
     public void DeactiveWealthUI_Func()
     {
         playerWealthClass.Deactive_Func();
+    }
+    public void OnLobbyWealthUI_Func()
+    {
+        playerWealthClass.OnLobby_Func();
+    }
+    public void OnBattleWealthUI_Func()
+    {
+        playerWealthClass.OnBattle_Func();
     }
     #endregion
     #region Trophy Group
@@ -340,24 +357,24 @@ public class Player_Data : MonoBehaviour
         switch (_trophyType)
         {
             case TrophyType.HealthPoint_Hero:
-                _calcValue = heroHealthPoint_RelativeLevel * _effectValue;
-                playerHeroData.healthPoint_Max += _calcValue;
+                _calcValue = hero_healthPoint_RelativeLevel * _effectValue;
+                heroClass.healthPoint_Max += _calcValue;
                 break;
             case TrophyType.AttackValue_Hero:
-                _calcValue = heroAttackValue_RelativeLevel * _effectValue;
-                playerHeroData.healthPoint_Max += _calcValue;
+                _calcValue = hero_attackValue_RelativeLevel * _effectValue;
+                heroClass.healthPoint_Max += _calcValue;
                 break;
             case TrophyType.CriticalPercent_Hero:
-                playerHeroData.criticalPercent += _effectValue;
+                heroClass.criticalPercent += _effectValue;
                 break;
             case TrophyType.CriticalBonus_Hero:
-                playerHeroData.criticalBonus += _effectValue;
+                heroClass.criticalBonus += _effectValue;
                 break;
             case TrophyType.ManaRegen:
-                playerHeroData.manaRegen += _effectValue;
+                heroClass.manaRegen += _effectValue;
                 break;
             case TrophyType.ManaStart:
-                playerHeroData.manaStart += _effectValue;
+                heroClass.manaStart += _effectValue;
                 break;
             case TrophyType.HealthPoint_Unit:
                 _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();
@@ -444,7 +461,101 @@ public class Player_Data : MonoBehaviour
     #endregion
     #region Unit Group
     #endregion
+    #region Hero Group
+    void Hero_FeedFood_Func(Food_Script _foodClass)
+    {
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+        _playerFoodData.SetData_Func(_foodClass);
+        heroFoodDataList.Add(_playerFoodData);
+
+        SetCharDataByFood_Func(heroClass, _foodClass, true);
+    }
+    void Hero_OutFood_Func(Food_Script _foodClass)
+    {
+        int _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+        heroFoodDataList.Remove(heroFoodDataList[_haveFoodID]);
+
+        SetCharDataByFood_Func(heroClass, _foodClass, false);
+    }
+    void Hero_SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
+    {
+        if (_haveFoodID == -1)
+            _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+
+        heroFoodDataList[_haveFoodID].SetData_Func(_foodClass);
+    }
+
+    public void Hero_SetLevel_Func(float _levelValue, bool _isInit = false)
+    {
+        Hero_SetLevel_InitUnitData_Func();
+        Hero_SetLevel_Level_Func(_levelValue);
+        Hero_SetLevel_Food_Func();
+        Hero_SetLevel_Trophy_Func();
+
+        if (_isInit == false)
+            Lobby_Manager.Instance.heroManagementClass.PrintInfoUI_Func();
+    }
+    void Hero_SetLevel_InitUnitData_Func()
+    {
+        Hero_Data _heroData = DataBase_Manager.Instance.heroData;
+        heroClass.SetData_Func(_heroData);
+    }
+    void Hero_SetLevel_Level_Func(float _levelValue)
+    {
+        heroLevel = (int)_levelValue;
+        _levelValue -= 1f;
+
+        float _levelPerBonus = DataBase_Manager.Instance.hero_LevelPerBonus;
+        _levelPerBonus *= 0.01f;
+
+        float _healthPoint = DataBase_Manager.Instance.heroData.healthPoint;
+        hero_healthPoint_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _healthPoint;
+        heroClass.healthPoint_Max = hero_healthPoint_RelativeLevel;
+
+        float _attackValue = DataBase_Manager.Instance.heroData.attackValue;
+        hero_attackValue_RelativeLevel = ((_levelValue * _levelPerBonus) + 1f) * _attackValue;
+        heroClass.attackValue = hero_attackValue_RelativeLevel;
+    }
+    void Hero_SetLevel_Food_Func()
+    {
+        for (int i = 0; i < heroFoodDataList.Count; i++)
+        {
+            Food_Script _foodClass = heroFoodDataList[i].foodClass;
+            Player_Data.Instance.SetCharDataByFood_Func(heroClass, _foodClass, true, false);
+        }
+    }
+    void Hero_SetLevel_Trophy_Func()
+    {
+        float _hpTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.HealthPoint_Hero, true);
+        float _dmgTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.AttackValue_Hero, true);
+
+        _hpTrophyEffectValue *= hero_healthPoint_RelativeLevel * 0.01f;
+        _dmgTrophyEffectValue *= hero_attackValue_RelativeLevel * 0.01f;
+
+        heroClass.healthPoint_Max += _hpTrophyEffectValue;
+        heroClass.attackValue += _dmgTrophyEffectValue;
+    }
+    #endregion
     #region Food Group
+    public int GetHaveFoodID_Func(List<PlayerFood_ClassData> _charFoodDataList, Food_Script _foodClass)
+    {
+        int _inventoryFoodID = -1;
+
+        for (int i = 0; i < _charFoodDataList.Count; i++)
+        {
+            if (_foodClass == _charFoodDataList[i].GetFoodClass_Func())
+            {
+                _inventoryFoodID = i;
+                break;
+            }
+        }
+
+        if (_inventoryFoodID == -1)
+            Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
+
+        return _inventoryFoodID;
+    }
+
     public void AddFood_Func(int _foodID, int _foodLevel = -1)
     {
         PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
@@ -486,15 +597,16 @@ public class Player_Data : MonoBehaviour
             
         }
     }
-    public void FeedFood_Func(int _unitID, Food_Script _foodClass)
+    public void FeedFood_Func(int _charID, Food_Script _foodClass)
     {
-        if (_unitID == 999)
+        if (_charID == 999)
         {
             // Hero
 
-            PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-            _playerFoodData.SetData_Func(_foodClass);
-            heroFoodDataList.Add(_playerFoodData);
+            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
+
+            Hero_FeedFood_Func(_foodClass);
         }
         else
         {
@@ -503,15 +615,22 @@ public class Player_Data : MonoBehaviour
             int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
             inventoryFoodDataList.RemoveAt(_inventoryFoodID);
 
-            playerUnitDataArr[_unitID].FeedFood_Func(_foodClass);
+            playerUnitDataArr[_charID].FeedFood_Func(_foodClass);
         }
     }
-    public void OutFood_Func(Food_Script _foodClass, int _unitID)
+    public void OutFood_Func(int _charID, Food_Script _foodClass)
     {
-        playerUnitDataArr[_unitID].OutFood_Func(_foodClass);
+        if(_charID == 999)
+        {
+            Hero_OutFood_Func(_foodClass);
+        }
+        else
+        {
+            playerUnitDataArr[_charID].OutFood_Func(_foodClass);
+        }
     }
 
-    public void SetFoodData_Func(Food_Script _foodClass, bool _isInventoryFood, int _unitID = -1)
+    public void SetFoodData_Func(Food_Script _foodClass, bool _isInventoryFood, int _charID = -1)
     {
         if(_isInventoryFood == true)
         {
@@ -520,7 +639,14 @@ public class Player_Data : MonoBehaviour
         }
         else if(_isInventoryFood == false)
         {
-            playerUnitDataArr[_unitID].SetFoodData_Func(_foodClass);
+            if(_charID == 999)
+            {
+                Hero_SetFoodData_Func(_foodClass);
+            }
+            else
+            {
+                playerUnitDataArr[_charID].SetFoodData_Func(_foodClass);
+            }
         }
     }
     public void SetFoodClassInInventory_Func(Food_Script _foodClass, int _inventoryID)
@@ -559,12 +685,22 @@ public class Player_Data : MonoBehaviour
         return inventoryFoodDataList.Count;
     }
 
-    public void SetUnitDataByFood_Func(int _unitID, Food_Script _foodClass, bool _isFeed)
+    public void SetCharDataByFood_Func(int _charID, Food_Script _foodClass, bool _isFeed)
     {
-        Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(_unitID);
-        SetUnitDataByFood_Func(_unitClass, _foodClass, _isFeed);
+        Character_Script _charClass = null;
+
+        if(_charID == 999)
+        {
+            _charClass = heroClass;
+        }
+        else
+        {
+            _charClass = DataBase_Manager.Instance.GetUnitClass_Func(_charID);
+        }
+        
+        SetCharDataByFood_Func(_charClass, _foodClass, _isFeed);
     }
-    public void SetUnitDataByFood_Func(Unit_Script _unitClass, Food_Script _foodClass, bool _isFeed, bool _isPrintUI = true)
+    public void SetCharDataByFood_Func(Character_Script _charClass, Food_Script _foodClass, bool _isFeed, bool _isPrintUI = true)
     {
         float _feedingCalc = 0f;
         if (_isFeed == true)
@@ -573,69 +709,115 @@ public class Player_Data : MonoBehaviour
             _feedingCalc = -0.01f;
 
         if(_foodClass.effectMain == FoodEffect_Main.AttackPower || _foodClass.effectMain == FoodEffect_Main.HealthPoint)
-            SetUnitDataByFoodMainEffect_Func(_unitClass, _foodClass, _feedingCalc);
+            SetCharDataByFoodMainEffect_Func(_charClass, _foodClass, _feedingCalc);
 
         if(FoodEffect_Sub.None < _foodClass.effectSub)
-            SetUnitDataByFoodSubEffect_Func(_unitClass, _foodClass, _feedingCalc);
+            SetCharDataByFoodSubEffect_Func(_charClass, _foodClass, _feedingCalc);
 
         if(_isPrintUI == true)
-            Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+        {
+            if(_charClass.unitID == 999)
+            {
+                Lobby_Manager.Instance.heroManagementClass.PrintInfoUI_Func();
+            }
+            else
+            {
+                Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+            }
+        }
     }
-    void SetUnitDataByFoodMainEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
+    void SetCharDataByFoodMainEffect_Func(Character_Script _charClass, Food_Script _foodClass, float _feedingCalc)
     {
-        int _charID = _unitClass.unitID;
+        int _charID = _charClass.unitID;
+        float _value = 0f;
 
         switch (_foodClass.effectMain)
         {
             case FoodEffect_Main.AttackPower:
-                float _attackValue = playerUnitDataArr[_charID].attackValue_RelativeLevel;
-                _attackValue = _attackValue * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
-                _unitClass.attackValue += _attackValue;
+                if (_charID == 999)
+                {
+                    _value = hero_attackValue_RelativeLevel;
+                }
+                else
+                {
+                    _value = playerUnitDataArr[_charID].attackValue_RelativeLevel;
+                }
+                _value = _value * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
+                _charClass.attackValue += _value;
                 break;
 
             case FoodEffect_Main.HealthPoint:
-                float _healthPoint = playerUnitDataArr[_charID].healthPoint_RelativeLevel;
-                _healthPoint = _healthPoint * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
-                _unitClass.healthPoint_Max += _healthPoint;
+                if (_charID == 999)
+                {
+                    _value = hero_healthPoint_RelativeLevel;
+                }
+                else
+                {
+                    _value = playerUnitDataArr[_charID].healthPoint_RelativeLevel;
+                }
+                _value = _value * _foodClass.GetMainEffectValue_Func() * _feedingCalc;
+                _charClass.healthPoint_Max += _value;
                 break;
         }
     }
-    void SetUnitDataByFoodSubEffect_Func(Unit_Script _unitClass, Food_Script _foodClass, float _feedingCalc)
+    void SetCharDataByFoodSubEffect_Func(Character_Script _charClass, Food_Script _foodClass, float _feedingCalc)
     {
-        int _charID = _unitClass.unitID;
+        int _charID = _charClass.unitID;
         float _value = 0f;
 
         switch (_foodClass.effectSub)
         {
             case FoodEffect_Sub.Critical:
                 _value = _foodClass.GetSubEffectValue_Func() * _feedingCalc * 100f;
-                _unitClass.criticalPercent += _value;
+                _charClass.criticalPercent += _value;
                 break;
 
             case FoodEffect_Sub.SpawnInterval:
-                _value = _unitClass.spawnInterval;
-                if (_value == 0f) _value = 1f;
-                _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.spawnInterval -= _value;
+                if(_charClass.unitID == 999)
+                {
+                    Debug.Log("System : 영웅 캐릭터가 생산속도 관련 음식을 습득했습니다.");
+                }
+                else
+                {
+                    Unit_Script _unitClass = _charClass as Unit_Script;
+                    _value = _unitClass.spawnInterval;
+                    if (_value == 0f) _value = 1f;
+                    _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
+                    _unitClass.spawnInterval -= _value;
+                }
                 break;
 
             case FoodEffect_Sub.DecreaseHP:
-                _value = _unitClass.healthPoint_Max;
+                if (_charID == 999)
+                {
+                    _value = hero_healthPoint_RelativeLevel;
+                }
+                else
+                {
+                    _value = playerUnitDataArr[_charID].healthPoint_RelativeLevel;
+                }
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.healthPoint_Max -= _value;
+                _charClass.healthPoint_Max -= _value;
                 break;
 
             case FoodEffect_Sub.DefenceValue:
                 _value = _foodClass.GetSubEffectValue_Func() * _feedingCalc * 100f;
-                _unitClass.defenceValue += _value;
+                _charClass.defenceValue += _value;
                 break;
 
             case FoodEffect_Sub.DecreaseAttack:
-                _value = _unitClass.attackValue;
+                if (_charID == 999)
+                {
+                    _value = hero_attackValue_RelativeLevel;
+                }
+                else
+                {
+                    _value = playerUnitDataArr[_charID].attackValue_RelativeLevel;
+                }
                 if (_value == 0f) _value = 1f;
                 _value = _value * _foodClass.GetSubEffectValue_Func() * _feedingCalc;
-                _unitClass.attackValue -= _value;
+                _charClass.attackValue -= _value;
                 break;
         }
     }
@@ -648,7 +830,7 @@ public class Player_Data : MonoBehaviour
     #region Skill Group
     public void UnlockSkill_Func(int _skillID)
     {
-        skillDataArr[_skillID].UnlockSkill_Func(_skillID);
+        skillDataArr[_skillID].UnlockSkill_Func();
     }
     public void LevelUpSkill_Func(int _skillID, int _fixedLevel = -1)
     {
@@ -662,6 +844,21 @@ public class Player_Data : MonoBehaviour
         {
             selectSkillIDArr[_grade]++;
         }
+    }
+    public int GetSkillLevel_Func(int _skillID)
+    {
+        return skillDataArr[_skillID].skillLevel;
+    }
+    public int GetSkillUpCost_Func(int _skillID)
+    {
+        int _skillLevel = GetSkillLevel_Func(_skillID);
+        
+        int _skillUpCost = ((_skillLevel - 1) * 2) + skillDataArr[_skillID].skillParentClass.upgradeInitCost;
+
+        if (60 < _skillUpCost)
+            _skillUpCost = 60;
+
+        return _skillUpCost;
     }
     #endregion
     #region Drink Group

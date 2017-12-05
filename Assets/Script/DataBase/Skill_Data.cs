@@ -9,13 +9,12 @@ public struct Skill_Data
     public string skillName;
     public string skillDesc;
     public Sprite skillSprite;
-
-    public int skillLevel;
+    
     public int slotOrder;
     public float coolTime;
     public float manaCost;
     public int unlockLevel;
-    public float upgradeCost;
+    public int upgradeInitCost;
     public SkillVar[] skillVarArr;
 
     public void SetData_Func(Skill_Parent _skillClass)
@@ -25,12 +24,11 @@ public struct Skill_Data
         skillDesc   = _skillClass.skillDesc;
         skillSprite = _skillClass.skillSprite;
                                  
-        skillLevel  = _skillClass.skillLevel ;
         slotOrder   = _skillClass.slotOrder   ;
         coolTime    = _skillClass.coolTime    ;
         manaCost    = _skillClass.manaCost    ;
         unlockLevel = _skillClass.unlockLevel ;
-        upgradeCost = _skillClass.upgradeCost ;
+        upgradeInitCost = _skillClass.upgradeInitCost ;
         skillVarArr = _skillClass.skillVarArr;
     }
 }

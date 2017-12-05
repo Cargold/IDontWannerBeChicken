@@ -34,8 +34,8 @@ public class Slam_Script : Skill_Parent
 
     public override void Init_Func()
     {
-        playerClass = Player_Data.Instance.playerHeroData;
-        playerTrf = Player_Data.Instance.playerHeroData.transform;
+        playerClass = Player_Data.Instance.heroClass;
+        playerTrf = Player_Data.Instance.heroClass.transform;
 
         collideCharList = new List<Character_Script>();
 

@@ -12,8 +12,7 @@ public class ObjectPool_Manager : MonoBehaviour
     public int defaultAmount = 10;
     public List<GameObject> poolList;
     private GameObject sampleFolderObj;
-    public int[] poolAmount;
-    
+
     Dictionary<string, ObjectPool> objectPoolDic = new Dictionary<string, ObjectPool>();
 
     public IEnumerator Init_Cor()
@@ -150,8 +149,6 @@ public class ObjectPool_Manager : MonoBehaviour
             objectPool.folder = folder;
 
             int amount = defaultAmount;
-            if (poolAmount.Length > i && poolAmount[i] != 0)
-                amount = poolAmount[i];
 
             for (int j = 0; j < amount; j++)
             {
@@ -165,8 +162,7 @@ public class ObjectPool_Manager : MonoBehaviour
                 // 꺼져, 느려
                 //yield return null;
             }
-
-            objectPool.maxAmount = amount;
+            
             yield return null;
         }
     }
@@ -193,14 +189,12 @@ public class ObjectPool_Manager : MonoBehaviour
         }
         else // 사용 가능한 오브젝트가 없을때
         {
-            //Debug.Log("Test, Spawn : " + pool.folder.transform);
-
             GameObject obj = Instantiate(pool.source);
             obj.transform.SetParent(pool.folder.transform);
             obj.name = pool.source.name;
             obj.SetActive(true);
             
-            pool.maxAmount++;
+            Debug.Break();
 
             return obj;
         }        
@@ -226,7 +220,6 @@ public class ObjectPool_Manager : MonoBehaviour
 public class ObjectPool
 {
     public GameObject source;
-    public int maxAmount;
     public GameObject folder;
 
     public List<GameObject> unusedList = new List<GameObject>();

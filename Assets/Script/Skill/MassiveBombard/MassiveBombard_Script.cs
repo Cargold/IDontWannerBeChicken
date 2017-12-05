@@ -21,7 +21,7 @@ public class MassiveBombard_Script : Skill_Parent
 
     public override void Init_Func()
     {
-        playerTrf = Player_Data.Instance.playerHeroData.transform;
+        playerTrf = Player_Data.Instance.heroClass.transform;
     }
     protected override void BattleEnterChild_Func()
     {
@@ -31,7 +31,7 @@ public class MassiveBombard_Script : Skill_Parent
 
         damageValue
             = damageData.recentValue
-            + Player_Data.Instance.playerHeroData.attackValue * damagePerData.recentValue;
+            + Player_Data.Instance.heroClass.attackValue * damagePerData.recentValue;
     }
     public override void UseSkill_Func()
     {

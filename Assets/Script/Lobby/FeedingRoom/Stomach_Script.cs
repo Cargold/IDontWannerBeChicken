@@ -178,7 +178,7 @@ public class Stomach_Script : MonoBehaviour
     void OutFood_Func(Food_Script _foodClass)
     {
         feedFoodClassList.Remove(_foodClass);
-        Player_Data.Instance.OutFood_Func(_foodClass, stomachUnitID);
+        Player_Data.Instance.OutFood_Func(stomachUnitID, _foodClass);
         Player_Data.Instance.AddFood_Func(_foodClass);
     }
 

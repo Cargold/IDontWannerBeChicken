@@ -20,7 +20,7 @@ public class PurifyingLay_Script : Skill_Parent
     {
         layColClass.Init_Func(this);
 
-        playerTrf = Player_Data.Instance.playerHeroData.transform;
+        playerTrf = Player_Data.Instance.heroClass.transform;
     }
     protected override void BattleEnterChild_Func()
     {

@@ -10,7 +10,7 @@ public class Unit_Script : Character_Script
     [SerializeField]
     private Vector3 moveDir;
 
-    private BattleSpawn_Script spawnCalss;
+    private BattleSpawn_Script spawnClass;
     public int spawnNum;
     public float spawnInterval;
     public int spawnNum_Limit;
@@ -135,7 +135,7 @@ public class Unit_Script : Character_Script
     }
     public void SetSpawner_Func(BattleSpawn_Script _spawnClass)
     {
-        spawnCalss = _spawnClass;
+        spawnClass = _spawnClass;
     }
 
     void InitMove_Func()
@@ -160,18 +160,24 @@ public class Unit_Script : Character_Script
             StartCoroutine("Move_Cor");
         }
     }
-
+    public bool isTest = false;
     IEnumerator Move_Cor()
     {
         animator.SetBool("OnContact", false);
         charState = CharacterState.Move;
 
+        isTest = false;
+
         while (charState == CharacterState.Move)
         {
+            isTest = true;
+
             this.transform.position += moveDir * moveSpeed * 0.01f;
 
             yield return new WaitForFixedUpdate();
         }
+
+        Debug.Log("Test, CharState : " + charState);
     }
 
     public override void Die_Func(bool _isImmediate = false)
@@ -189,7 +195,8 @@ public class Unit_Script : Character_Script
             effectData_Die.ActiveEffect_Func();
         }
         
-        spawnCalss.UnitDie_Func(this);
+        if(spawnClass != null)
+            spawnClass.UnitDie_Func(this);
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
 

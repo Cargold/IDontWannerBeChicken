@@ -40,39 +40,21 @@ public class PlayerUnit_ClassData
         _playerFoodData.SetData_Func(_foodClass);
         playerFoodDataList.Add(_playerFoodData);
 
-        Player_Data.Instance.SetUnitDataByFood_Func(unitClass, _foodClass, true);
+        Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, true);
     }
     public void SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
         if(_haveFoodID == -1)
-            _haveFoodID = GetHaveFoodID_Func(_foodClass);
+            _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
 
         playerFoodDataList[_haveFoodID].SetData_Func(_foodClass);
     }
     public void OutFood_Func(Food_Script _foodClass)
     {
-        int _haveFoodID = GetHaveFoodID_Func(_foodClass);
+        int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
         playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
-        Player_Data.Instance.SetUnitDataByFood_Func(unitClass, _foodClass, false);
-    }
-    public int GetHaveFoodID_Func(Food_Script _foodClass)
-    {
-        int _inventoryFoodID = -1;
-
-        for (int i = 0; i < playerFoodDataList.Count; i++)
-        {
-            if (_foodClass == playerFoodDataList[i].GetFoodClass_Func())
-            {
-                _inventoryFoodID = i;
-                break;
-            }
-        }
-
-        if (_inventoryFoodID == -1)
-            Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
-
-        return _inventoryFoodID;
+        Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, false);
     }
     public PlayerFood_ClassData[] GetPlayerFoodDataArr_Func()
     {
@@ -84,8 +66,7 @@ public class PlayerUnit_ClassData
         SetLevel_Level_Func(_levelValue);
         SetLevel_Food_Func();
         SetLevel_Trophy_Func();
-
-        // 유닛 레벨업은 파티창에서만 가능하니까?
+        
         if(_isInit == false)
             Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
     }
@@ -131,7 +112,7 @@ public class PlayerUnit_ClassData
         for (int i = 0; i < playerFoodDataList.Count; i++)
         {
             Food_Script _foodClass = playerFoodDataList[i].foodClass;
-            Player_Data.Instance.SetUnitDataByFood_Func(unitClass, _foodClass, true, false);
+            Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, true, false);
         }
     }
     void SetLevel_Trophy_Func()

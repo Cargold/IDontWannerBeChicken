@@ -44,8 +44,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     [Header("Unit Upgrade")]
     public RectTransform unitLevelUpBtnRTrf;
-    public Text unitLevelUpText;
-    private int unitLevelUpCost;
+    public Text charLevelUpText;
+    private int charLevelUpCost;
 
     #region Override Group
     protected override void InitUI_Func()
@@ -74,10 +74,14 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
             lobbyManager.OffFeedingRoom_Func(selectUnitID);
         }
+
+        Player_Data.Instance.DeactiveWealthUI_Func();
     }
     #endregion
     public void Enter_Func(int _selectUnitID)
     {
+        // 999 = Hero, Other = Unit
+
         this.gameObject.SetActive(true);
 
         selectUnitID = _selectUnitID;
@@ -99,10 +103,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
             PointUp_Func(_foodClass);
         }
 
-        PrintUnitUpgradeCost_Func();
+        PrintCharUpgradeCost_Func();
 
         anim["FeedingRoom"].speed = 1f;
         anim.Play("FeedingRoom");
+
+        Player_Data.Instance.ActiveWealthUI_Func();
     }
     void InitSelect_Func()
     {
@@ -354,34 +360,46 @@ public class FeedingRoom_Script : LobbyUI_Parent
         }
     }
 
-    #region Unit Upgrade Group
-    void PrintUnitUpgradeCost_Func(int _charLevel = -1)
+    #region Char Upgrade Group
+    void PrintCharUpgradeCost_Func(int _charLevel = -1)
     {
-        if(_charLevel == -1)
+        int _charGrade = 0;
+        if (selectUnitID == 999)
         {
-            if (selectUnitID == 999)
+            if (_charLevel == -1)
             {
                 _charLevel = Player_Data.Instance.heroLevel;
             }
-            else
+
+            _charGrade = Player_Data.Instance.heroClass.charGrade;
+        }
+        else
+        {
+            if (_charLevel == -1)
             {
                 _charLevel = Player_Data.Instance.playerUnitDataArr[selectUnitID].unitLevel;
             }
+
+            _charGrade = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID).charGrade;
         }
 
-        int _charGrade = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID).charGrade;
-        unitLevelUpCost = DataBase_Manager.Instance.GetUnitLevelUpCost_Func(_charLevel + _charGrade);
-        unitLevelUpText.text = unitLevelUpCost.ToString();
+        charLevelUpCost = DataBase_Manager.Instance.GetCharLevelUpCost_Func(_charLevel + _charGrade);
+        charLevelUpText.text = string.Format("{0:N0}", charLevelUpCost);
     }
-    public void OnUnitLevelUp_Func()
+    public void OnCharLevelUp_Func()
     {
-        bool _isCorrect = Player_Data.Instance.PayWealth_Func(WealthType.Gold, unitLevelUpCost, true);
+        bool _isCorrect = Player_Data.Instance.PayWealth_Func(WealthType.Gold, charLevelUpCost, true);
         if(_isCorrect == true)
         {
             int _charLevel = 0;
             if (selectUnitID == 999)
             {
+                Debug.Log("Test, Hero");
 
+                _charLevel = Player_Data.Instance.heroLevel;
+                _charLevel++;
+
+                Player_Data.Instance.Hero_SetLevel_Func(_charLevel);
             }
             else
             {
@@ -389,21 +407,21 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 _charLevel++;
 
                 Player_Data.Instance.playerUnitDataArr[selectUnitID].SetLevel_Func(_charLevel);
-
-                Player_Data.Instance.PayWealth_Func(WealthType.Gold, unitLevelUpCost);
             }
 
-            PrintUnitUpgradeCost_Func(_charLevel);
+            Player_Data.Instance.PayWealth_Func(WealthType.Gold, charLevelUpCost);
+
+            PrintCharUpgradeCost_Func(_charLevel);
         }
         else
         {
-            unitLevelUpText.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
+            charLevelUpText.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
         }
     }
     void ResetLevelUpBtn_Func()
     {
         Color _color = DataBase_Manager.Instance.textColor;
-        unitLevelUpText.DOColor(_color, 0.2f);
+        charLevelUpText.DOColor(_color, 0.2f);
     }
     #endregion
 
@@ -488,7 +506,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         isUpgradeReady = false;
 
-        Player_Data.Instance.SetUnitDataByFood_Func(selectUnitID, selectedFoodClass, false);
+        Player_Data.Instance.SetCharDataByFood_Func(selectUnitID, selectedFoodClass, false);
 
         float _materialExp = materialFoodClass.GetMaterialExp_Func();
         materialFoodClass.Destroy_Func();
@@ -501,7 +519,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         bool _isInventoryFood = CheckInventoryFood_Func(selectedFoodClass);
         Player_Data.Instance.SetFoodData_Func(selectedFoodClass, _isInventoryFood, selectUnitID);
-        Player_Data.Instance.SetUnitDataByFood_Func(selectUnitID, selectedFoodClass, true);
+        Player_Data.Instance.SetCharDataByFood_Func(selectUnitID, selectedFoodClass, true);
     }
     public void RemoveFood_Func(Food_Script _foodClass)
     {

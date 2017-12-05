@@ -67,7 +67,7 @@ public class BattleStartDirection_Script : MonoBehaviour
     {
         if (_directionState == GameState.Lobby)
         {
-            Player_Data.Instance.playerHeroData.transform.position = new Vector3(2.45f, 0f, 0f);
+            Player_Data.Instance.heroClass.transform.position = new Vector3(2.45f, 0f, 0f);
 
             partyAni["Party"].time = 0f;
             partyAni["Party"].speed = -1f;

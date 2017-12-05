@@ -10,7 +10,7 @@ public class OverDrive_Script : Skill_Parent
     
     public override void Init_Func()
     {
-        playerClass = Player_Data.Instance.playerHeroData;
+        playerClass = Player_Data.Instance.heroClass;
     }
     protected override void BattleEnterChild_Func()
     {

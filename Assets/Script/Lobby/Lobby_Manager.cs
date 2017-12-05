@@ -30,7 +30,7 @@ public class Lobby_Manager : MonoBehaviour
     {
         Instance = this;
 
-        int _menuNum = menuGroupTrf.childCount;
+        int _menuNum = 8;
         lobbyUIParentClassArr = new LobbyUI_Parent[_menuNum];
 
         for (int i = 0; i < _menuNum; i++)
@@ -50,7 +50,7 @@ public class Lobby_Manager : MonoBehaviour
         questRoomClass = (QuestRoom_Script)lobbyUIParentClassArr[5];
         trophyRoomClass = (TrophyRoom_Script)lobbyUIParentClassArr[6];
         feedingRoomClass = (FeedingRoom_Script)lobbyUIParentClassArr[7];
-        
+
         yield break;
     }
     #region Lobby Group
@@ -66,6 +66,8 @@ public class Lobby_Manager : MonoBehaviour
         int _lobbyTypeID = (int)_lobbyState;
         
         lobbyUIParentClassArr[_lobbyTypeID].Enter_Func();
+
+        Player_Data.Instance.OnLobbyWealthUI_Func();
     }
     public void Exit_Func(LobbyState _lobbyState)
     {
@@ -87,7 +89,7 @@ public class Lobby_Manager : MonoBehaviour
     {
         if(_selectUnitID == 999)
         {
-
+            heroManagementClass.ReturnUI_Func();
         }
         else
         {

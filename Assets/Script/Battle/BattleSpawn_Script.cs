@@ -162,6 +162,7 @@ public class BattleSpawn_Script : MonoBehaviour
         spawnCheckAllCount++;
         
         spawnActiveUnitCount++;
+
         if (_isDefaultDirection == true)
         {
             OnSpawnAllyDirection_Func(_spawnUnitClass);
@@ -186,6 +187,7 @@ public class BattleSpawn_Script : MonoBehaviour
                 _spawnUnitTrf.position.y + spawnPosY_Calc - 3f,
                 0f
             );
+        
         _spawnUnitTrf.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
             .OnComplete(_spawnUnitClass.OnLanding_Func);
         

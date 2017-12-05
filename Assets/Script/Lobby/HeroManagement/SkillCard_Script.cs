@@ -37,6 +37,7 @@ public class SkillCard_Script : MonoBehaviour
 
         isUnlock = _playerSkillData.isUnlock;
         lockImageObj.SetActive(!_playerSkillData.isUnlock);
+        lockConditionText.text = "Stage " + _playerSkillData.skillParentClass.unlockLevel;
         lockConditionText.gameObject.SetActive(!_playerSkillData.isUnlock);
     }
 
@@ -53,7 +54,7 @@ public class SkillCard_Script : MonoBehaviour
         {
             if(selectImageObj.activeInHierarchy == false)
             {
-                heroManagementClass.SelectCard_Func(this);
+                heroManagementClass.SelectSkillCard_Func(this);
 
                 selectImageObj.SetActive(true);
             }

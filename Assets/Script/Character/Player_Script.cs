@@ -6,6 +6,7 @@ using DG.Tweening;
 
 public class Player_Script : Character_Script
 {
+    public int heroLevel;
     public Transform spawnPos;
     public GameObject rendGroupObj;
     public enum MoveDir
@@ -32,7 +33,30 @@ public class Player_Script : Character_Script
 
     public float manaStart;
     public float manaRegen;
-    
+
+    // Rendering Var
+    public Vector2 feedImagePos;
+    public float feedImageSize;
+
+    public void SetData_Func(Hero_Data _heroData)
+    {
+        // 풀링 될 때의 첫 데이터 세팅
+
+        healthPoint_Max = _heroData.healthPoint;
+        healthPoint_Recent = _heroData.healthPoint;
+        defenceValue = _heroData.defenceValue;
+        attackValue = _heroData.attackValue;
+        attackRate_Max = _heroData.attackRate;
+        attackRange = _heroData.attackRange;
+        moveSpeed = _heroData.moveSpeed;
+        criticalPercent = _heroData.criticalPercent;
+        criticalBonus = _heroData.criticalBonus;
+        shootType = _heroData.shootType;
+        shootTime = _heroData.shootSpeed;
+        shootHeight = _heroData.shootHeight;
+        attackType = _heroData.attackType;
+        manaRegen = _heroData.manaRegen;
+    }
     public void LobbyEnter_Func()
     {
         hpRend_Group.gameObject.SetActive(false);

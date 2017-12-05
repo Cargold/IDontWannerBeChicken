@@ -153,13 +153,13 @@ public class Character_Script : MonoBehaviour
         }
         if (isHouse == false && isPlayer == false)
             shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
-
-
+        
         // Set Status
         isAlive = true;
         SetState_Func(CharacterState.Move);
 
         // Set Attack
+        contactCharClassList.Clear();
         StartCoroutine(CheckAttackRate_Cor());
         if(isPlayer == false)
             StartCoroutine(CheckAttack_Cor());
@@ -193,7 +193,7 @@ public class Character_Script : MonoBehaviour
         switch (_drinkType)
         {
             case DrinkType.Health:
-                float _bonusHP = Player_Data.Instance.playerUnitDataArr[unitID].healthPoint_RelativeLevel * _drinkEffectValue;
+                float _bonusHP = Player_Data.Instance.playerUnitDataArr[unitID].unitClass.healthPoint_Max * _drinkEffectValue;
                 healthPoint_Max += _bonusHP;
                 healthPoint_Recent = healthPoint_Max;
                 break;
@@ -385,22 +385,24 @@ public class Character_Script : MonoBehaviour
         }
 
         Character_Script _closerCharClass = null;
-        float _closerCharDistance = 0f;
-        int _closeCharID = 0;
+        float _closerCharDistance = attackRange;
+        int _closeCharID = -1;
+
+        Vector3 _thisPosCalc = new Vector3(this.transform.position.x, 0f, 0f);
 
         for (int i = 0; i < contactCharClassList.Count; i++)
         {
             // 지나친 대상일 경우 무시
             if (groupType == GroupType.Ally)
             {
-                if (contactCharClassList[i].transform.position.x < this.transform.position.x)
+                if (contactCharClassList[i].transform.position.x + 1f < _thisPosCalc.x)
                 {
                     continue;
                 }
             }
             else if (groupType == GroupType.Enemy)
             {
-                if (this.transform.position.x < contactCharClassList[i].transform.position.x)
+                if (_thisPosCalc.x < contactCharClassList[i].transform.position.x - 1f)
                 {
                     continue;
                 }
@@ -408,7 +410,7 @@ public class Character_Script : MonoBehaviour
 
             // 거리 체크
             Vector3 _contactCharPos = new Vector3(contactCharClassList[i].transform.position.x, 0f, 0f);
-            float _distanceValue = Vector3.Distance(this.transform.position, _contactCharPos);
+            float _distanceValue = Vector3.Distance(_thisPosCalc, _contactCharPos);
 
             // 처음 체크하는 대상이거나, 기존 최단 근접 대상보다 가까운 경우
             if (_closerCharClass == null || _distanceValue < _closerCharDistance)
@@ -416,12 +418,6 @@ public class Character_Script : MonoBehaviour
                 _closerCharDistance = _distanceValue;
                 _closerCharClass = contactCharClassList[i];
                 _closeCharID = i;
-
-                // 체크된 대상이 공격사거리(또는 인자값)보다 짧은 경우
-                if (_distanceValue <= _checkValue)
-                {
-                    break;
-                }
             }
         }
 
@@ -434,8 +430,8 @@ public class Character_Script : MonoBehaviour
 
             return contactCharClassList[0];
         }
-
-        return null;
+        else
+            return null;
     }
     protected bool CheckTargetAlive_Func()
     {
@@ -471,7 +467,7 @@ public class Character_Script : MonoBehaviour
     public virtual void Damaged_Func(float _damageValue)
     {
         _damageValue *= defenceValue_Calc;
-
+        
         healthPoint_Recent -= _damageValue;
 
         if (0 < healthPoint_Recent)
@@ -783,7 +779,10 @@ public class Character_Script : MonoBehaviour
         stunData.isStunState = false;
 
         isControlOut = false;
-        animator.SetBool("OnContact", true);
+        //animator.SetBool("OnContact", true);
+
+        animator.SetBool("OnContact", false);
+        animator.SetBool("AttackReady", false);
     }
     #endregion
 }

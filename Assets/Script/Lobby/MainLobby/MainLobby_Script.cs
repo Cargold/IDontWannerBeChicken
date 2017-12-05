@@ -70,7 +70,9 @@ public class MainLobby_Script : LobbyUI_Parent
 
         for (int i = 0; i < partyMemberObjList.Count; i++)
         {
-            ObjectPool_Manager.Instance.Free_Func(_partyMemberObjArr[i]);
+            partyMemberObjList[i].GetComponent<Unit_Script>().Die_Func(true);
+
+            //ObjectPool_Manager.Instance.Free_Func(_partyMemberObjArr[i]);
         }
 
         partyMemberObjList.Clear();

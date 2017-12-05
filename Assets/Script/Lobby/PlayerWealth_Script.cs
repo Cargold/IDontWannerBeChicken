@@ -28,4 +28,12 @@ public class PlayerWealth_Script : MonoBehaviour
     {
         this.gameObject.SetActive(false);
     }
+    public void OnLobby_Func()
+    {
+        this.transform.SetParent(Lobby_Manager.Instance.menuGroupTrf);
+    }
+    public void OnBattle_Func()
+    {
+        this.transform.SetParent(Lobby_Manager.Instance.mainLobbyClass.thisRTrf);
+    }
 }

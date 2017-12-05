@@ -54,9 +54,13 @@ public class PartySetting_Script : LobbyUI_Parent
         unitShadowImage.SetNaturalAlphaColor_Func(0f);
 
         unitCardClassArr[0].OnSelect_Func(false);
+
+        Player_Data.Instance.DeactiveWealthUI_Func();
     }
     public override void Exit_Func()
     {
+        Player_Data.Instance.ActiveWealthUI_Func();
+
         this.gameObject.SetActive(false);
     }
     #endregion
@@ -322,7 +326,6 @@ public class PartySetting_Script : LobbyUI_Parent
         unitImage.rectTransform.DOLocalMove(_unitClass.feedImagePos, 0.5f);
         unitImage.rectTransform.DOScale(_unitClass.feedImageSize, 0.5f);
     }
-    
     public void ReturnUI_Func()
     {
         Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(selectUnitID);

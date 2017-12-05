@@ -24,16 +24,23 @@ public class SkillInfo_Script : MonoBehaviour
         nameText.text = _skillClass.skillName + " Lv." + _skillLevel;
 
         int _varNum = _skillClass.skillVarArr.Length;
-        float[] _varUpgradeValueArr = new float[_varNum];
-        for (int i = 0; i < _varNum; i++)
+        List<float> _varUpgradeValueArr = new List<float>();
+        for (int i = 0; i < 10; i++)
         {
-            _varUpgradeValueArr[i]
-                = _skillClass.skillVarArr[i].initValue
-                + (_skillLevel * _skillClass.skillVarArr[i].upgradeValue);
+            if(i < _varNum)
+            {
+                _varUpgradeValueArr.Add(
+                    _skillClass.skillVarArr[i].initValue + (_skillLevel * _skillClass.skillVarArr[i].upgradeValue)
+                    );
+            }
+            else
+            {
+                _varUpgradeValueArr.Add(0f);
+            }
         }
 
         string _descByFormatting = "";
-        _descByFormatting = string.Format(_skillClass.skillDesc, _varUpgradeValueArr);
+        _descByFormatting = string.Format(_skillClass.skillDesc, _varUpgradeValueArr[0], _varUpgradeValueArr[1], _varUpgradeValueArr[2], _varUpgradeValueArr[3], _varUpgradeValueArr[4]);
 
         descText.text = _descByFormatting;
     }

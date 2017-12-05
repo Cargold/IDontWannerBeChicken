@@ -24,6 +24,7 @@ public class DataBase_Manager : MonoBehaviour
     [SerializeField]
     private Unit_Data[] m_UnitDataArr;
     private Dictionary<int, Unit_Script> unitClassDic;
+    public float hero_LevelPerBonus;
     public float allyUnit_LevelPerBonus;
     public float enemyMonster_LevelPerBonus;
 
@@ -213,11 +214,11 @@ public class DataBase_Manager : MonoBehaviour
     {
         return m_UnitDataArr[_unitID].unitName;
     }
-    public Unit_Script GetUnitClass_Func(int _unitID)
+    public Unit_Script GetUnitClass_Func(int _charID)
     {
         Unit_Script _unitClass = null;
 
-        if (unitClassDic.TryGetValue(_unitID, out _unitClass) == false)
+        if (unitClassDic.TryGetValue(_charID, out _unitClass) == false)
         {
             Debug.LogError("Bug : 유닛ID가 설정치를 벗어났슴다");
         }
@@ -228,7 +229,7 @@ public class DataBase_Manager : MonoBehaviour
     {
         return unitDataObjArr.Length;
     }
-    public int GetUnitLevelUpCost_Func(int _recentLevel)
+    public int GetCharLevelUpCost_Func(int _recentLevel)
     {
         int _initCost = 1000;
         int _cost = _initCost;

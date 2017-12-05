@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class HeroManagement_Script : LobbyUI_Parent
 {
@@ -12,6 +14,10 @@ public class HeroManagement_Script : LobbyUI_Parent
     public SkillGrade_Script[] skillGradeArr;
 
     public SkillInfo_Script skillInfoClass;
+    public Text skillLevelUpCostTest;
+
+    public Image heroImage;
+    public Text[] heroInfoTextArr;
 
     #region Override Group
     protected override void InitUI_Func()
@@ -80,6 +86,8 @@ public class HeroManagement_Script : LobbyUI_Parent
                 }
             }
         }
+
+        PrintInfoUI_Func();
     }
     public override void Exit_Func()
     {
@@ -88,8 +96,8 @@ public class HeroManagement_Script : LobbyUI_Parent
         this.gameObject.SetActive(false);
     }
     #endregion
-
-    public void SelectCard_Func(SkillCard_Script _selectCardClass)
+    #region SkillCard Group
+    public void SelectSkillCard_Func(SkillCard_Script _selectCardClass)
     {
         // 이전 선택된 카드, 효과 해제
         if(selectCardClass != null)
@@ -113,13 +121,83 @@ public class HeroManagement_Script : LobbyUI_Parent
             skillGradeArr[_grade].SelectSkill_Func(false);
         }
     }
-    public void PrintCardInfo_Func(SkillCard_Script _selectCardClass)
+    public void SkillLevelUp_Func()
     {
-        skillInfoClass.PrintSelectCardInfo_Func(_selectCardClass);
-    }
+        int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(selectCardClass.cardID);
+        bool _isPay = Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost, true);
+        if(_isPay == true)
+        {
+            Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost);
 
+            Player_Data.Instance.LevelUpSkill_Func(selectCardClass.cardID);
+
+            PrintCardInfo_Func();
+        }
+        else if(_isPay == false)
+        {
+            skillLevelUpCostTest.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
+        }
+    }
+    void ResetLevelUpBtn_Func()
+    {
+        Color _color = DataBase_Manager.Instance.textColor;
+        skillLevelUpCostTest.DOColor(_color, 0.2f);
+    }
+    #endregion
+    #region Print Group
+    public void PrintCardInfo_Func(SkillCard_Script _selectCardClass = null)
+    {
+        if (_selectCardClass == null)
+            _selectCardClass = selectCardClass;
+
+        skillInfoClass.PrintSelectCardInfo_Func(_selectCardClass);
+        PrintSkillUpCost_Func(_selectCardClass.cardID);
+    }
+    void PrintSkillUpCost_Func(int _skillDataID)
+    {
+        int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(selectCardClass.cardID);
+
+        skillLevelUpCostTest.text = skillLevelUpCost.ToString();
+    }
+    public void PrintInfoUI_Func()
+    {
+        Player_Script _heroClass = Player_Data.Instance.heroClass;
+
+        heroInfoTextArr[0].text = string.Format("{0:N0}", (int)_heroClass.attackValue);
+        heroInfoTextArr[1].text = string.Format("{0:N0}", (int)_heroClass.healthPoint_Max);
+        heroInfoTextArr[2].text = string.Format("{0:N0}", _heroClass.defenceValue) + "%";
+        heroInfoTextArr[3].text = string.Format("{0:N0}", _heroClass.criticalPercent) + "%";
+        heroInfoTextArr[4].text = "0";
+        heroInfoTextArr[5].text = "0";
+        heroInfoTextArr[6].text = "Lv." + Player_Data.Instance.heroLevel + " " + _heroClass.charName;
+        heroInfoTextArr[7].text = _heroClass.charDesc;
+    }
+    #endregion
+    #region OnFeed Group
     public void OnFeedingRoom_Func()
     {
+        // Call : Btn Event
+
+        RotateUnitImage_Func();
         lobbyManager.OnFeedingRoom_Func(999);
     }
+    void RotateUnitImage_Func()
+    {
+        Player_Script _playerClass = Player_Data.Instance.heroClass;
+
+        heroImage.rectTransform.DORotate(Vector3.up * 180f, 0.5f);
+        heroImage.DOColor(Color.black, 0.5f);
+        heroImage.rectTransform.DOLocalMove(_playerClass.feedImagePos, 0.5f);
+        heroImage.rectTransform.DOScale(_playerClass.feedImageSize, 0.5f);
+    }
+    public void ReturnUI_Func()
+    {
+        Player_Script _playerClass = Player_Data.Instance.heroClass;
+
+        heroImage.transform.DORotate(Vector3.zero, 0.5f);
+        heroImage.DOColor(Color.white, 0.5f);
+        heroImage.transform.DOLocalMove(new Vector3(516f, -75, 0f), 0.5f);
+        heroImage.transform.DOScale(1f, 0.5f).SetEase(Ease.OutExpo);
+    }
+    #endregion
 }
