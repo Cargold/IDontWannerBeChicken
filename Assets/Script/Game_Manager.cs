@@ -9,13 +9,14 @@ public class Game_Manager : MonoBehaviour
     
     public TranslationSystem_Manager translationSystem;
     public DataBase_Manager databaseClass;
-    public Player_Data playerDataClass;
-    public Battle_Manager battleClass;
-    public Lobby_Manager lobbyClass;
     public ObjectPool_Manager objectPoolManager;
-    public SmoothFollow_Script mainCameraSmoothClass;
+    public Player_Data playerDataClass;
+    public Lobby_Manager lobbyClass;
     public BattleStartDirection_Script directionClass;
+    public Battle_Manager battleClass;
+    public SkillSystem_Manager skillSystemManager;
     public Enviroment_Manager enviromentClass;
+    public SmoothFollow_Script mainCameraSmoothClass;
 
     public GameState gameState;
     public Image loadingImage;
@@ -35,7 +36,8 @@ public class Game_Manager : MonoBehaviour
         yield return lobbyClass.Init_Cor();         // 5. 플레이어 데이터를 바탕으로 로비 구성
         yield return directionClass.Init_Cor();     // 6. 메인로비의 Idle 애니메이션 연출 시작
         yield return battleClass.Init_Cor();        // 7. 스폰매니저 등 전투 관련 데이터 활성화
-        yield return enviromentClass.Init_Cor();    // 8. 환경 생성
+        yield return skillSystemManager.Init_Cor(); // 8. 스킬매니저 초기화
+        yield return enviromentClass.Init_Cor();    // 9. 환경 생성
 
         yield return Loading_Cor(true);
 
@@ -90,8 +92,9 @@ public class Game_Manager : MonoBehaviour
     {
         gameState = GameState.Lobby;
         
-        lobbyClass.Enter_Func(LobbyState.MainLobby);
         directionClass.EnterUI_Func(GameState.Lobby);
+        
+        lobbyClass.Enter_Func(LobbyState.MainLobby);
     }
 
     public void Loading_Func()

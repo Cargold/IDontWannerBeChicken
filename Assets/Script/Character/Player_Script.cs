@@ -25,10 +25,10 @@ public class Player_Script : Character_Script
     [SerializeField]
     private int isControlOutCount_Player;
 
-    private Transform shieldGroupTrf;
-    private Transform shieldGaugeTrf;
-    private float shieldValue_Max;
-    private float shieldValue_Recent;
+    public Transform shieldGroupTrf;
+    public Transform shieldGaugeTrf;
+    public float shieldValue_Max;
+    public float shieldValue_Recent;
 
     public float manaStart;
     public float manaRegen;
@@ -210,7 +210,7 @@ public class Player_Script : Character_Script
                     }
 
                     effectData_AttackAniOn.ActiveEffect_Func();
-
+                    
                     // 범위 공격이라는 전제...
                     Vector3 _contactCharPos = contactCharClassList[0].transform.position;
                     targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
@@ -221,6 +221,7 @@ public class Player_Script : Character_Script
                     spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
                     int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
                     spawnShellClass.Init_Func(this, _sortingOrder);
+
                     spawnShellClass.OnAttack_Func();
                 }
                 else

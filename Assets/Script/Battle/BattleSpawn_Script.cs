@@ -38,7 +38,7 @@ public class BattleSpawn_Script : MonoBehaviour
     #region Spawn Group
     public void ActiveSpawn_Func(BattleType _battleType, int _battleID, bool _isDrinkHpOn = false, bool _isTemporarySpawn = false)
     {
-        isActive = true;
+        isActive = !_isTemporarySpawn;
         
         battleType = _battleType;
 
@@ -161,9 +161,9 @@ public class BattleSpawn_Script : MonoBehaviour
         spawnUnitList.Add(_spawnUnitClass);
         spawnCheckAllCount++;
         
+        spawnActiveUnitCount++;
         if (_isDefaultDirection == true)
         {
-            spawnActiveUnitCount++;
             OnSpawnAllyDirection_Func(_spawnUnitClass);
         }
 
@@ -308,7 +308,9 @@ public class BattleSpawn_Script : MonoBehaviour
     }
     private IEnumerator KillUnitAll_Cor(bool _isUneffect)
     {
-        while(0 < spawnUnitList.Count)
+        spawnActiveUnitCount = 0;
+
+        while (0 < spawnUnitList.Count)
         {
             Unit_Script _unitClass = (Unit_Script)spawnUnitList[0];
             spawnUnitList.RemoveAt(0);
@@ -321,7 +323,7 @@ public class BattleSpawn_Script : MonoBehaviour
     public void DeactiveSpawn_Func()
     {
         isActive = false;
-
+        
         StopCoroutine("CheckSpawnTimer_Cor");
     }
 

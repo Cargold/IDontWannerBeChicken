@@ -74,6 +74,7 @@ public class StoreRoom_Script : LobbyUI_Parent
                 GameObject _cardObj = Instantiate(storeCardObj);
                 _cardObj.transform.SetParent(storeCardGroupObjArr[_listID].transform);
                 _cardObj.transform.localPosition = _cardPos;
+                _cardObj.transform.localScale = Vector3.one;
                 _cardPos += Vector3.right * 274.2f;
 
                 StoreCard_Script _storeCard = _cardObj.GetComponent<StoreCard_Script>();

@@ -8,7 +8,6 @@ public class Battle_Manager : MonoBehaviour
     public static Battle_Manager Instance;
 
     public Player_Script playerClass;
-    public SkillSystem_Manager skillSystemManager;
     public RectTransform battleUITrf;
     public BattleSpawn_Script[] spawnClassArr_Ally;
     public List<BattleSpawn_Script> activeSapwnClassList_Ally;
@@ -108,8 +107,6 @@ public class Battle_Manager : MonoBehaviour
 
         pauseClass.Init_Func();
         resultClass.Init_Func(this);
-
-        yield return skillSystemManager.Init_Cor();
 
         yield break;
     }
@@ -256,13 +253,14 @@ public class Battle_Manager : MonoBehaviour
 
         if (Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Critical) == true)
             playerClass.SetDrinkBonus_Func(DrinkType.Critical, true);
+
         OnSpawnAllyUnit_Func();
         OnSpawnEnemyUnit_Func();
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
 
         bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
-            skillSystemManager.BattleStart_Func(_isManaDrinkOn);
+        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
     }
 
     void OnSpawnAllyUnit_Func()
@@ -287,10 +285,10 @@ public class Battle_Manager : MonoBehaviour
     {
         // 스킬에 의한 호출
 
-        if(spawnClassArr_Ally[_unitID].isActive == false)
-        {
-            spawnClassArr_Ally[_unitID].ActiveSpawn_Func(battleType, battleID, true);
-        }
+        //if(spawnClassArr_Ally[_unitID].isActive == false)
+        //{
+        //    spawnClassArr_Ally[_unitID].ActiveSpawn_Func(battleType, battleID, true);
+        //}
 
         return spawnClassArr_Ally[_unitID].OnSpawningAlly_Func(false);
     }
@@ -503,16 +501,14 @@ public class Battle_Manager : MonoBehaviour
         {
             spawnClassArr_Ally[i].DeactiveSpawn_Func();
         }
-        activeSapwnClassList_Ally.Clear();
 
         for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
         {
             spawnClassArr_Enemy[i].DeactiveSpawn_Func();
         }
-        activeSpawnClassList_Enemy.Clear();
 
         // 4. 스킬 시스템 작동 중지
-        skillSystemManager.Deactive_Func();
+        SkillSystem_Manager.Instance.Deactive_Func();
 
         // 5. 드링크 사용
         for (int i = 0; i < 4; i++)
@@ -757,7 +753,9 @@ public class Battle_Manager : MonoBehaviour
         Enviroment_Manager.Instance.NatureReset_Func();
 
         SetRewardOnPlayer_Func();
-        
+
+        ClearSpawnData_Func();
+
         goldBonus = 0f;
     }
     
@@ -827,6 +825,23 @@ public class Battle_Manager : MonoBehaviour
     void SetRewardOnPlayerTrophy_Func(int _rewardID, int _rewardAmount)
     {
         Player_Data.Instance.AddTrophy_Func(_rewardID, true);
+    }
+
+    void ClearSpawnData_Func()
+    {
+        spawnEnemyIDList.Clear();
+
+        for (int i = 0; i < spawnClassArr_Ally.Length; i++)
+        {
+            spawnClassArr_Ally[i].KillUnitAll_Func(true);
+        }
+        activeSapwnClassList_Ally.Clear();
+
+        for (int i = 0; i < spawnClassArr_Enemy.Length; i++)
+        {
+            spawnClassArr_Enemy[i].KillUnitAll_Func(true);
+        }
+        activeSpawnClassList_Enemy.Clear();
     }
     #endregion
 }

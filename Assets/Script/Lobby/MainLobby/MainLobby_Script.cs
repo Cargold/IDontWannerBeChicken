@@ -32,9 +32,15 @@ public class MainLobby_Script : LobbyUI_Parent
         thisRTrf.DOSizeDelta(new Vector3(0f, 600f), 1f);
     }
     #endregion
-    public void PrintPartyMember_Func()
+    private void PrintPartyMember_Func()
     {
         // Call : Btn Event . PartyRoom Exit
+
+        StartCoroutine(PrintPartyMember_Cor());
+    }
+    private IEnumerator PrintPartyMember_Cor()
+    {
+        yield return new WaitForFixedUpdate();
 
         for (int i = 0; i < 5; i++)
         {

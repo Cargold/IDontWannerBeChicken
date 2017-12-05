@@ -146,10 +146,10 @@ public class Character_Script : MonoBehaviour
         {
             unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
 
-            //for (int i = 0; i < unitRendArr.Length; i++)
-            //{
-            //    unitRendArr[i].sortingOrder = (int)(this.transform.position.y * -100f) + 210 - i;
-            //}
+            for (int i = 0; i < unitRendArr.Length; i++)
+            {
+                unitRendArr[i].sortingOrder = (int)(this.transform.position.y * -100f) + 209 - i;
+            }
         }
         if (isHouse == false && isPlayer == false)
             shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
@@ -173,6 +173,10 @@ public class Character_Script : MonoBehaviour
 
         shadowRend.gameObject.SetActive(true);
         unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+        for (int i = 0; i < unitRendArr.Length; i++)
+        {
+            unitRendArr[i].sortingOrder = (int)(this.transform.position.y * -100f) + 209 - i;
+        }
         shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
 
         isAlive = true;

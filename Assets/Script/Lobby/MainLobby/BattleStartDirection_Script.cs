@@ -28,7 +28,6 @@ public class BattleStartDirection_Script : MonoBehaviour
         DirectionCage_Func(_directionState);
         DirectionEntrance_Func(_directionState);
         DirectionParty_Func(_directionState);
-        
     }
     void DirectionCage_Func(GameState _directionState)
     {
@@ -68,6 +67,8 @@ public class BattleStartDirection_Script : MonoBehaviour
     {
         if (_directionState == GameState.Lobby)
         {
+            Player_Data.Instance.playerHeroData.transform.position = new Vector3(2.45f, 0f, 0f);
+
             partyAni["Party"].time = 0f;
             partyAni["Party"].speed = -1f;
             partyAni.Play();

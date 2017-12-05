@@ -83,6 +83,7 @@ public class Inventory_Script : MonoBehaviour
                         sortInitPos.localPosition.y + (sortGapPos.y * i)
                     );
                 inventoryFoodClassList[count].transform.localPosition = _sortPos;
+                inventoryFoodClassList[count].transform.localScale = Vector3.one;
             }
         }
     }

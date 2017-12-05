@@ -51,6 +51,7 @@ public class Stomach_Script : MonoBehaviour
 
             _foodObj.transform.position = _playerFoodDataArr[i].pos;
             _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
+            _foodObj.transform.localScale = Vector3.one;
             ReplaceStomach_Func(_foodObj.transform);
 
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
