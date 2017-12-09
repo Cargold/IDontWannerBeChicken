@@ -7,6 +7,9 @@ using DG.Tweening;
 public class StoreRoom_Script : LobbyUI_Parent
 {
     public StorePopUp_Script popUpClass;
+    [SerializeField]
+    private GameObject resultMessageObj;
+    public Gacha_Script gachaClass;
 
     public Transform storeListTrf;
 
@@ -38,27 +41,27 @@ public class StoreRoom_Script : LobbyUI_Parent
 
         this.gameObject.SetActive(false);
     }
-
     protected override void EnterUI_Func()
     {
         this.gameObject.SetActive(true);
 
         OnTapBtn_Func(0);
     }
-
     public override void Exit_Func()
     {
         this.gameObject.SetActive(false);
         
     }
     #endregion
-    
     void Init_Func()
     {
         anim.Play();
         InitCard_Func();
         InitStoreUI_Func();
         InitUIData_Func();
+        InitGacha_Func();
+
+        resultMessageObj.SetActive(false);
     }
     void InitCard_Func()
     {
@@ -184,6 +187,10 @@ public class StoreRoom_Script : LobbyUI_Parent
             }
         }
     }
+    void InitGacha_Func()
+    {
+        gachaClass.Init_Func(this);
+    }
 
     public void OnTapBtn_Func(int _listID)
     {
@@ -214,6 +221,7 @@ public class StoreRoom_Script : LobbyUI_Parent
         {
             case StoreGoodsType.Wealth:
                 Player_Data.Instance.AddWealth_Func((WealthType)_storeData.goodsID, _storeData.goodsAmount);
+                OnResultMessage_Func();
                 break;
             case StoreGoodsType.FoodBox:
                 FoodGrade _foodGrade = FoodGrade.Common;
@@ -222,7 +230,7 @@ public class StoreRoom_Script : LobbyUI_Parent
 
                 for (int i = 0; i < _storeData.goodsAmount; i++)
                 {
-                    int _foodID = GetFoodID_Func(_foodGrade);
+                    int _foodID = GetFoodRandID_Func(_foodGrade);
                     Player_Data.Instance.AddFood_Func(_foodID);
                 }
                 break;
@@ -241,8 +249,12 @@ public class StoreRoom_Script : LobbyUI_Parent
                 break;
         }
     }
+    void OnResultMessage_Func()
+    {
+        resultMessageObj.SetActive(true);
+    }
 
-    public int GetFoodID_Func(FoodGrade _checkFoodGrade = FoodGrade.Common)
+    public int GetFoodRandID_Func(FoodGrade _checkFoodGrade = FoodGrade.Common)
     {
         int _perBonos = 0;
         if (_checkFoodGrade == FoodGrade.Rare)

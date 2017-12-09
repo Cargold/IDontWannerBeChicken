@@ -599,7 +599,7 @@ public class Battle_Manager : MonoBehaviour
         // 아이템 획득 확률 비교
         if (_calcFoodGetPer < Random.Range(0f, 100f)) return;
 
-        int _foodID = Lobby_Manager.Instance.storeRoomClass.GetFoodID_Func();
+        int _foodID = Lobby_Manager.Instance.storeRoomClass.GetFoodRandID_Func();
 
         Reward_Data _rewardData = new Reward_Data();
         _rewardData.SetData_Func(RewardType.Food, _foodID, 1);

@@ -236,3 +236,10 @@ public enum LanguageType
     Korea,
     English,
 }
+
+public enum GachaType
+{
+    None = -1,
+    NormalBox,
+    SpeicalBox,
+}

@@ -25,7 +25,7 @@ public class Lobby_Manager : MonoBehaviour
     public TrophyRoom_Script trophyRoomClass;
     [System.NonSerialized]
     public QuestRoom_Script questRoomClass;
-    
+
     public IEnumerator Init_Cor()
     {
         Instance = this;
