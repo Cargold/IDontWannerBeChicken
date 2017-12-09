@@ -50,8 +50,6 @@ public class BattleStartDirection_Script : MonoBehaviour
     {
         if (_directionState == GameState.Lobby)
         {
-            Debug.Log("Test, Lobby");
-
             entranceAni["EntranceFallanim"].time = 0f;
             entranceAni["EntranceFallanim"].speed = -1f;
             entranceAni.Play();

@@ -194,8 +194,6 @@ public class ObjectPool_Manager : MonoBehaviour
             obj.name = pool.source.name;
             obj.SetActive(true);
             
-            Debug.Break();
-
             return obj;
         }        
     }

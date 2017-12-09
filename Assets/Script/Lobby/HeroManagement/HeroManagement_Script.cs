@@ -123,19 +123,28 @@ public class HeroManagement_Script : LobbyUI_Parent
     }
     public void SkillLevelUp_Func()
     {
-        int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(selectCardClass.cardID);
-        bool _isPay = Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost, true);
-        if(_isPay == true)
+        int _skillID = selectCardClass.cardID;
+        int _skillLevel = Player_Data.Instance.GetSkillLevel_Func(_skillID);
+        if (_skillLevel < 20)
         {
-            Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost);
+            int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(_skillID);
+            bool _isPay = Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost, true);
+            if (_isPay == true)
+            {
+                Player_Data.Instance.PayWealth_Func(WealthType.Mineral, skillLevelUpCost);
 
-            Player_Data.Instance.LevelUpSkill_Func(selectCardClass.cardID);
+                Player_Data.Instance.LevelUpSkill_Func(selectCardClass.cardID);
 
-            PrintCardInfo_Func();
+                PrintCardInfo_Func();
+            }
+            else if (_isPay == false)
+            {
+                skillLevelUpCostTest.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
+            }
         }
-        else if(_isPay == false)
+        else
         {
-            skillLevelUpCostTest.DOColor(Color.red, 0.2f).OnComplete(ResetLevelUpBtn_Func);
+
         }
     }
     void ResetLevelUpBtn_Func()
@@ -155,9 +164,18 @@ public class HeroManagement_Script : LobbyUI_Parent
     }
     void PrintSkillUpCost_Func(int _skillDataID)
     {
-        int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(selectCardClass.cardID);
+        int _skillID = selectCardClass.cardID;
+        int _skillLevel = Player_Data.Instance.GetSkillLevel_Func(_skillID);
+        if (_skillLevel < 20)
+        {
+            int skillLevelUpCost = Player_Data.Instance.GetSkillUpCost_Func(selectCardClass.cardID);
 
-        skillLevelUpCostTest.text = skillLevelUpCost.ToString();
+            skillLevelUpCostTest.text = skillLevelUpCost.ToString();
+        }
+        else
+        {
+            skillLevelUpCostTest.text = "MAX";
+        }
     }
     public void PrintInfoUI_Func()
     {

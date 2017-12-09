@@ -16,7 +16,8 @@ public class StomachInner_Script : MonoBehaviour
         if(collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            stomachClass.FeedFoodByInner_Func(_foodClass);
+            //stomachClass.FeedFoodByInner_Func(_foodClass);
+            // CargoldFeed
         }
     }
 
@@ -25,7 +26,8 @@ public class StomachInner_Script : MonoBehaviour
         if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            stomachClass.OutFoodByInner_Func(_foodClass);
+            //stomachClass.OutFoodByInner_Func(_foodClass);
+            // CargoldFeed
         }
     }
 }

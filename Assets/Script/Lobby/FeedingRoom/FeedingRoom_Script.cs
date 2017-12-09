@@ -88,20 +88,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         inventoryClass.Active_Func(_selectUnitID);
 
-        Food_Script _foodClass = inventoryClass.GetFoodRand_Func();
-        if(_foodClass == null)
-        {
-            _foodClass = stomachClass.GetFoodRand_Func();
-        }
-
-        if(_foodClass == null)
-        {
-            InitSelect_Func();
-        }
-        else
-        {
-            PointUp_Func(_foodClass);
-        }
+        InitSelect_Func();
 
         PrintCharUpgradeCost_Func();
 
@@ -124,6 +111,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         expMainImage.fillAmount = 0f;
         expProgressImage.fillAmount = 0f;
+
+        selectPointingTrf.localPosition = Vector2.left * 1000f;
     }
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
@@ -424,7 +413,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
         charLevelUpText.DOColor(_color, 0.2f);
     }
     #endregion
-
     #region Food Upgrade Group
     private void PrintUpgradeInfo_Func()
     {

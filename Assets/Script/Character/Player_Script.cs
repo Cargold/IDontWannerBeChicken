@@ -6,6 +6,7 @@ using DG.Tweening;
 
 public class Player_Script : Character_Script
 {
+    [Header("Hero Data")]
     public int heroLevel;
     public Transform spawnPos;
     public GameObject rendGroupObj;
@@ -82,6 +83,7 @@ public class Player_Script : Character_Script
 
         // Set Status
         isAlive = true;
+        sphereCol.enabled = true;
         moveDir = MoveDir.None;
         SetState_Func(CharacterState.Move);
         isControlOutCount_Player = 0;
@@ -187,18 +189,13 @@ public class Player_Script : Character_Script
 
             if(charState != CharacterState.Move)
             {
-                if (CheckTargetAlive_Func() == true)
+                if (GetCollideCheck_Func() == true)
                 {
-                    // 목표대상이 살아있다면
+                    // 목표대상이 사정권 내에 있다면
 
-                    if (GetCollideCheck_Func() == true)
+                    if (animator.GetBool("AttackReady") == true)
                     {
-                        // 목표대상이 사정권 내에 있다면
-
-                        if (animator.GetBool("AttackReady") == true)
-                        {
-                            SetState_Func(CharacterState.Attack);
-                        }
+                        SetState_Func(CharacterState.Attack);
                     }
                 }
             }
@@ -214,42 +211,35 @@ public class Player_Script : Character_Script
     {
         // Call : Ani Event
 
-        if (CheckTargetAlive_Func() == true)
+        if (GetCollideCheck_Func() == true)
         {
-            // 목표대상이 살아있다면
+            // 목표대상이 사정권 내에 있다면
 
-            if (GetCollideCheck_Func() == true)
+            if (animator.GetBool("AttackReady") == true)
             {
-                // 목표대상이 사정권 내에 있다면
+                animator.SetBool("AttackReady", false);
+                attackRate_Recent = 0f;
 
-                if (animator.GetBool("AttackReady") == true)
+                attackValue_Calc = attackValue;
+                if (Random.Range(0f, 100f) < criticalPercent)
                 {
-                    animator.SetBool("AttackReady", false);
-                    attackRate_Recent = 0f;
-
-                    attackValue_Calc = attackValue;
-                    if (Random.Range(0f, 100f) < criticalPercent)
-                    {
-                        attackValue_Calc *= criticalBonus;
-                    }
-
-                    effectData_AttackAniOn.ActiveEffect_Func();
-                    
-                    // 범위 공격이라는 전제...
-                    Vector3 _contactCharPos = contactCharClassList[0].transform.position;
-                    targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
-
-                    GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
-                    _spawnShellObj.transform.position = targetPos;
-
-                    spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
-                    int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
-                    spawnShellClass.Init_Func(this, _sortingOrder);
-
-                    spawnShellClass.OnAttack_Func();
+                    attackValue_Calc *= criticalBonus;
                 }
-                else
-                    SetState_Func(CharacterState.Idle);
+
+                effectData_AttackAniOn.ActiveEffect_Func();
+                    
+                // 범위 공격이라는 전제...
+                Vector3 _contactCharPos = contactCharClassList[0].transform.position;
+                targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
+
+                GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+                _spawnShellObj.transform.position = targetPos;
+
+                spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+                int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
+                spawnShellClass.Init_Func(this, _sortingOrder);
+
+                spawnShellClass.OnAttack_Func();
             }
             else
                 SetState_Func(CharacterState.Idle);
@@ -289,6 +279,7 @@ public class Player_Script : Character_Script
     public override void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
+        sphereCol.enabled = false;
         charState = CharacterState.Die;
         contactCharClassList.Clear();
 

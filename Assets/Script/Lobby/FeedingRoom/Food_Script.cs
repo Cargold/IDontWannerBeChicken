@@ -283,6 +283,28 @@ public class Food_Script : MonoBehaviour
     {
         foodState = FoodState.Stomach;
         foodImage.color = Color.green;
+
+        StartCoroutine("FeedingTimeCheck_Cor");
+    }
+    private IEnumerator FeedingTimeCheck_Cor()
+    {
+        float _calcTime = 1f;
+
+        while (0f < _calcTime)
+        {
+            yield return new WaitForFixedUpdate();
+
+            if(isDragState == false)
+            {
+                _calcTime -= 0.02f;
+            }
+            else if(foodState != FoodState.Stomach)
+            {
+                yield break;
+            }
+        }
+
+        feedingRoomClass.stomachClass.FeedFoodByInner_Func(this);
     }
     public void OutFoodByInner_Func()
     {
@@ -305,7 +327,8 @@ public class Food_Script : MonoBehaviour
 
                 if (_foodClass.foodState == FoodState.Stomach)
                 {
-                    feedingRoomClass.SetFeedFoodByChain_Func(_foodClass);
+                    // CargoldFeed
+                    //feedingRoomClass.SetFeedFoodByChain_Func(_foodClass);
                 }
             }
         }

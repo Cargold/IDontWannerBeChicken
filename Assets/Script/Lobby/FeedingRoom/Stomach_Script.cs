@@ -87,6 +87,8 @@ public class Stomach_Script : MonoBehaviour
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
             feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Stomach);
+
+            feedingRoomClass.RemoveFoodInInventory_Func(_foodClass);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -97,6 +99,8 @@ public class Stomach_Script : MonoBehaviour
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
             feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Inventory);
+
+            feedingRoomClass.AddFoodInInventroy_Func(_foodClass);
         }
     }
     public void FeedFoodByInner_Func(Food_Script _foodClass)
@@ -127,8 +131,6 @@ public class Stomach_Script : MonoBehaviour
     }
     void FeedFood_Func(Food_Script _foodClass)
     {
-        feedingRoomClass.RemoveFoodInInventory_Func(_foodClass);
-
         feedFoodClassList.Add(_foodClass);
         ReplaceStomach_Func(_foodClass.transform);
         Player_Data.Instance.FeedFood_Func(stomachUnitID, _foodClass);
@@ -141,8 +143,6 @@ public class Stomach_Script : MonoBehaviour
         {
             if (feedFoodClassList.Contains(_foodClass) == true)
             {
-                feedingRoomClass.AddFoodInInventroy_Func(_foodClass);
-
                 _foodClass.OutFoodByInner_Func();
                 OutFood_Func(_foodClass);
             }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Unit_Script : Character_Script
 {
+    [Header("Unit Data")]
     public MutantType mutantType;
     public MonsterType monsterType;
 
@@ -150,7 +151,6 @@ public class Unit_Script : Character_Script
             moveDir = Vector3.left;
         }
     }
-
     protected override void Move_Func()
     {
         if(charState != CharacterState.Move && isAlive == true)
@@ -158,34 +158,31 @@ public class Unit_Script : Character_Script
             animator.speed = 1f;
             StopCoroutine("Move_Cor");
             StartCoroutine("Move_Cor");
+
+            if (unitSprite != null)
+                unitRend.sprite = unitSprite;
         }
     }
-    public bool isTest = false;
     IEnumerator Move_Cor()
     {
         animator.SetBool("OnContact", false);
         charState = CharacterState.Move;
 
-        isTest = false;
-
         while (charState == CharacterState.Move)
         {
-            isTest = true;
-
             this.transform.position += moveDir * moveSpeed * 0.01f;
 
             yield return new WaitForFixedUpdate();
         }
-
-        Debug.Log("Test, CharState : " + charState);
     }
 
     public override void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
+        sphereCol.enabled = false;
         charState = CharacterState.Die;
         contactCharClassList.Clear();
-
+        
         StopCoroutine("Move_Cor");
 
         hpRend_Group.gameObject.SetActive(false);

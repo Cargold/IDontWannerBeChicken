@@ -11,7 +11,9 @@ public class Character_Script : MonoBehaviour
     public string charDesc;
     public int charGrade;
 
+    [Header("Character Data")]
     public bool isAlive = false;
+    public SphereCollider sphereCol;
     public float healthPoint_Max;
     [SerializeField]
     protected float healthPoint_Recent;
@@ -57,7 +59,7 @@ public class Character_Script : MonoBehaviour
     // Info Data
     public GroupType groupType;
 
-    // Rendering Data
+    [Header("Rendering Data")]
     public Animator animator;
     public SpriteRenderer unitRend;
     public SpriteRenderer[] unitRendArr;
@@ -72,6 +74,7 @@ public class Character_Script : MonoBehaviour
     public bool isPlayer;
     public bool isHouse;
 
+    [Header("Effect Data")]
     public CharEffectData effectData_AttackStart;
     public CharEffectData effectData_AttackAniOn;
     public CharEffectData effectData_Die;
@@ -113,8 +116,10 @@ public class Character_Script : MonoBehaviour
     protected void Init_Func(GroupType _groupType)
     {
         groupType = _groupType;
-        
+
         // Init Renderer
+        sphereCol = this.GetComponent<SphereCollider>();
+        sphereCol.enabled = false;
         animator = this.GetComponent<Animator>();
         hpRend_Group = this.transform.Find("Pivot").Find("HP_Group");
         hpRend_Group.gameObject.SetActive(false);
@@ -126,8 +131,9 @@ public class Character_Script : MonoBehaviour
         // Init HP
         healthPoint_Recent = healthPoint_Max;
         CalcHP_Func();
-        
+
         // Init Attack
+        contactCharClassList.Clear();
         defenceValue_Calc = 1f - (defenceValue * 0.01f);
 
         // Init Var
@@ -156,10 +162,10 @@ public class Character_Script : MonoBehaviour
         
         // Set Status
         isAlive = true;
+        sphereCol.enabled = true;
         SetState_Func(CharacterState.Move);
 
         // Set Attack
-        contactCharClassList.Clear();
         StartCoroutine(CheckAttackRate_Cor());
         if(isPlayer == false)
             StartCoroutine(CheckAttack_Cor());
@@ -227,11 +233,17 @@ public class Character_Script : MonoBehaviour
     {
         animator.speed = 1f;
         charState = CharacterState.Idle;
+
+        if (unitSprite != null)
+            unitRend.sprite = unitSprite;
     }
     protected virtual void Move_Func()
     {
         animator.speed = 1f;
         charState = CharacterState.Move;
+
+        if (unitSprite != null)
+            unitRend.sprite = unitSprite;
     }
     
     void OnTriggerEnter(Collider col)
@@ -263,7 +275,7 @@ public class Character_Script : MonoBehaviour
 
             if (_charClass.groupType != this.groupType)
             {
-                if(contactCharClassList.Contains(_charClass) == false)
+                if (contactCharClassList.Contains(_charClass) == false)
                 {
                     contactCharClassList.Add(col.GetComponent<Character_Script>());
                 }
@@ -281,42 +293,34 @@ public class Character_Script : MonoBehaviour
     }
     protected virtual IEnumerator CheckAttack_Cor()
     {
-        while(isAlive == true)
+        while (isAlive == true)
         {
             // 내가 살아있다면
 
             if (isControlOut == false)
             {
-                if (CheckTargetAlive_Func() == true)
-                {
-                    // 목표대상이 살아있다면
+                // 목표대상이 살아있다면
 
-                    if (GetCollideCheck_Func() == true)
+                if (GetCollideCheck_Func() == true)
+                {
+                    // 목표대상이 사정권 내에 있다면
+
+                    if (charState != CharacterState.Attack)
                     {
-                        // 목표대상이 사정권 내에 있다면
-
-                        if (charState != CharacterState.Attack)
+                        attackValue_Calc = attackValue;
+                        if (Random.Range(0f, 100f) < criticalPercent)
                         {
-                            attackValue_Calc = attackValue;
-                            if (Random.Range(0f, 100f) < criticalPercent)
-                            {
-                                attackValue_Calc *= criticalBonus;
-                            }
-
-                            animator.SetBool("OnContact", true);
-                            SetState_Func(CharacterState.Attack);
-
-                            effectData_AttackStart.ActiveEffect_Func();
+                            attackValue_Calc *= criticalBonus;
                         }
+
+                        animator.SetBool("OnContact", true);
+                        SetState_Func(CharacterState.Attack);
+
+                        effectData_AttackStart.ActiveEffect_Func();
                     }
-                    else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
-                        SetState_Func(CharacterState.Move);
                 }
-                else
-                {
-                    if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
-                        SetState_Func(CharacterState.Move);
-                }
+                else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == true)
+                    SetState_Func(CharacterState.Move);
             }
             else if(isControlOut == true)
             {
@@ -390,19 +394,31 @@ public class Character_Script : MonoBehaviour
 
         Vector3 _thisPosCalc = new Vector3(this.transform.position.x, 0f, 0f);
 
+        for (int i = 0; i < contactCharClassList.Count;)
+        {
+            if (contactCharClassList[i].isAlive == false)
+            {
+                contactCharClassList.Remove(contactCharClassList[i]);
+            }
+            else
+            {
+                i++;
+            }
+        }
+
         for (int i = 0; i < contactCharClassList.Count; i++)
         {
             // 지나친 대상일 경우 무시
             if (groupType == GroupType.Ally)
             {
-                if (contactCharClassList[i].transform.position.x + 1f < _thisPosCalc.x)
+                if (contactCharClassList[i].transform.position.x < _thisPosCalc.x)
                 {
                     continue;
                 }
             }
             else if (groupType == GroupType.Enemy)
             {
-                if (_thisPosCalc.x < contactCharClassList[i].transform.position.x - 1f)
+                if (_thisPosCalc.x < contactCharClassList[i].transform.position.x)
                 {
                     continue;
                 }
@@ -529,16 +545,11 @@ public class Character_Script : MonoBehaviour
 
             if (shootType == ShootType.RelativeAnimation)
             {
-                if (CheckTargetAlive_Func() == true)
+                if (GetCollideCheck_Func() == true)
                 {
-                    // 목표대상이 살아있다면
+                    // 목표대상이 사정권 내에 있다면
 
-                    if (GetCollideCheck_Func() == true)
-                    {
-                        // 목표대상이 사정권 내에 있다면
-
-                        OnAttack_Func();
-                    }
+                    OnAttack_Func();
                 }
             }
             else if(shootType == ShootType.Projectile)
