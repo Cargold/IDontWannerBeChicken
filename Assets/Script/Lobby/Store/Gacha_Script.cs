@@ -268,7 +268,7 @@ public class Gacha_Script : MonoBehaviour
         boxText.text = _text;
 
         boxTrf.localScale = Vector3.one;
-        boxTrf.DOScale(Vector3.zero, 0.4f).SetDelay(0.4f).OnComplete(PrintGachaDirection_Func);
+        boxTrf.DOScale(Vector3.zero, 0.25f).SetDelay(0.25f).OnComplete(PrintGachaDirection_Func);
     }
     void PrintGachaDirection_Func()
     {
@@ -283,7 +283,7 @@ public class Gacha_Script : MonoBehaviour
             else
                 yield break;
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
         }
     }
     public void CardResizeClear_Func()

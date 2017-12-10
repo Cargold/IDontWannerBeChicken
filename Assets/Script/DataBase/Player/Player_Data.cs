@@ -580,6 +580,7 @@ public class Player_Data : MonoBehaviour
             _foodLevel = foodBoxLevel;
         _playerFoodData.foodType = FoodType.Normal;
         _playerFoodData.foodID = _foodID;
+        _playerFoodData.level = _foodLevel;
 
         inventoryFoodDataList.Add(_playerFoodData);
     }

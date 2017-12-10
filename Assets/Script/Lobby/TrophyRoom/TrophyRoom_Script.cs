@@ -23,6 +23,8 @@ public class TrophyRoom_Script : LobbyUI_Parent
         this.gameObject.SetActive(true);
 
         anim.Play();
+
+        Active_Func();
     }
     public override void Exit_Func()
     {
@@ -43,6 +45,14 @@ public class TrophyRoom_Script : LobbyUI_Parent
             trophyListClassArr[i] = _trophyObj.GetComponent<TrophyList_Script>();
 
             trophyListClassArr[i].Init_Func(this, i);
+        }
+    }
+
+    void Active_Func()
+    {
+        for (int i = 0; i < trophyListClassArr.Length; i++)
+        {
+            trophyListClassArr[i].SetNum_Func(i);
         }
     }
 }
