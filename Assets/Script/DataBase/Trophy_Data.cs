@@ -6,6 +6,8 @@ using UnityEngine;
 public struct Trophy_Data
 {
     public int trophyID;
+    public string[] nameArr;
+    public string[] descArr;
     public Sprite trophySprite;
     public TrophyType effectType;
     public int amountLimit;
@@ -18,5 +20,8 @@ public struct Trophy_Data
         effectType   = _trophyClass.effectType;
         amountLimit  = _trophyClass.amountLimit;
         effectValue  = _trophyClass.effectValue;
+
+        nameArr = _trophyClass.nameArr;
+        descArr = _trophyClass.descArr;
     }
 }

@@ -243,3 +243,11 @@ public enum GachaType
     NormalBox,
     SpeicalBox,
 }
+
+public enum FoodType
+{
+    None = -1,
+    Normal,
+    Source,
+    Stone,
+}

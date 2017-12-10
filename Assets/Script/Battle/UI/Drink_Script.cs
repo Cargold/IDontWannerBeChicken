@@ -9,4 +9,6 @@ public class Drink_Script : MonoBehaviour
     public float effectValue;
     public Sprite drinkSprite;
     public Sprite drinkBtnSprite;
+
+    public string[] nameArr;
 }

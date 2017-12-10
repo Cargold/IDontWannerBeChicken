@@ -5,8 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public struct Food_Data
 {
+    public FoodType foodType;
     public int foodId;
     public string foodName;
+    public string[] nameArr;
     public FoodGrade foodGrade;
     public FoodEffect_Main effectMain;
     public FoodEffect_Sub effectSub;
@@ -16,13 +18,21 @@ public struct Food_Data
 
     public void SetData_Func(Food_Script _foodClass)
     {
-         foodId             = _foodClass.foodId;
-         foodName           = _foodClass.foodName;
-         foodGrade          = _foodClass.foodGrade;
-         effectMain         = _foodClass.effectMain;
-         effectSub          = _foodClass.effectSub;
-         mainEffectValue    = _foodClass.GetMainEffectValue_Func();
-         subEffectValue     = _foodClass.GetSubEffectValue_Func();
-         foodSprite         = _foodClass.foodImage.sprite;
+        foodType           = _foodClass.foodType;
+        foodId             = _foodClass.foodId;
+        foodName           = _foodClass.foodName;
+        foodGrade          = _foodClass.foodGrade;
+        effectMain         = _foodClass.effectMain;
+        effectSub          = _foodClass.effectSub;
+        mainEffectValue    = _foodClass.GetMainEffectValue_Func();
+        subEffectValue     = _foodClass.GetSubEffectValue_Func();
+        foodSprite         = _foodClass.foodImage.sprite;
+
+        int _nameNum = _foodClass.nameArr.Length;
+        nameArr = new string[_nameNum];
+        for (int i = 0; i < _nameNum; i++)
+        {
+            nameArr[i] = _foodClass.nameArr[i];
+        }
     }
 }

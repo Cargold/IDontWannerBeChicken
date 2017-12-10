@@ -21,7 +21,6 @@ public class DataBase_Manager : MonoBehaviour
             return m_UnitDataArr;
         }
     }
-    [SerializeField]
     private Unit_Data[] m_UnitDataArr;
     private Dictionary<int, Unit_Script> unitClassDic;
     public float hero_LevelPerBonus;
@@ -37,7 +36,6 @@ public class DataBase_Manager : MonoBehaviour
             return m_MonsterDataArr;
         }
     }
-    [SerializeField]
     private Unit_Data[] m_MonsterDataArr;
     public Dictionary<int, Unit_Script> monsterClassDic;
     public float chickenHouseHp_Default;
@@ -51,8 +49,29 @@ public class DataBase_Manager : MonoBehaviour
             return m_FoodDataArr;
         }
     }
-    [SerializeField]
     private Food_Data[] m_FoodDataArr;
+
+    [Header("Stone Data")]
+    public GameObject stoneDataObj;
+    public Food_Data stoneData
+    {
+        get
+        {
+            return m_StoneData;
+        }
+    }
+    private Food_Data m_StoneData;
+
+    [Header("Source Data")]
+    public GameObject[] sourceDataObjArr;
+    public Food_Data[] sourceDataArr
+    {
+        get
+        {
+            return m_SourceDataArr;
+        }
+    }
+    private Food_Data[] m_SourceDataArr;
 
     [Header("Skill Data")]
     public GameObject[] skillDataObjArr;
@@ -63,7 +82,6 @@ public class DataBase_Manager : MonoBehaviour
             return m_SkillDataArr;
         }
     }
-    [SerializeField]
     private Skill_Data[] m_SkillDataArr;
 
     [Header("Trophy Data")]
@@ -75,7 +93,6 @@ public class DataBase_Manager : MonoBehaviour
             return m_TrophyDataArr;
         }
     }
-    [SerializeField]
     private Trophy_Data[] m_TrophyDataArr;
 
     [Header("Shell Data")]
@@ -93,7 +110,6 @@ public class DataBase_Manager : MonoBehaviour
             return m_DrinkDataArr;
         }
     }
-    [SerializeField]
     private Drink_Data[] m_DrinkDataArr;
 
     [Header("Reference Data")]
@@ -156,6 +172,7 @@ public class DataBase_Manager : MonoBehaviour
     }
     IEnumerator InitFoodData_Cor()
     {
+        // Food
         int _foodDataObjNum = foodDataObjArr.Length;
         m_FoodDataArr = new Food_Data[_foodDataObjNum];
         for (int i = 0; i < _foodDataObjNum; i++)
@@ -163,6 +180,20 @@ public class DataBase_Manager : MonoBehaviour
             Food_Script _foodClass = foodDataObjArr[i].GetComponent<Food_Script>();
             _foodClass.foodId = i;
             m_FoodDataArr[i].SetData_Func(_foodClass);
+        }
+
+        // Stone
+        Food_Script _stoneClass = stoneDataObj.GetComponent<Food_Script>();
+        m_StoneData.SetData_Func(_stoneClass);
+
+        // Source
+        int _sourceDataObjNum = sourceDataObjArr.Length;
+        m_SourceDataArr = new Food_Data[_sourceDataObjNum];
+        for (int i = 0; i < _sourceDataObjNum; i++)
+        {
+            Food_Script _sourceClass = sourceDataObjArr[i].GetComponent<Food_Script>();
+            _sourceClass.foodId = i;
+            m_SourceDataArr[i].SetData_Func(_sourceClass);
         }
 
         yield break;

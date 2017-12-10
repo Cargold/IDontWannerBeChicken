@@ -5,9 +5,11 @@ using System.Collections;
 public class Food_Script : MonoBehaviour
 {
     public FeedingRoom_Script feedingRoomClass;
-    
+
+    public FoodType foodType;
     public int foodId;
     public string foodName;
+    public string[] nameArr;
     public FoodGrade foodGrade;
     [SerializeField]
     private float gradePenalty;

@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerFood_ClassData
 {
+    public FoodType foodType;
     public int foodID;
     public int level;
     public float remainExp;
@@ -16,6 +17,7 @@ public class PlayerFood_ClassData
 
     public void SetData_Func(Food_Script _foodClass)
     {
+        foodType = _foodClass.foodType;
         level = _foodClass.level;
         remainExp = _foodClass.remainExp;
         foodID = _foodClass.foodId;

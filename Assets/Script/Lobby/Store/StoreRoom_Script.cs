@@ -58,6 +58,7 @@ public class StoreRoom_Script : LobbyUI_Parent
         anim.Play();
         InitCard_Func();
         InitStoreUI_Func();
+        InitPackage_Func();
         InitUIData_Func();
         InitGacha_Func();
 
@@ -141,6 +142,16 @@ public class StoreRoom_Script : LobbyUI_Parent
             }
         }
     }
+    void InitPackage_Func()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(Player_Data.Instance.isPackageAlreadyBuyArr[i] == true)
+            {
+                Destroy(storeListCardTrfArr[i + 16].gameObject);
+            }
+        }
+    }
     void InitUIData_Func()
     {
         for (int _listID = 0; _listID < 5; _listID++)
@@ -212,44 +223,18 @@ public class StoreRoom_Script : LobbyUI_Parent
         
         popUpClass.Active_Func(storeDataArr[storeDataID]);
     }
-
     public void BuyStoreGoods_Func(int _storeDataID)
     {
         Store_Data _storeData = storeDataArr[_storeDataID];
 
-        switch (_storeData.storeGoodsType)
+        if(16<=_storeDataID)
         {
-            case StoreGoodsType.Wealth:
-                Player_Data.Instance.AddWealth_Func((WealthType)_storeData.goodsID, _storeData.goodsAmount);
-                OnResultMessage_Func();
-                break;
-            case StoreGoodsType.FoodBox:
-                FoodGrade _foodGrade = FoodGrade.Common;
-                if (_storeData.goodsID == 1)
-                    _foodGrade = FoodGrade.Rare;
-
-                for (int i = 0; i < _storeData.goodsAmount; i++)
-                {
-                    int _foodID = GetFoodRandID_Func(_foodGrade);
-                    Player_Data.Instance.AddFood_Func(_foodID);
-                }
-                break;
-            case StoreGoodsType.Trophy:
-                for (int i = 0; i < _storeData.goodsAmount; i++)
-                {
-                    Player_Data.Instance.AddTrophy_Func(TrophyType.Random, true);
-                }
-                break;
-            case StoreGoodsType.Drink:
-                int _drinkID = _storeData.goodsID;
-                int _drinkNum = _storeData.goodsAmount;
-                Player_Data.Instance.AddDrink_Func(_drinkID, _drinkNum);
-                break;
-            case StoreGoodsType.Package:
-                break;
+            Destroy(storeListCardTrfArr[_storeDataID].gameObject);
         }
+
+        gachaClass.BuyStoreGoods_Func(_storeData);
     }
-    void OnResultMessage_Func()
+    public void OnResultMessage_Func()
     {
         resultMessageObj.SetActive(true);
     }
@@ -292,5 +277,11 @@ public class StoreRoom_Script : LobbyUI_Parent
         }
 
         return _randFoodID;
+    }
+    public int GetBuyDrinkNum_Func(int _drinkID)
+    {
+        _drinkID += 12;
+        
+        return storeDataArr[_drinkID].goodsAmount;
     }
 }

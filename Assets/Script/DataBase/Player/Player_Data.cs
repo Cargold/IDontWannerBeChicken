@@ -6,7 +6,7 @@ public class Player_Data : MonoBehaviour
 {
     public static Player_Data Instance;
 
-    // Wealth
+    [Header("Wealth")]
     [SerializeField]
     private int goldValue;
     [SerializeField]
@@ -14,39 +14,42 @@ public class Player_Data : MonoBehaviour
     [SerializeField]
     private PlayerWealth_Script playerWealthClass;
 
-    // Trophy
+    [Header("Trophy")]
     public PlayerTrophy_Data[] trophyDataArr;
 
-    // Party
+    [Header("Party")]
     public int[] partyUnitIdArr;
     public int populationPoint;
 
-    // Unit
+    [Header("Unit")]
     [SerializeField]
     public PlayerUnit_ClassData[] playerUnitDataArr;
 
-    // Hero
+    [Header("Hero")]
     public int heroLevel;
     public float hero_healthPoint_RelativeLevel;
     public float hero_attackValue_RelativeLevel;
     public Player_Script heroClass;
     public List<PlayerFood_ClassData> heroFoodDataList;
 
-    // Inventory
+    [Header("Inventory")]
     public List<PlayerFood_ClassData> inventoryFoodDataList;
     public int foodBoxLevel;
 
-    // Stage
+    [Header("Stage")]
     public int stageID_Normal;
     public int stageID_Special;
 
-    // Skill
+    [Header("Skill")]
     public PlayerSkill_Data[] skillDataArr;
     public int[] selectSkillIDArr;
     public int[] test_SkillLevel;
 
     [Header("Drink")]
     public PlayerDrink_Data[] drinkDataArr;
+
+    [Header("Package")]
+    public bool[] isPackageAlreadyBuyArr;
 
     public IEnumerator Init_Cor()
     {
@@ -62,6 +65,7 @@ public class Player_Data : MonoBehaviour
         yield return LoadStage_Cor();
         yield return LoadSkill_Cor();
         yield return LoadDrink_Cor();
+        yield return LoadPackage_Cor();
 
         yield break;
     }
@@ -185,6 +189,10 @@ public class Player_Data : MonoBehaviour
     {
         yield break;
     }
+    IEnumerator LoadPackage_Cor()
+    {
+        yield break;
+    }
     
     #region Wealth Group
     public void AddWealth_Func(WealthType _wealthType, int _value)
@@ -292,6 +300,11 @@ public class Player_Data : MonoBehaviour
             return _effectValue;
         }
     }
+    //public void 
+    public int GetTrophyRandID_Func()
+    {
+        return Random.Range(0, trophyDataArr.Length);
+    }
     public bool AddTrophy_Func(TrophyType _trophyType, bool _isAdd = false)
     {
         int _trophyID = -1;
@@ -304,6 +317,9 @@ public class Player_Data : MonoBehaviour
     }
     public bool AddTrophy_Func(int _trophyID, bool _isAdd = false)
     {
+        if(_trophyID < 0)
+            _trophyID = Random.Range(0, trophyDataArr.Length);
+
         int _haveNum = trophyDataArr[_trophyID].haveNum;
         bool _isReturnValue = false;
 
@@ -562,7 +578,19 @@ public class Player_Data : MonoBehaviour
 
         if (_foodLevel == -1)
             _foodLevel = foodBoxLevel;
+        _playerFoodData.foodType = FoodType.Normal;
         _playerFoodData.foodID = _foodID;
+
+        inventoryFoodDataList.Add(_playerFoodData);
+    }
+    public void AddSource_Func(int _sourceID, int _sourceLevel = -1)
+    {
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+
+        if (_sourceLevel == -1)
+            _sourceLevel = foodBoxLevel;
+        _playerFoodData.foodType = FoodType.Source;
+        _playerFoodData.foodID = _sourceID;
 
         inventoryFoodDataList.Add(_playerFoodData);
     }
@@ -940,4 +968,15 @@ public class Player_Data : MonoBehaviour
         return drinkDataArr[_drinkID].haveNum;
     }
     #endregion
+    public void BuyPackage_Func(int _packageID)
+    {
+        if (isPackageAlreadyBuyArr[_packageID] == false)
+        {
+            isPackageAlreadyBuyArr[_packageID] = true;
+        }
+        else if(isPackageAlreadyBuyArr[_packageID] == true)
+        {
+            Debug.LogError("Bug : 패키지 구매 이력이 이미 있습니다.");
+        }
+    }
 }
