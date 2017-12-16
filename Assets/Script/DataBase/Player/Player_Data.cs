@@ -387,10 +387,10 @@ public class Player_Data : MonoBehaviour
                 heroClass.criticalBonus += _effectValue;
                 break;
             case TrophyType.ManaRegen:
-                heroClass.manaRegen += _effectValue;
+                heroClass.manaRegen = (DataBase_Manager.Instance.heroData.manaRegen * (1 + _effectValue));
                 break;
             case TrophyType.ManaStart:
-                heroClass.manaStart += _effectValue;
+                heroClass.manaStart = (DataBase_Manager.Instance.heroData.manaStart * (1 + _effectValue));
                 break;
             case TrophyType.HealthPoint_Unit:
                 _unitNum = DataBase_Manager.Instance.GetUnitMaxNum_Func();

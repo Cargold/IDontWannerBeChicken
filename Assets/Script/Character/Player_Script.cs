@@ -56,6 +56,8 @@ public class Player_Script : Character_Script
         shootTime = _heroData.shootSpeed;
         shootHeight = _heroData.shootHeight;
         attackType = _heroData.attackType;
+
+        manaStart = _heroData.manaStart;
         manaRegen = _heroData.manaRegen;
     }
     public void LobbyEnter_Func()

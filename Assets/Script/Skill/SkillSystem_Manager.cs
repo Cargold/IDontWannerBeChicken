@@ -66,8 +66,7 @@ public class SkillSystem_Manager : MonoBehaviour
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
 
-        float _trophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.ManaStart, true);
-        mana_Recent = mana_StartValue + (mana_StartValue * _trophyEffectValue);
+        mana_Recent = Player_Data.Instance.heroClass.manaStart;
 
         isManaDrinkOn = _isManaDrinkOn;
 
@@ -76,19 +75,12 @@ public class SkillSystem_Manager : MonoBehaviour
 
     IEnumerator ManaRegen_Cor()
     {
-        float _mana_RegenValue = mana_RegenValue;
+        float _mana_RegenValue = Player_Data.Instance.heroClass.manaRegen;
 
         if (isManaDrinkOn == true)
         {
             float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Mana].effectValue;
             _mana_RegenValue = mana_RegenValue * _drinkEffectValue;
-        }
-
-        float _manaRegenTrophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.ManaRegen, true);
-        if(0f < _manaRegenTrophyEffectValue)
-        {
-            _manaRegenTrophyEffectValue *= mana_RegenValue;
-            _mana_RegenValue += _manaRegenTrophyEffectValue;
         }
         
         while (isActive == true)
