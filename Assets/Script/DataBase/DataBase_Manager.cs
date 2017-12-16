@@ -276,14 +276,10 @@ public class DataBase_Manager : MonoBehaviour
     // Food
     public string GetFoodName_Func(int _foodID)
     {
-        return m_FoodDataArr[_foodID].foodName;
+        return m_FoodDataArr[_foodID].nameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
 
     // Monster
-    public string GetMonsterName_Func(int _unitID)
-    {
-        return m_MonsterDataArr[_unitID].charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
-    }
     public Unit_Script GetMonsterClass_Func(int _unitID)
     {
         Unit_Script _unitClass = null;

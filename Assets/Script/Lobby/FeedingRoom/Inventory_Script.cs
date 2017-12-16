@@ -52,7 +52,7 @@ public class Inventory_Script : MonoBehaviour
             
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.foodID];
 
-            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.foodName);
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
             _foodClass.Init_Func(feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.remainExp);
             _foodClass.SetState_Func(FoodPlaceState.Inventory);
@@ -141,7 +141,7 @@ public class Inventory_Script : MonoBehaviour
         else
         {
             Debug.LogError("Bug : 이미 가방에 있는 음식이 추가되었습니다.");
-            Debug.LogError("Name : " + _foodClass.foodName);
+            Debug.LogError("Name : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
     }
     public void RemoveFood_Func(Food_Script _foodClass)
@@ -153,7 +153,7 @@ public class Inventory_Script : MonoBehaviour
         else
         {
             Debug.LogError("Bug : 가방에 없는 음식을 제거하였습니다.");
-            Debug.LogError("Name : " + _foodClass.foodName);
+            Debug.LogError("Name : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
     }
 }

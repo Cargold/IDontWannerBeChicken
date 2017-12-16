@@ -47,7 +47,7 @@ public class Stomach_Script : MonoBehaviour
         {
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodDataArr[i].foodID];
 
-            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.foodName);
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
 
             _foodObj.transform.position = _playerFoodDataArr[i].pos;
             _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
@@ -149,13 +149,13 @@ public class Stomach_Script : MonoBehaviour
             else
             {
                 Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
-                Debug.LogError("음식 이름 : " + _foodClass.foodName);
+                Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
             }
         }
         else
         {
             Debug.LogError("Bug : 뱃속 상태가 아닙니다.");
-            Debug.LogError("음식 이름 : " + _foodClass.foodName);
+            Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
     }
     public void OutFoodByStomachRange_Func(Food_Script _foodClass)
@@ -171,7 +171,7 @@ public class Stomach_Script : MonoBehaviour
             else
             {
                 Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
-                Debug.LogError("음식 이름 : " + _foodClass.foodName);
+                Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
             }
         }
     }

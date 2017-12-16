@@ -10,6 +10,7 @@ public class PlayerFood_ClassData
     public int level;
     public float remainExp;
     public string foodName;
+    public string[] nameArr;
     public Vector3 pos;
     public Vector3 rot;
     
@@ -21,7 +22,7 @@ public class PlayerFood_ClassData
         level = _foodClass.level;
         remainExp = _foodClass.remainExp;
         foodID = _foodClass.foodId;
-        foodName = _foodClass.foodName;
+        nameArr = _foodClass.nameArr;
         pos = _foodClass.transform.position;
         rot = _foodClass.transform.rotation.eulerAngles;
 

@@ -7,7 +7,6 @@ public struct Food_Data
 {
     public FoodType foodType;
     public int foodId;
-    public string foodName;
     public string[] nameArr;
     public FoodGrade foodGrade;
     public FoodEffect_Main effectMain;
@@ -20,7 +19,7 @@ public struct Food_Data
     {
         foodType           = _foodClass.foodType;
         foodId             = _foodClass.foodId;
-        foodName           = _foodClass.foodName;
+        nameArr           = _foodClass.nameArr;
         foodGrade          = _foodClass.foodGrade;
         effectMain         = _foodClass.effectMain;
         effectSub          = _foodClass.effectSub;

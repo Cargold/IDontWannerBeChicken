@@ -8,7 +8,6 @@ public class Food_Script : MonoBehaviour
 
     public FoodType foodType;
     public int foodId;
-    public string foodName;
     public string[] nameArr;
     public FoodGrade foodGrade;
     [SerializeField]
@@ -45,7 +44,7 @@ public class Food_Script : MonoBehaviour
     public void SetData_Func(Food_Data _foodData)
     {
         foodId = _foodData.foodId;
-        foodName = _foodData.foodName;
+        nameArr = _foodData.nameArr;
         foodGrade = _foodData.foodGrade;
         gradePenalty = DataBase_Manager.Instance.foodGradePenaltyValue[(int)foodGrade];
         effectMain = _foodData.effectMain;

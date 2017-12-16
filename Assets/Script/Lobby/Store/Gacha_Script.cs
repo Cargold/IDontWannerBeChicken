@@ -90,7 +90,7 @@ public class Gacha_Script : MonoBehaviour
             // 가챠용 연출
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_foodID];
             Sprite _foodSprite = _foodData.foodSprite;
-            string _foodName = _foodData.foodName;
+            string _foodName = _foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
             SetGachaCard_Func(CardBgType.Food, _foodSprite, _foodName);
         }
 
@@ -164,7 +164,7 @@ public class Gacha_Script : MonoBehaviour
                     // 가챠용 세팅
                     Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_foodID];
                     Sprite _foodSprite = _foodData.foodSprite;
-                    string _foodName = _foodData.foodName;
+                    string _foodName = _foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
                     SetGachaCard_Func(CardBgType.Food, _foodSprite, _foodName);
                 }
 
@@ -228,7 +228,7 @@ public class Gacha_Script : MonoBehaviour
                     // 가챠용 세팅
                     Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_foodID];
                     Sprite _foodSprite = _foodData.foodSprite;
-                    string _foodName = _foodData.foodName;
+                    string _foodName = _foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
                     SetGachaCard_Func(CardBgType.Food, _foodSprite, _foodName);
                 }
 

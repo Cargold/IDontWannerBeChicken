@@ -20,6 +20,7 @@ public class Game_Manager : MonoBehaviour
 
     public GameState gameState;
     public Image loadingImage;
+    public GameObject loadingObj;
 
     void Awake()
     {
@@ -55,13 +56,17 @@ public class Game_Manager : MonoBehaviour
     {
         if (_isLoadingClear == false)
         {
-            loadingImage.SetNaturalAlphaColor_Func(1f);
-            loadingImage.raycastTarget = true;
+            loadingObj.SetActive(false);
+
+            //loadingImage.SetNaturalAlphaColor_Func(1f);
+            //loadingImage.raycastTarget = true;
         }
         else if(_isLoadingClear == true)
         {
-            loadingImage.SetNaturalAlphaColor_Func(0f);
-            loadingImage.raycastTarget = false;
+            loadingObj.SetActive(false);
+
+            //loadingImage.SetNaturalAlphaColor_Func(0f);
+            //loadingImage.raycastTarget = false;
         }
 
         yield break;

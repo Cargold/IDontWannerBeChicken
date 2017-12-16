@@ -285,7 +285,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     void PrintFoodInfo_Func(Food_Script _foodClass)
     {
-        foodText.text = _foodClass.foodName + " Lv." + _foodClass.level;
+        foodText.text = _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID] + " Lv." + _foodClass.level;
 
         switch (_foodClass.effectMain)
         {

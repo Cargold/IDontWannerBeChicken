@@ -56,7 +56,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_unitData);
 
-            poolList[_poolListCount].name = _unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+            poolList[_poolListCount].name = _unitClass.gameObject.name;
 
             DataBase_Manager.Instance.SetUnitClass_Func(i, _unitClass);
         }
@@ -75,7 +75,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
             _foodClass.SetData_Func(_foodData);
 
-            poolList[_poolListCount].name = _foodClass.foodName;
+            poolList[_poolListCount].name = _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
         }
 
         yield break;
@@ -95,7 +95,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_charData);
 
-            poolList[_poolListCount].name = _unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+            poolList[_poolListCount].name = _unitClass.gameObject.name;
 
             DataBase_Manager.Instance.monsterClassDic.Add(i, _unitClass);
         }

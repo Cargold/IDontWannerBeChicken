@@ -176,7 +176,7 @@ public class Result_Script : MonoBehaviour
         resultRewardImageArr[_rewardObjID].sprite = _foodData.foodSprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();
 
-        resultRewardTextArr[_rewardObjID].text = _foodData.foodName;
+        resultRewardTextArr[_rewardObjID].text = _foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
 
         resultRewardBGImageArr[_rewardObjID].sprite = resultRewardBGSpriteArr[1];
         resultRewardBGImageArr[_rewardObjID].SetNativeSize();

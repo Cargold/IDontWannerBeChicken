@@ -95,7 +95,6 @@ public class Battle_Manager : MonoBehaviour
         {
             GameObject _spawnAllyObj = new GameObject();
             _spawnAllyObj.transform.parent = this.transform;
-            _spawnAllyObj.name = "SpawnObjEnemy_" + i + "_" + DataBase_Manager.Instance.GetMonsterName_Func(i);
 
             Unit_Script _monsterClass = DataBase_Manager.Instance.GetMonsterClass_Func(i);
 

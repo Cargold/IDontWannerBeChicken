@@ -48,8 +48,8 @@ public class MainLobby_Script : LobbyUI_Parent
 
             if (0 <= _partyMemberID)
             {
-                string _unitName = DataBase_Manager.Instance.GetUnitName_Func(_partyMemberID);
-                GameObject _unitObj = ObjectPool_Manager.Instance.Get_Func(_unitName);
+                GameObject _unitObj = DataBase_Manager.Instance.unitDataObjArr[_partyMemberID];
+                _unitObj = ObjectPool_Manager.Instance.Get_Func(_unitObj);
                 _unitObj.transform.SetParent(partyMemberTrfArr[i]);
                 _unitObj.transform.localPosition = Vector3.zero;
                 _unitObj.transform.localEulerAngles = Vector3.zero;

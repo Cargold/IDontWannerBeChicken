@@ -7,6 +7,7 @@ public class TranslationSystem_Manager : MonoBehaviour
     public static TranslationSystem_Manager Instance;
     
     public LanguageType languageType;
+    [System.NonSerialized]
     public int languageTypeID;
 
     public string trophyRoomNumDesc
@@ -543,11 +544,17 @@ public class TranslationSystem_Manager : MonoBehaviour
     {
         Instance = this;
 
+        SetLanguageType_Func();
+
         yield break;
     }
-    public void SetLanguageType_Func(LanguageType _languageType)
+    public void SetLanguageType_Func()
     {
-        languageType = _languageType;
-        languageTypeID = (int)_languageType;
+        // 기기 언어 불러오기 ㄱㄱ
+
+        LanguageType _languageType;
+        //languageType = _languageType;
+
+        languageTypeID = (int)languageType;
     }
 }
