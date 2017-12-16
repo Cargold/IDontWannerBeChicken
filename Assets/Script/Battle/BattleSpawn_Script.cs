@@ -145,7 +145,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
     public Unit_Script OnSpawningAlly_Func(bool _isDefaultDirection = true)
     {
-        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID]);
 
         _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Ally);
         _charObj.transform.localScale = Vector3.one;
@@ -217,7 +217,7 @@ public class BattleSpawn_Script : MonoBehaviour
     {
         MutantType _mutantType = CheckMutant_Func();
 
-        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charName);
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID]);
 
         _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Enemy);
         _charObj.transform.localScale = new Vector3(-1f, 1f, 1f);

@@ -30,8 +30,8 @@ public struct Hero_Data
     public void SetData_Func(Player_Script _playerClass)
     {
         unitId = 999;
-        unitName = _playerClass.charName;
-        unitDesc = _playerClass.charDesc;
+        unitName = _playerClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+        unitDesc = _playerClass.charDescArr[TranslationSystem_Manager.Instance.languageTypeID];
 
         healthPoint = _playerClass.healthPoint_Max;
         defenceValue = _playerClass.defenceValue;

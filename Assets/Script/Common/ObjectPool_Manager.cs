@@ -56,7 +56,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_unitData);
 
-            poolList[_poolListCount].name = _unitClass.charName;
+            poolList[_poolListCount].name = _unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
 
             DataBase_Manager.Instance.SetUnitClass_Func(i, _unitClass);
         }
@@ -95,7 +95,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_charData);
 
-            poolList[_poolListCount].name = _unitClass.charName;
+            poolList[_poolListCount].name = _unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
 
             DataBase_Manager.Instance.monsterClassDic.Add(i, _unitClass);
         }

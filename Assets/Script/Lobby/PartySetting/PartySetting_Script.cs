@@ -350,8 +350,8 @@ public class PartySetting_Script : LobbyUI_Parent
         unitInfoTextArr[3].text = string.Format("{0:N0}", _unitClass.criticalPercent) + "%";
         unitInfoTextArr[4].text = string.Format("{0:N0}", _unitClass.spawnNum_Limit);
         unitInfoTextArr[5].text = string.Format("{0:N0}", _unitClass.spawnInterval) + "s";
-        unitInfoTextArr[6].text = "Lv." + Player_Data.Instance.playerUnitDataArr[_unitClass.unitID].unitLevel + " " + _unitClass.charName;
-        unitInfoTextArr[7].text = _unitClass.charDesc;
+        unitInfoTextArr[6].text = "Lv." + Player_Data.Instance.playerUnitDataArr[_unitClass.unitID].unitLevel + " " + _unitClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+        unitInfoTextArr[7].text = _unitClass.charDescArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     public void ReadyUnitImage_Func()
     {

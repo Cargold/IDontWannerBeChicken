@@ -193,8 +193,8 @@ public class HeroManagement_Script : LobbyUI_Parent
         heroInfoTextArr[3].text = string.Format("{0:N0}", _heroClass.criticalPercent) + "%";
         heroInfoTextArr[4].text = "0";
         heroInfoTextArr[5].text = "0";
-        heroInfoTextArr[6].text = "Lv." + Player_Data.Instance.heroLevel + " " + _heroClass.charName;
-        heroInfoTextArr[7].text = _heroClass.charDesc;
+        heroInfoTextArr[6].text = "Lv." + Player_Data.Instance.heroLevel + " " + _heroClass.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+        heroInfoTextArr[7].text = _heroClass.charDescArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     #endregion
     #region OnFeed Group

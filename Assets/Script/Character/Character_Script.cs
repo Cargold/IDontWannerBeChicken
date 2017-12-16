@@ -7,9 +7,7 @@ using DG.Tweening;
 public class Character_Script : MonoBehaviour
 {
     public int unitID;
-    public string charName;
     public string[] charNameArr;
-    public string charDesc;
     public string[] charDescArr;
     public int charGrade;
 
