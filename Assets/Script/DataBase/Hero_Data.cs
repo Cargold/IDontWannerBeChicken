@@ -22,6 +22,7 @@ public struct Hero_Data
     public float shootHeight;
     public AttackType attackType;
 
+    public float manaStart;
     public float manaRegen;
 
     // Info Data
@@ -48,6 +49,7 @@ public struct Hero_Data
         
         groupType = GroupType.Ally;
 
+        manaStart = _playerClass.manaStart;
         manaRegen = _playerClass.manaRegen;
     }
 }
