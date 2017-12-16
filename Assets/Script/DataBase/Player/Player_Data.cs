@@ -135,7 +135,14 @@ public class Player_Data : MonoBehaviour
     IEnumerator LoadInventory_Cor()
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
-        for (int i = 0; i < 10; i++)
+
+        //LoadInventory_Test_Func();
+
+        yield break;
+    }
+    void LoadInventory_Test_Func()
+    {
+        for (int i = 0; i < 20; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
@@ -144,13 +151,9 @@ public class Player_Data : MonoBehaviour
             _playerFoodData.level = Random.Range(1, 4);
             _playerFoodData.remainExp = Random.Range(0f, 99f);
 
-            //_playerFoodData.foodID = 1;
-
             inventoryFoodDataList.Add(_playerFoodData);
         }
-
-        yield break;
-    } // UnComplete
+    }
     IEnumerator LoadStage_Cor()
     {
         // Cargold : 스테이지 데이터 불러오기

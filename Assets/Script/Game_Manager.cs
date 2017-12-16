@@ -57,16 +57,10 @@ public class Game_Manager : MonoBehaviour
         if (_isLoadingClear == false)
         {
             loadingObj.SetActive(false);
-
-            //loadingImage.SetNaturalAlphaColor_Func(1f);
-            //loadingImage.raycastTarget = true;
         }
         else if(_isLoadingClear == true)
         {
             loadingObj.SetActive(false);
-
-            //loadingImage.SetNaturalAlphaColor_Func(0f);
-            //loadingImage.raycastTarget = false;
         }
 
         yield break;

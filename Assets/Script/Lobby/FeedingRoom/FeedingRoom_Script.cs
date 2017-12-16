@@ -124,31 +124,21 @@ public class FeedingRoom_Script : LobbyUI_Parent
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
     {
-
+        // 여긴 쓰지 않는다.
+        // 선택한 음식이, 선택음식을 바꾸기 위한 건지 재료음식을 선택한 건지 구분할 수 없음.
     }
 
     public void PointUp_Func(Food_Script _foodClass)
     {
-        if (selectedFoodClass == null || selectedFoodClass != _foodClass && materialFoodClass != _foodClass)
-        {
-            // 처음 먹이주기에 들어온 경우
-            // 선택되지도 않고, 재료 음식도 아닌 음식을 선택한 경우
-
-            SelectNewFood_Func(_foodClass);
-        }
-        else if(selectedFoodClass == _foodClass)
-        {
-
-        }
-        else if(materialFoodClass == _foodClass)
+        if (materialFoodClass == _foodClass)
         {
             // 재료 음식을 선택 취소한 경우
 
-            if(isUpgradeReady == false)
+            if (isUpgradeReady == false)
             {
                 UpgradeEnd_Func();
             }
-            else if(isUpgradeReady == true)
+            else if (isUpgradeReady == true)
             {
                 int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
                 if (Player_Data.Instance.PayWealth_Func(WealthType.Gold, _upgradeCost) == true)
@@ -157,9 +147,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
                     UpgradeEnd_Func();
             }
         }
-        else
+        else if(materialFoodClass == null)
         {
-            Debug.LogError("Bug : 어느 음식도 선택되지 않았습니다.");
+            SelectNewFood_Func(_foodClass);
         }
     }
     void SelectNewFood_Func(Food_Script _foodClass)
@@ -175,7 +165,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         feedingRoomState = FeedingRoomState.SelectFood;
         selectedFoodClass = _foodClass;
-        SetTopDepthTrf_Func(selectedFoodClass.transform);
+        selectedFoodClass.transform.SetParent(upgradeGroupTrf);
         selectedFoodClass.transform.SetAsLastSibling();
 
         selectPointingTrf.SetParent(selectedFoodClass.transform);
@@ -187,33 +177,39 @@ public class FeedingRoom_Script : LobbyUI_Parent
     
     public void DragBegin_Func(Food_Script _foodClass)
     {
-        if (selectedFoodClass == _foodClass)
-        {
-            // 선택된 음식을 드래그한 경우
+        // 음식을 누르고 드래그를 시작했을 때
 
-            DragBeginSelectFood_Func();
-        }
-        else if(materialFoodClass == null)
+        if (selectedFoodClass == null)
         {
-            // 재료 음식을 드래그한 경우
-            // 업그레이드 상황 시작
+            // 선택 중인 음식이 없을 때
 
-            UpgradeBegin_Func(_foodClass);
-            PrintUpgradeInfo_Func();
+            SelectNewFood_Func(_foodClass);
         }
-        else
+        else if (selectedFoodClass != null && selectedFoodClass != _foodClass)
         {
-            Debug.LogError("Bug : 드래그를 시도하는 음식은 선택된 것도 아니며, 재료도 선택된 상태입니다.");
-        }
-    }
-    void DragBeginSelectFood_Func()
-    {
+            // 선택 중인 음식이 있을 때
 
-    }
-    
-    void SetTopDepthTrf_Func(Transform _trf)
-    {
-        _trf.SetParent(upgradeGroupTrf);
+            if (_foodClass.foodPlaceState == FoodPlaceState.Inventory)
+            {
+                if (materialFoodClass == null)
+                {
+                    // 재료음식이 없을 때
+
+                    UpgradeBegin_Func(_foodClass);
+                    PrintUpgradeInfo_Func();
+                }
+                else if (materialFoodClass == _foodClass)
+                {
+                    // 재료음식을 다시 누를 때
+
+                    UpgradeEnd_Func();
+                }
+            }
+            else if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+            {
+                materialFoodClass = _foodClass;
+            }
+        }
     }
 
     public void Dragging_Func(Food_Script _foodClass)
@@ -234,10 +230,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
                 materialFoodClass.transform.position = _dragPos;
             }
-            else
-            {
-                Debug.LogError("Bug : 드래그 중인 음식은 선택되지도, 재료도 아닙니다.");
-            }
         }
         else if (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
@@ -252,6 +244,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         while (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
             Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+
             _foodClass.SetVelocity_Func(_dragPos);
 
             yield return null;
@@ -462,10 +455,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
         upgradeFocusImage.SetNaturalAlphaColor_Func(0.7f);
         upgradeFocusImage.transform.SetAsLastSibling();
 
-        SetTopDepthTrf_Func(selectedFoodClass.transform);
+        selectedFoodClass.transform.SetParent(upgradeGroupTrf);
         selectedFoodClass.transform.SetAsLastSibling();
 
-        SetTopDepthTrf_Func(materialFoodClass.transform);
+        materialFoodClass.transform.SetParent(upgradeGroupTrf);
         materialFoodClass.transform.SetAsLastSibling();
     }
     public  void UpgradeFoodApproach_Func(Food_Script _materialFoodClass)
@@ -486,9 +479,12 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         isUpgradeReady = false;
         
-        inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
+        if(materialFoodClass != null)
+        {
+            inventoryClass.SetRegroupTrf_Func(materialFoodClass.transform);
 
-        materialFoodClass = null;
+            materialFoodClass = null;
+        }
 
         guideSelectObj.SetActive(true);
         guideDragObj.SetActive(false);

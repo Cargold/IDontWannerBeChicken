@@ -14,6 +14,7 @@ public class Inventory_Script : MonoBehaviour
     public Transform sortInitPos;
     public Vector2 sortGapPos;
     public int axisXNum;
+    public int inventoryFoodNumMax;
     
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
@@ -76,12 +77,20 @@ public class Inventory_Script : MonoBehaviour
                 {
                     break;
                 }
-                _sortPos =
+                else if(inventoryFoodNumMax <= count)
+                {
+                    _sortPos = sortInitPos.localPosition;
+                }
+                else
+                {
+                    _sortPos =
                     new Vector2
                     (
                         sortInitPos.localPosition.x + (sortGapPos.x * j),
                         sortInitPos.localPosition.y + (sortGapPos.y * i)
                     );
+                }
+                
                 inventoryFoodClassList[count].transform.localPosition = _sortPos;
                 inventoryFoodClassList[count].transform.localScale = Vector3.one;
             }
