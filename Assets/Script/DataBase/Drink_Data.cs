@@ -12,6 +12,7 @@ public struct Drink_Data
     public Sprite drinkBtnSprite;
 
     public string[] nameArr;
+    public string[] descArr;
 
     public void SetData_Func(Drink_Script _drinkClass)
     {
@@ -21,11 +22,7 @@ public struct Drink_Data
         drinkSprite    = _drinkClass.drinkSprite;
         drinkBtnSprite = _drinkClass.drinkBtnSprite;
 
-        int _nameNum = _drinkClass.nameArr.Length;
-        nameArr = new string[_nameNum];
-        for (int i = 0; i < _nameNum; i++)
-        {
-            nameArr[i] = _drinkClass.nameArr[i];
-        }
+        nameArr = _drinkClass.nameArr;
+        descArr = _drinkClass.descArr;
     }
 }

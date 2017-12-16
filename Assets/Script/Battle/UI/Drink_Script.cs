@@ -11,4 +11,5 @@ public class Drink_Script : MonoBehaviour
     public Sprite drinkBtnSprite;
 
     public string[] nameArr;
+    public string[] descArr;
 }
