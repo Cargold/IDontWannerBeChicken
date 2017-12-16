@@ -18,7 +18,7 @@ public class TrophyRoom_Script : LobbyUI_Parent
 
         Init_Func();
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
         this.gameObject.SetActive(true);
 

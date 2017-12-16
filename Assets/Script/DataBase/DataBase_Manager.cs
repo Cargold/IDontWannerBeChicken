@@ -243,7 +243,7 @@ public class DataBase_Manager : MonoBehaviour
     }
     public string GetUnitName_Func(int _unitID)
     {
-        return m_UnitDataArr[_unitID].unitName;
+        return m_UnitDataArr[_unitID].charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     public Unit_Script GetUnitClass_Func(int _charID)
     {
@@ -282,7 +282,7 @@ public class DataBase_Manager : MonoBehaviour
     // Monster
     public string GetMonsterName_Func(int _unitID)
     {
-        return m_MonsterDataArr[_unitID].unitName;
+        return m_MonsterDataArr[_unitID].charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     public Unit_Script GetMonsterClass_Func(int _unitID)
     {

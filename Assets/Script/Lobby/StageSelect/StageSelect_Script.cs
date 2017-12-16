@@ -25,7 +25,7 @@ public class StageSelect_Script : LobbyUI_Parent
 
         this.gameObject.SetActive(false);
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
         EnterStageSelect_Func();
     }

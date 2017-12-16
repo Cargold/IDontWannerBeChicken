@@ -17,7 +17,7 @@ public class MainLobby_Script : LobbyUI_Parent
 
         partyMemberObjList = new List<GameObject>();
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
         // Call : Btn Event
 

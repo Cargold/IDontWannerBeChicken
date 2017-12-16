@@ -21,7 +21,7 @@ public class SkillInfo_Script : MonoBehaviour
         int _skillLevel = _playerSkillData.skillLevel;
         Skill_Parent _skillClass = _playerSkillData.skillParentClass;
 
-        nameText.text = _skillClass.skillName + " Lv." + _skillLevel;
+        nameText.text = _skillClass.skillNameArr[TranslationSystem_Manager.Instance.languageTypeID] + " Lv." + _skillLevel;
 
         int _varNum = _skillClass.skillVarArr.Length;
         List<float> _varUpgradeValueArr = new List<float>();
@@ -40,7 +40,7 @@ public class SkillInfo_Script : MonoBehaviour
         }
 
         string _descByFormatting = "";
-        _descByFormatting = string.Format(_skillClass.skillDesc, _varUpgradeValueArr[0], _varUpgradeValueArr[1], _varUpgradeValueArr[2], _varUpgradeValueArr[3], _varUpgradeValueArr[4]);
+        _descByFormatting = string.Format(_skillClass.skillDescArr[TranslationSystem_Manager.Instance.languageTypeID], _varUpgradeValueArr[0], _varUpgradeValueArr[1], _varUpgradeValueArr[2], _varUpgradeValueArr[3], _varUpgradeValueArr[4]);
 
         descText.text = _descByFormatting;
     }

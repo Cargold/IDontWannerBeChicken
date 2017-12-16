@@ -61,11 +61,11 @@ public class Lobby_Manager : MonoBehaviour
         LobbyState _lobbyState = _loobyTypeText.ToEnum<LobbyState>();
         Enter_Func(_lobbyState);
     }
-    public void Enter_Func(LobbyState _lobbyState)
+    public void Enter_Func(LobbyState _lobbyState, int _referenceID = -1)
     {
         int _lobbyTypeID = (int)_lobbyState;
         
-        lobbyUIParentClassArr[_lobbyTypeID].Enter_Func();
+        lobbyUIParentClassArr[_lobbyTypeID].Enter_Func(_referenceID);
 
         Player_Data.Instance.OnLobbyWealthUI_Func();
     }

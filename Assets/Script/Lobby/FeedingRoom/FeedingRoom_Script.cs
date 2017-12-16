@@ -56,9 +56,24 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         this.gameObject.SetActive(false);
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
-        
+        // 999 = Hero, Other = Unit
+
+        this.gameObject.SetActive(true);
+
+        Player_Data.Instance.ActiveWealthUI_Func();
+
+        selectUnitID = _referenceID;
+
+        inventoryClass.Active_Func(_referenceID);
+
+        InitSelect_Func();
+
+        PrintCharUpgradeCost_Func();
+
+        anim["FeedingRoom"].speed = 1f;
+        anim.Play("FeedingRoom");
     }
     public override void Exit_Func()
     {
@@ -75,28 +90,20 @@ public class FeedingRoom_Script : LobbyUI_Parent
             lobbyManager.OffFeedingRoom_Func(selectUnitID);
         }
 
-        Player_Data.Instance.DeactiveWealthUI_Func();
+        if(lobbyManager.partySettingClass.isActive == true)
+        {
+            Player_Data.Instance.DeactiveWealthUI_Func();
+        }
+        else if(lobbyManager.heroManagementClass.isActive == true)
+        {
+            Player_Data.Instance.ActiveWealthUI_Func();
+        }
+        else
+        {
+            Debug.LogError("Bug : 피딩룸 닫은 후 파티세팅 또는 영웅관리 외에 다른 룸으로 가는 예외상황 발생");
+        }
     }
     #endregion
-    public void Enter_Func(int _selectUnitID)
-    {
-        // 999 = Hero, Other = Unit
-
-        this.gameObject.SetActive(true);
-
-        selectUnitID = _selectUnitID;
-
-        inventoryClass.Active_Func(_selectUnitID);
-
-        InitSelect_Func();
-
-        PrintCharUpgradeCost_Func();
-
-        anim["FeedingRoom"].speed = 1f;
-        anim.Play("FeedingRoom");
-
-        Player_Data.Instance.ActiveWealthUI_Func();
-    }
     void InitSelect_Func()
     {
         feedingRoomState = FeedingRoomState.InitState;

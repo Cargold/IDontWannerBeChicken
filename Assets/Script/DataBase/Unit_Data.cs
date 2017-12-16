@@ -7,7 +7,8 @@ public struct Unit_Data
 {
     public int unitId;
     public string unitName;
-    public string unitDesc;
+    public string[] charNameArr;
+    public string[] charDescArr;
 
     public float healthPoint;
     public float defenceValue;
@@ -42,8 +43,8 @@ public struct Unit_Data
     public void SetData_Func(Unit_Script _unitClass, int _unitID)
     {
         unitId          = _unitID;
-        unitName        = _unitClass.charName;
-        unitDesc        = _unitClass.charDesc;
+        charNameArr     = _unitClass.charNameArr;
+        charDescArr     = _unitClass.charDescArr;
 
         healthPoint     = _unitClass.healthPoint_Max;
         defenceValue    = _unitClass.defenceValue;

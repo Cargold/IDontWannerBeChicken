@@ -29,8 +29,8 @@ public class Unit_Script : Character_Script
         // 풀링 될 때의 첫 데이터 세팅
 
         unitID = _unitData.unitId;
-        charName = _unitData.unitName;
-        charDesc = _unitData.unitDesc;
+        charName = _unitData.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
+        charDesc = _unitData.charDescArr[TranslationSystem_Manager.Instance.languageTypeID];
 
         healthPoint_Max = _unitData.healthPoint;
         healthPoint_Recent = _unitData.healthPoint;

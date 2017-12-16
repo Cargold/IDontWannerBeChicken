@@ -44,7 +44,7 @@ public class PartySetting_Script : LobbyUI_Parent
         isTouchOn = false;
         this.gameObject.SetActive(false);
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
         this.gameObject.SetActive(true);
 
@@ -59,6 +59,8 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
+        isActive = false;
+
         Player_Data.Instance.ActiveWealthUI_Func();
 
         this.gameObject.SetActive(false);
@@ -315,7 +317,8 @@ public class PartySetting_Script : LobbyUI_Parent
         }
 
         RotateUnitImage_Func();
-        lobbyManager.OnFeedingRoom_Func(selectUnitID);
+
+        lobbyManager.Enter_Func(LobbyState.FeedingRoom, selectUnitID);
     }
     void RotateUnitImage_Func()
     {

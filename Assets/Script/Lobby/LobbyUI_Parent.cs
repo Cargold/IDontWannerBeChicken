@@ -23,11 +23,11 @@ public abstract class LobbyUI_Parent : MonoBehaviour
     }
     protected abstract void InitUI_Func();
 
-    public void Enter_Func()
+    public void Enter_Func(int _referenceID = -1)
     {
-        EnterUI_Func();
+        EnterUI_Func(_referenceID);
     }
-    protected abstract void EnterUI_Func();
+    protected abstract void EnterUI_Func(int _referenceID = -1);
 
     public abstract void Exit_Func();
 }

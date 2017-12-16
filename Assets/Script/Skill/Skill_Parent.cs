@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class Skill_Parent : MonoBehaviour
 {
     public int skillID;
-    public string skillName;
-    public string skillDesc;
+    public string[] skillNameArr;
+    public string[] skillDescArr;
     public Sprite skillSprite;
     
     public int slotOrder;

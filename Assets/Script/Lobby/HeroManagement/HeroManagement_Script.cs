@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class HeroManagement_Script : LobbyUI_Parent
 {
+    public bool isActive;
+
     public SkillCard_Script[] skillCardClassArr;
     public Transform skillCardGroupTrf;
     public SkillCard_Script selectCardClass;
@@ -70,9 +72,11 @@ public class HeroManagement_Script : LobbyUI_Parent
 
         this.gameObject.SetActive(false);
     }
-    protected override void EnterUI_Func()
+    protected override void EnterUI_Func(int _referenceID = -1)
     {
         this.gameObject.SetActive(true);
+
+        isActive = true;
 
         for (int i = 0; i < 5; i++)
         {
@@ -92,6 +96,8 @@ public class HeroManagement_Script : LobbyUI_Parent
     public override void Exit_Func()
     {
         // Call : Btn Event
+
+        isActive = false;
 
         this.gameObject.SetActive(false);
     }
@@ -197,7 +203,8 @@ public class HeroManagement_Script : LobbyUI_Parent
         // Call : Btn Event
 
         RotateUnitImage_Func();
-        lobbyManager.OnFeedingRoom_Func(999);
+        lobbyManager.Enter_Func(LobbyState.FeedingRoom, 999);
+        //lobbyManager.OnFeedingRoom_Func(999);
     }
     void RotateUnitImage_Func()
     {

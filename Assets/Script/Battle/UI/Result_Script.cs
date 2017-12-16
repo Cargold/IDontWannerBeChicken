@@ -196,7 +196,7 @@ public class Result_Script : MonoBehaviour
 
         resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * _unitData.cardImageSize;
 
-        resultRewardTextArr[_rewardObjID].text = _unitData.unitName;
+        resultRewardTextArr[_rewardObjID].text = _unitData.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
