@@ -202,9 +202,7 @@ public class Food_Script : MonoBehaviour
         if(_foodPlaceState == FoodPlaceState.Stomach)
         {
             foodPlaceState = FoodPlaceState.Stomach;
-
-            thisCol.isTrigger = false;
-
+            
             thisRigid.gravityScale = 500f;
         }
         else if (_foodPlaceState == FoodPlaceState.Inventory)
@@ -223,13 +221,9 @@ public class Food_Script : MonoBehaviour
         }
         else if (_foodPlaceState == FoodPlaceState.Dragging)
         {
-            _foodPlaceState = FoodPlaceState.Dragging;
+            foodPlaceState = FoodPlaceState.Dragging;
 
-            thisCol.isTrigger = true;
-
-            thisRigid.velocity = Vector2.zero;
-            thisRigid.angularVelocity = 0f;
-            thisRigid.gravityScale = 0f;
+            thisCol.isTrigger = false;
 
             StartCoroutine("FeedingTimeCheck_Cor");
         }
