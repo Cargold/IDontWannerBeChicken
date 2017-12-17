@@ -500,6 +500,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
         Player_Data.Instance.SetCharDataByFood_Func(selectUnitID, selectedFoodClass, false);
 
         float _materialExp = materialFoodClass.GetMaterialExp_Func();
+        float _trophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.UpgradeExp, true) * 0.01f;
+        _materialExp *= 1f + _trophyEffectValue;
+
         materialFoodClass.Destroy_Func();
         materialFoodClass = null;
 

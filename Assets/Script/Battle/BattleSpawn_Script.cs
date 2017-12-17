@@ -13,7 +13,8 @@ public class BattleSpawn_Script : MonoBehaviour
     public ArrayList spawnUnitList = new ArrayList();
     public bool isActive = false;
     [SerializeField]
-    private Unit_Script unitClass;
+    private Unit_Data unitData;
+    private string unitObjName;
     public int spawnID;
     public int spawnCheckAllCount;
     public int spawnActiveUnitCount;
@@ -30,9 +31,10 @@ public class BattleSpawn_Script : MonoBehaviour
 
         spawnID = _spawnID;
 
-        unitClass = _unitClass;
+        unitData.SetData_Func(_unitClass, _unitClass.unitID);
+        spawnNumLimit = unitData.spawnNum_Limit;
 
-        spawnNumLimit = _unitClass.spawnNum_Limit;
+        unitObjName = _unitClass.gameObject.name;
     }
 
     #region Spawn Group
@@ -52,13 +54,13 @@ public class BattleSpawn_Script : MonoBehaviour
 
         if (spawnGroupType == GroupType.Enemy)
         {
-            int _monsterID = unitClass.unitID;
+            int _monsterID = unitData.unitId;
 
-            float _hpValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].healthPoint;
-            unitClass.healthPoint_Max = _hpValue * (((_battleID - 1) * 0.05f) + 1f);
+            float _hpValue = unitData.healthPoint;
+            unitData.healthPoint = _hpValue * (((_battleID - 1) * 0.05f) + 1f);
 
-            float _attackValue = DataBase_Manager.Instance.monsterDataArr[_monsterID].attackValue;
-            unitClass.attackValue = _attackValue * (((_battleID - 1) * 0.05f) + 1f);
+            float _attackValue = unitData.attackValue;
+            unitData.attackValue = _attackValue * (((_battleID - 1) * 0.05f) + 1f);
         }
         
         if(_isTemporarySpawn == false)
@@ -76,7 +78,7 @@ public class BattleSpawn_Script : MonoBehaviour
                 {
                     // 테스트를 위해 시작부터 아군 유닛이 나오길 원하는 경우
 
-                    _spawnCalcTime = unitClass.spawnInterval;
+                    _spawnCalcTime = unitData.spawnInterval;
                 }
             }
         }
@@ -84,7 +86,7 @@ public class BattleSpawn_Script : MonoBehaviour
         {
             // 적은 시작부터 등장
             
-            _spawnCalcTime = unitClass.spawnInterval;
+            _spawnCalcTime = unitData.spawnInterval;
         }
         
         while (isActive == true)
@@ -96,16 +98,16 @@ public class BattleSpawn_Script : MonoBehaviour
                 yield return null;
             }
 
-            if (_spawnCalcTime < unitClass.spawnInterval)
+            if (_spawnCalcTime < unitData.spawnInterval)
             {
                 _spawnCalcTime += (spawnTimerBonus * 0.02f);
                 yield return new WaitForFixedUpdate();
             }
             else
             {
-                _spawnCalcTime -= unitClass.spawnInterval;
+                _spawnCalcTime -= unitData.spawnInterval;
 
-                for (int i = 0; i < unitClass.spawnNum; i++)
+                for (int i = 0; i < unitData.spawnNum; i++)
                 {
                     if (spawnGroupType == GroupType.Ally)
                     {
@@ -145,7 +147,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
     public Unit_Script OnSpawningAlly_Func(bool _isDefaultDirection = true)
     {
-        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.gameObject.name);
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitObjName);
 
         _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Ally);
         _charObj.transform.localScale = Vector3.one;
@@ -153,7 +155,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);
-        _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
+        _spawnUnitClass.SetDataByPlayerUnit_Func(unitData);
         if(isDrinkHpOn == true)
             _spawnUnitClass.SetDrinkBonus_Func(DrinkType.Health, true);
         _spawnUnitClass.SetSpawner_Func(this);
@@ -217,7 +219,7 @@ public class BattleSpawn_Script : MonoBehaviour
     {
         MutantType _mutantType = CheckMutant_Func();
 
-        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitClass.gameObject.name);
+        GameObject _charObj = ObjectPool_Manager.Instance.Get_Func(unitObjName);
 
         _charObj.transform.SetParent(Battle_Manager.Instance.spawnTrf_Enemy);
         _charObj.transform.localScale = new Vector3(-1f, 1f, 1f);
@@ -225,7 +227,7 @@ public class BattleSpawn_Script : MonoBehaviour
 
         Unit_Script _spawnUnitClass = _charObj.GetComponent<Unit_Script>();
         _spawnUnitClass.Init_Func(spawnGroupType);
-        _spawnUnitClass.SetDataByPlayerUnit_Func(unitClass);
+        _spawnUnitClass.SetDataByPlayerUnit_Func(unitData);
         _spawnUnitClass.SetMutant_Func(_mutantType);
         _spawnUnitClass.SetSpawner_Func(this);
         _spawnUnitClass.moveSpeed *= Random.Range(0.95f, 1.05f);

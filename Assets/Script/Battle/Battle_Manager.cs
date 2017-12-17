@@ -42,8 +42,8 @@ public class Battle_Manager : MonoBehaviour
     public int stageClearGold;
     public float battleTime;
     public int killCount;
-    public float goldBonus;
-    public float foodGetPer;
+    private float goldBonus;
+    private float foodGetPer;
     public bool[] isTestSpawnAlly;
 
     public GameObject[] drinkObjArr;
@@ -106,6 +106,8 @@ public class Battle_Manager : MonoBehaviour
 
         pauseClass.Init_Func();
         resultClass.Init_Func(this);
+
+        foodGetPer = 25f;
 
         yield break;
     }
@@ -252,7 +254,10 @@ public class Battle_Manager : MonoBehaviour
 
         playerClass.BattleEnter_Func();
 
-        chickenHouseClass.healthPoint_Max = ((battleID * 0.05f) + 1f) * DataBase_Manager.Instance.chickenHouseHp_Default;
+        float _chickenHouseHP = ((battleID * 0.05f) + 1f) * DataBase_Manager.Instance.chickenHouseHp_Default;
+        _chickenHouseHP *= 1f - (Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.HealthPoint_House, true) * 0.01f);
+
+        chickenHouseClass.healthPoint_Max = _chickenHouseHP;
         chickenHouseClass.Init_Func(GroupType.Enemy);
         chickenHouseClass.OnLanding_Func();
 
@@ -564,6 +569,9 @@ public class Battle_Manager : MonoBehaviour
             _wealthAmount = (int)((float)_wealthAmount * _drinkEffectValue);
         }
 
+        float _trophyEffectValue = (Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.GoldBonus, true) * 0.01f) + 1f;
+        _wealthAmount = (int)(_wealthAmount * _trophyEffectValue);
+
         Reward_Data _rewardData = new Reward_Data();
         _rewardData.SetData_Func(RewardType.Wealth, 0, _wealthAmount);
 
@@ -594,6 +602,9 @@ public class Battle_Manager : MonoBehaviour
         {
             _calcFoodGetPer = (goldBonus / stageClearGold) * foodGetPer;
         }
+
+        float _trophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.ItemDropPer, true);
+        _calcFoodGetPer += _trophyEffectValue;
 
         // 아이템 획득 확률 비교
         if (_calcFoodGetPer < Random.Range(0f, 100f)) return;

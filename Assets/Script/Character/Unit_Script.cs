@@ -110,6 +110,28 @@ public class Unit_Script : Character_Script
             attackRate_Speed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitClass.attackRate_Max;
         }
     }
+    public void SetDataByPlayerUnit_Func(Unit_Data _unitData)
+    {
+        healthPoint_Max = _unitData.healthPoint;
+        healthPoint_Recent = _unitData.healthPoint;
+        defenceValue = _unitData.defenceValue;
+        attackValue = _unitData.attackValue;
+        attackRate_Max = _unitData.attackRate;
+        attackRange = _unitData.attackRange;
+        moveSpeed = _unitData.moveSpeed;
+        criticalPercent = _unitData.criticalPercent;
+
+        spawnInterval = _unitData.spawnInterval;
+
+        if (groupType == GroupType.Ally)
+        {
+            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitData.attackRate;
+        }
+        else if (groupType == GroupType.Enemy)
+        {
+            attackRate_Speed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitData.attackRate;
+        }
+    }
     public void SetMutant_Func(MutantType _mutantType)
     {
         mutantType = _mutantType;

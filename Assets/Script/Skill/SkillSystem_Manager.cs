@@ -14,10 +14,8 @@ public class SkillSystem_Manager : MonoBehaviour
     public Color skillBtnCoolTimeColor;
 
     public bool isActive = false;
-    public float mana_StartValue;
     public float mana_Max;
     public float mana_Recent;
-    public float mana_RegenValue;
     public bool isManaDrinkOn = false;
 
     public Image manaImage;
@@ -80,7 +78,7 @@ public class SkillSystem_Manager : MonoBehaviour
         if (isManaDrinkOn == true)
         {
             float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Mana].effectValue;
-            _mana_RegenValue = mana_RegenValue * _drinkEffectValue;
+            _mana_RegenValue = _mana_RegenValue * _drinkEffectValue;
         }
         
         while (isActive == true)
