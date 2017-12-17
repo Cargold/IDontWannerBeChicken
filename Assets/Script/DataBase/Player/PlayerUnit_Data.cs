@@ -26,9 +26,13 @@ public class PlayerUnit_ClassData
         SetLevel_Func(_unitLevel, true);
 
         // 유닛의 음식 정보 불러오기
-        for (int i = 0; i < playerFoodDataList.Count; i++)
+        for (int i = 0; i < 3; i++)
         {
-            
+            //PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData();
+
+            //Food_Script _foodClass = 
+
+            //_playerFoodClass.SetData_Func()
         }
 
         yield break;
@@ -45,13 +49,15 @@ public class PlayerUnit_ClassData
     public void SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
         if(_haveFoodID == -1)
-            _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
+            //_haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
+            _haveFoodID = _foodClass.placeID;
 
         playerFoodDataList[_haveFoodID].SetData_Func(_foodClass);
     }
     public void OutFood_Func(Food_Script _foodClass)
     {
-        int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
+        //int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
+        int _haveFoodID = _foodClass.placeID;
         playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, false);

@@ -50,13 +50,27 @@ public class Inventory_Script : MonoBehaviour
         for (int i = 0; i < _haveFoodNum; i++)
         {
             PlayerFood_ClassData _playerFoodData = Player_Data.Instance.GetPlayerFoodData_Func(i);
-            
-            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodData.foodID];
 
-            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
+            string _foodObjName = "";
+            if (_playerFoodData.foodType == FoodType.Normal)
+            {
+                _foodObjName = DataBase_Manager.Instance.foodDataObjArr[_playerFoodData.foodID].gameObject.name;
+            }
+            else if (_playerFoodData.foodType == FoodType.Source)
+                _foodObjName = DataBase_Manager.Instance.sauceDataObjArr[_playerFoodData.foodID].gameObject.name;
+            else if (_playerFoodData.foodType == FoodType.Stone)
+                _foodObjName = DataBase_Manager.Instance.stoneDataObj.gameObject.name;
+
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodObjName);
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
-            _foodClass.Init_Func(feedingRoomClass, FoodState.Inventory, _playerFoodData.level, _playerFoodData.remainExp);
-            _foodClass.SetState_Func(FoodPlaceState.Inventory);
+            _foodClass.Init_Func
+                (
+                    feedingRoomClass,
+                    FoodPlaceState.Inventory,
+                    i,
+                    _playerFoodData.level,
+                    _playerFoodData.remainExp
+                );
             inventoryFoodClassList.Add(_foodClass);
             Player_Data.Instance.SetFoodClassInInventory_Func(_foodClass, i);
 
@@ -137,15 +151,12 @@ public class Inventory_Script : MonoBehaviour
             return inventoryFoodClassList[Random.Range(0, inventoryFoodClassList.Count)];
     }
 
-    public bool CheckInventoryFood_Func(Food_Script _foodClass)
-    {
-        return inventoryFoodClassList.Contains(_foodClass);
-    }
     public void AddFood_Func(Food_Script _foodClass)
     {
         if(inventoryFoodClassList.Contains(_foodClass) == false)
         {
             inventoryFoodClassList.Add(_foodClass);
+            _foodClass.placeID = inventoryFoodClassList.Count;
         }
         else
         {
@@ -158,11 +169,16 @@ public class Inventory_Script : MonoBehaviour
         if (inventoryFoodClassList.Contains(_foodClass) == true)
         {
             inventoryFoodClassList.Remove(_foodClass);
+            _foodClass.placeID = -1;
         }
         else
         {
             Debug.LogError("Bug : 가방에 없는 음식을 제거하였습니다.");
             Debug.LogError("Name : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
+    }
+    public bool GetFoodHave_Func(Food_Script _foodClass)
+    {
+        return inventoryFoodClassList.Contains(_foodClass);
     }
 }

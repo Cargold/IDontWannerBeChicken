@@ -62,16 +62,16 @@ public class DataBase_Manager : MonoBehaviour
     }
     private Food_Data m_StoneData;
 
-    [Header("Source Data")]
-    public GameObject[] sourceDataObjArr;
-    public Food_Data[] sourceDataArr
+    [Header("Sauce Data")]
+    public GameObject[] sauceDataObjArr;
+    public Food_Data[] sauceDataArr
     {
         get
         {
-            return m_SourceDataArr;
+            return m_SauceDataArr;
         }
     }
-    private Food_Data[] m_SourceDataArr;
+    private Food_Data[] m_SauceDataArr;
 
     [Header("Skill Data")]
     public GameObject[] skillDataObjArr;
@@ -187,13 +187,13 @@ public class DataBase_Manager : MonoBehaviour
         m_StoneData.SetData_Func(_stoneClass);
 
         // Source
-        int _sourceDataObjNum = sourceDataObjArr.Length;
-        m_SourceDataArr = new Food_Data[_sourceDataObjNum];
+        int _sourceDataObjNum = sauceDataObjArr.Length;
+        m_SauceDataArr = new Food_Data[_sourceDataObjNum];
         for (int i = 0; i < _sourceDataObjNum; i++)
         {
-            Food_Script _sourceClass = sourceDataObjArr[i].GetComponent<Food_Script>();
+            Food_Script _sourceClass = sauceDataObjArr[i].GetComponent<Food_Script>();
             _sourceClass.foodId = i;
-            m_SourceDataArr[i].SetData_Func(_sourceClass);
+            m_SauceDataArr[i].SetData_Func(_sourceClass);
         }
 
         yield break;

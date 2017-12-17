@@ -56,7 +56,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_unitData);
 
-            poolList[_poolListCount].name = _unitClass.gameObject.name;
+            poolList[_poolListCount].name = DataBase_Manager.Instance.unitDataObjArr[i].name;
 
             DataBase_Manager.Instance.SetUnitClass_Func(i, _unitClass);
         }
@@ -66,6 +66,8 @@ public class ObjectPool_Manager : MonoBehaviour
     IEnumerator InitFood_Cor()
     {
         int _poolListCount = poolList.Count;
+
+        // Food
         int _foodDataNum = DataBase_Manager.Instance.foodDataArr.Length;
         for (int i = 0; i < _foodDataNum; i++, _poolListCount++)
         {
@@ -75,8 +77,30 @@ public class ObjectPool_Manager : MonoBehaviour
             Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[i];
             _foodClass.SetData_Func(_foodData);
 
-            poolList[_poolListCount].name = _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
+            poolList[_poolListCount].name = DataBase_Manager.Instance.foodDataObjArr[i].name;
         }
+
+        // Sauce
+        int _sauceDataNum = DataBase_Manager.Instance.sauceDataArr.Length;
+        for (int i = 0; i < _sauceDataNum; i++, _poolListCount++)
+        {
+            poolList.Add(Instantiate(DataBase_Manager.Instance.sauceDataObjArr[i]));
+            poolList[_poolListCount].transform.SetParent(sampleFolderObj.transform);
+            Food_Script _sauceClass = poolList[_poolListCount].GetComponent<Food_Script>();
+            Food_Data _sauceData = DataBase_Manager.Instance.sauceDataArr[i];
+            _sauceClass.SetData_Func(_sauceData);
+
+            poolList[_poolListCount].name = DataBase_Manager.Instance.sauceDataObjArr[i].name;
+        }
+
+        // Stone
+        poolList.Add(Instantiate(DataBase_Manager.Instance.stoneDataObj));
+        poolList[_poolListCount].transform.SetParent(sampleFolderObj.transform);
+        Food_Script _stoneClass = poolList[_poolListCount].GetComponent<Food_Script>();
+        Food_Data _stoneData = DataBase_Manager.Instance.stoneData;
+        _stoneClass.SetData_Func(_stoneData);
+
+        poolList[_poolListCount].name = DataBase_Manager.Instance.stoneDataObj.name;
 
         yield break;
     }
@@ -95,7 +119,7 @@ public class ObjectPool_Manager : MonoBehaviour
             Unit_Script _unitClass = poolList[_poolListCount].GetComponent<Unit_Script>();
             _unitClass.SetData_Func(_charData);
 
-            poolList[_poolListCount].name = _unitClass.gameObject.name;
+            poolList[_poolListCount].name = DataBase_Manager.Instance.monsterDataObjArr[i].name;
 
             DataBase_Manager.Instance.monsterClassDic.Add(i, _unitClass);
         }

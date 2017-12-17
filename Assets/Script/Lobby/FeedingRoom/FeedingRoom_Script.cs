@@ -255,7 +255,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public void DragEnd_Func(Food_Script _foodClass)
     {
-        ReplaceFood_Func();
+        ReplaceInInventory_Func();
 
         if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
@@ -265,7 +265,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
             StopCoroutine("DraggingPhysics_Cor");
         }
     }
-    void ReplaceFood_Func()
+    void ReplaceInInventory_Func()
     {
         if(replaceFoodClass != null)
         {
@@ -331,13 +331,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
         expMainImage.fillAmount = _expPer;
         expProgressImage.fillAmount = 0f;
     }
-    public bool CheckInventoryFood_Func(Food_Script _foodClass)
+    public bool GetFoodHaveInInventroy_Func(Food_Script _foodClass)
     {
-        return inventoryClass.CheckInventoryFood_Func(_foodClass);
-    }
-    public void AddFoodInInventroy_Func(Food_Script _foodClass)
-    {
-        inventoryClass.AddFood_Func(_foodClass);
+        return inventoryClass.GetFoodHave_Func(_foodClass);
     }
     public void ReplaceFood_Func(Food_Script _foodClass, bool _isImmediately = false)
     {
@@ -345,7 +341,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         
         if (_isImmediately == true)
         {
-            ReplaceFood_Func();
+            ReplaceInInventory_Func();
         }
     }
 
@@ -503,7 +499,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         float _trophyEffectValue = Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.UpgradeExp, true) * 0.01f;
         _materialExp *= 1f + _trophyEffectValue;
 
-        materialFoodClass.Destroy_Func();
+        materialFoodClass.UseMaterialFood_Func();
         materialFoodClass = null;
 
         selectedFoodClass.GetExp_Func(_materialExp);
@@ -511,64 +507,93 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
 
-        bool _isInventoryFood = CheckInventoryFood_Func(selectedFoodClass);
+        bool _isInventoryFood = GetFoodHaveInInventroy_Func(selectedFoodClass);
         Player_Data.Instance.SetFoodData_Func(selectedFoodClass, _isInventoryFood, selectUnitID);
         Player_Data.Instance.SetCharDataByFood_Func(selectUnitID, selectedFoodClass, true);
     }
-    public void RemoveFood_Func(Food_Script _foodClass)
+    public void UseMaterialFood_Func(Food_Script _foodClass)
     {
-        bool _isInventoryFood = false;
-        _isInventoryFood = CheckInventoryFood_Func(_foodClass);
+        Player_Data.Instance.OutFoodInInventory_Func(_foodClass);
 
-        Player_Data.Instance.RemoveFood_Func(_foodClass, _isInventoryFood, selectUnitID);
-        if (_isInventoryFood == true)
-        {
-            RemoveFoodInInventory_Func(_foodClass);
-        }
-        else
-        {
-            RemoveFoodInStomach_Func(_foodClass);
-        }
+        RemoveFoodInInventory_Func(_foodClass);
     }
     public void RemoveFoodInInventory_Func(Food_Script _foodClass)
     {
-        inventoryClass.RemoveFood_Func(_foodClass);
+        if (inventoryClass.GetFoodHave_Func(_foodClass) == true)
+        {
+            inventoryClass.RemoveFood_Func(_foodClass);
+        }
+        else
+        {
+            Debug.LogError("Bug : 가방에 없는 음식이 제거되었습니다.");
+        }
     }
     void RemoveFoodInStomach_Func(Food_Script _foodClass)
     {
-
+        
     }
     #endregion
-    #region Stomach Group
     public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
     {
-        if(_foodPlaceState == FoodPlaceState.Stomach)
+        if (_foodPlaceState == FoodPlaceState.Stomach)
         {
-            if(_setterFoodClass.foodState == FoodState.Inventory)
+            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging)
             {
+                // 가방에서 음식을 꺼냄
+                inventoryClass.RemoveFood_Func(_setterFoodClass);
+
+                // 음식을 위장 상태로...
                 _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
+
+                // 위장으로 음식 이동
+                stomachClass.FeedFood_Func(_setterFoodClass);
+
+                // 플레이어 데이터 수정
+                Player_Data.Instance.OutFoodInInventory_Func(_setterFoodClass);
+                Player_Data.Instance.FeedFood_Func(selectUnitID, _setterFoodClass);
+            }
+            else
+            {
+                Debug.LogError("Bug : 섭취된 음식이 드래깅 상태 외 다른 상태일 수 없습니다.");
             }
         }
-        else if(_foodPlaceState == FoodPlaceState.Inventory)
+        else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
-            // 드래그 상태 취소
-            _setterFoodClass.SetDragState_Func(false);
-            
-            // 뱃속에서 음식을 꺼냄
-            stomachClass.OutFoodByStomachRange_Func(_setterFoodClass);
+            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Stomach)
+            {
+                // 뱃속에서 음식을 꺼냄
+                stomachClass.OutFood_Func(_setterFoodClass);
 
-            // 음식을 인벤토리 상태로...
-            _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
+                // 음식을 인벤토리 상태로...
+                _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
 
-            // 음식을 인벤토리로 이동
-            ReplaceFood_Func(_setterFoodClass, true);
+                // 인벤토리로 음식 객체 이동
+                ReplaceFood_Func(_setterFoodClass, true);
+
+                // 인벤토리로 데이터 이동
+                inventoryClass.AddFood_Func(_setterFoodClass);
+
+                // 플레이어 데이터에서도...
+                Player_Data.Instance.AddFoodInInventory_Func(_setterFoodClass);
+                Player_Data.Instance.OutFoodInChar_Func(selectUnitID, _setterFoodClass);
+            }
+            else if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging)
+            {
+                _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
+            }
+        }
+        else if (_foodPlaceState == FoodPlaceState.Dragging)
+        {
+            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Inventory)
+            {
+                _setterFoodClass.SetState_Func(FoodPlaceState.Dragging);
+            }
+            else
+            {
+                Debug.LogError("Bug : 가방의 음식만이 드래깅 상태가 될 수 있습니다.");
+            }
         }
     }
-    public void SetFeedFoodByChain_Func(Food_Script _foodClass)
-    {
-        stomachClass.FeedFoodByChain_Func(_foodClass);
-    }
-    #endregion
     #region Animation Group
     public void AnimationStart_Func()
     {

@@ -29,7 +29,13 @@ public class TrophyList_Script : MonoBehaviour
 
     public void SetNum_Func(int _trophyID)
     {
+        Trophy_Data _trophyData = DataBase_Manager.Instance.trophyDataArr[_trophyID];
+        int _languageID = TranslationSystem_Manager.Instance.languageTypeID;
+
         int _trophyNum = Player_Data.Instance.GetTrophyNum_Func(_trophyID);
         trophyNumText.text = TranslationSystem_Manager.Instance.trophyRoomNumDesc + _trophyNum;
+
+        float _value = Player_Data.Instance.GetCalcTrophyEffect_Func(_trophyID, true);
+        trophyEffectText.text = _trophyData.descArr[_languageID] + " +" + (int)_value + "%";
     }
 }

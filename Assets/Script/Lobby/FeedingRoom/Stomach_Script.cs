@@ -45,10 +45,15 @@ public class Stomach_Script : MonoBehaviour
 
         for (int i = 0; i < _playerFoodDataArr.Length; i++)
         {
-            Food_Data _foodData = DataBase_Manager.Instance.foodDataArr[_playerFoodDataArr[i].foodID];
+            string _foodObjName = "";
+            if (_playerFoodDataArr[i].foodType == FoodType.Normal)
+                _foodObjName = DataBase_Manager.Instance.foodDataObjArr[_playerFoodDataArr[i].foodID].gameObject.name;
+            else if (_playerFoodDataArr[i].foodType == FoodType.Source)
+                _foodObjName = DataBase_Manager.Instance.sauceDataObjArr[_playerFoodDataArr[i].foodID].gameObject.name;
+            else if (_playerFoodDataArr[i].foodType == FoodType.Stone)
+                _foodObjName = DataBase_Manager.Instance.stoneDataObj.gameObject.name;
 
-            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodData.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
-
+            GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodObjName);
             _foodObj.transform.position = _playerFoodDataArr[i].pos;
             _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
             _foodObj.transform.localScale = Vector3.one;
@@ -58,11 +63,11 @@ public class Stomach_Script : MonoBehaviour
             _foodClass.Init_Func
                 (
                     feedingRoomClass, 
-                    FoodState.FeedingByInner, 
+                    FoodPlaceState.Stomach,
+                    i,
                     _playerFoodDataArr[i].level, 
                     _playerFoodDataArr[i].remainExp
                 );
-            _foodClass.SetState_Func(FoodPlaceState.Stomach);
             feedFoodClassList.Add(_foodClass);
 
             _playerFoodDataArr[i].SetData_Func(_foodClass);
@@ -86,9 +91,7 @@ public class Stomach_Script : MonoBehaviour
         if(collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Stomach);
-
-            feedingRoomClass.RemoveFoodInInventory_Func(_foodClass);
+            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Dragging);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -98,53 +101,27 @@ public class Stomach_Script : MonoBehaviour
         if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Inventory);
 
-            feedingRoomClass.AddFoodInInventroy_Func(_foodClass);
+            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Inventory);
         }
     }
-    public void FeedFoodByInner_Func(Food_Script _foodClass)
-    {
-        if(_foodClass.foodState == FoodState.Stomach)
-        {
-            if (feedFoodClassList.Contains(_foodClass) == false)
-            {
-                _foodClass.FeedingByInner_Func();
-                FeedFood_Func(_foodClass);
-            }
-        }
-        else if(_foodClass.foodState == FoodState.FeedingByChain)
-        {
-            _foodClass.FeedingByInner_Func();
-        }
-    }
-    public void FeedFoodByChain_Func(Food_Script _foodClass)
-    {
-        if (_foodClass.foodState == FoodState.Stomach)
-        {
-            if (feedFoodClassList.Contains(_foodClass) == false)
-            {
-                _foodClass.FeedingByChain_Func();
-                FeedFood_Func(_foodClass);
-            }
-        }
-    }
-    void FeedFood_Func(Food_Script _foodClass)
+    public void FeedFood_Func(Food_Script _foodClass)
     {
         feedFoodClassList.Add(_foodClass);
+        _foodClass.placeID = feedFoodClassList.Count;
+
         ReplaceStomach_Func(_foodClass.transform);
-        Player_Data.Instance.FeedFood_Func(stomachUnitID, _foodClass);
     }
-    public void OutFoodByInner_Func(Food_Script _foodClass)
+    public void OutFood_Func(Food_Script _foodClass)
     {
         if (isActive == false) return;
 
-        if(_foodClass.foodState == FoodState.FeedingByInner)
+        if (_foodClass.foodPlaceState != FoodPlaceState.Stomach)
         {
             if (feedFoodClassList.Contains(_foodClass) == true)
             {
-                _foodClass.OutFoodByInner_Func();
-                OutFood_Func(_foodClass);
+                feedFoodClassList.Remove(_foodClass);
+                _foodClass.placeID = -1;
             }
             else
             {
@@ -154,32 +131,9 @@ public class Stomach_Script : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Bug : 뱃속 상태가 아닙니다.");
+            Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
             Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
-    }
-    public void OutFoodByStomachRange_Func(Food_Script _foodClass)
-    {
-        if (isActive == false) return;
-
-        if (0 < (int)_foodClass.foodState)
-        {
-            if (feedFoodClassList.Contains(_foodClass) == true)
-            {
-                OutFood_Func(_foodClass);
-            }
-            else
-            {
-                Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
-                Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
-            }
-        }
-    }
-    void OutFood_Func(Food_Script _foodClass)
-    {
-        feedFoodClassList.Remove(_foodClass);
-        Player_Data.Instance.OutFood_Func(stomachUnitID, _foodClass);
-        Player_Data.Instance.AddFood_Func(_foodClass);
     }
 
     public Food_Script GetFoodRand_Func()
@@ -188,6 +142,10 @@ public class Stomach_Script : MonoBehaviour
             return null;
         else
             return feedFoodClassList[Random.Range(0, feedFoodClassList.Count)];
+    }
+    public bool GetFoodHave_Func(Food_Script _foodClass)
+    {
+        return feedFoodClassList.Contains(_foodClass);
     }
 
     public void ReplaceStomach_Func(Transform _trf)

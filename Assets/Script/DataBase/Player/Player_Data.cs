@@ -125,7 +125,19 @@ public class Player_Data : MonoBehaviour
     {
         inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
-        //LoadInventory_Test_Func();
+        LoadInventory_Test_Func();
+
+        //for (int i = 0; i < 10; i++)
+        //{
+        //    PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+
+        //    _playerFoodData.foodType = FoodType.Stone;
+        //    _playerFoodData.foodID = 0;
+        //    _playerFoodData.level = 1;
+        //    _playerFoodData.remainExp = 0;
+
+        //    inventoryFoodDataList.Add(_playerFoodData);
+        //}
 
         yield break;
     }
@@ -327,7 +339,8 @@ public class Player_Data : MonoBehaviour
     }
     void Hero_OutFood_Func(Food_Script _foodClass)
     {
-        int _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+        //int _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+        int _haveFoodID = _foodClass.placeID;
         heroFoodDataList.Remove(heroFoodDataList[_haveFoodID]);
 
         SetCharDataByFood_Func(heroClass, _foodClass, false);
@@ -335,7 +348,8 @@ public class Player_Data : MonoBehaviour
     void Hero_SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
         if (_haveFoodID == -1)
-            _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+            //_haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+            _haveFoodID = _foodClass.placeID;
 
         heroFoodDataList[_haveFoodID].SetData_Func(_foodClass);
     }
@@ -449,7 +463,7 @@ public class Player_Data : MonoBehaviour
 
         inventoryFoodDataList.Add(_playerFoodData);
     }
-    public void AddFood_Func(Food_Script _foodClass)
+    public void AddFoodInInventory_Func(Food_Script _foodClass)
     {
         // 보상 또는 구매를 통해 인벤토리로...
         // 유닛 위장에서 인벤토리로...
@@ -459,26 +473,13 @@ public class Player_Data : MonoBehaviour
         
         inventoryFoodDataList.Add(_playerFoodData);
     }
-    public void RemoveFood_Func(Food_Script _foodClass, bool _isInventoryFood, int _haveFoodUnitID)
+    public void OutFoodInInventory_Func(Food_Script _foodClass)
     {
-        if(_isInventoryFood == true)
-        {
-            // 인벤토리의 음식이 삭제되는 경우
+        if (_foodClass.placeID == -1)
+            Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
 
-            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
-
-            if (_inventoryFoodID == -1)
-                Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
-
-            ObjectPool_Manager.Instance.Free_Func(inventoryFoodDataList[_inventoryFoodID].GetFoodClass_Func().gameObject);
-            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
-        }
-        else
-        {
-            // 유닛이 가진 음식이 삭제되는 경우
-
-            
-        }
+        inventoryFoodDataList.RemoveAt(_foodClass.placeID);
+        ObjectPool_Manager.Instance.Free_Func(_foodClass.gameObject);
     }
     public void FeedFood_Func(int _charID, Food_Script _foodClass)
     {
@@ -486,7 +487,8 @@ public class Player_Data : MonoBehaviour
         {
             // Hero
 
-            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            int _inventoryFoodID = _foodClass.placeID;
             inventoryFoodDataList.RemoveAt(_inventoryFoodID);
 
             Hero_FeedFood_Func(_foodClass);
@@ -495,13 +497,14 @@ public class Player_Data : MonoBehaviour
         {
             // Unit
 
-            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            int _inventoryFoodID = _foodClass.placeID;
             inventoryFoodDataList.RemoveAt(_inventoryFoodID);
 
             playerUnitDataArr[_charID].FeedFood_Func(_foodClass);
         }
     }
-    public void OutFood_Func(int _charID, Food_Script _foodClass)
+    public void OutFoodInChar_Func(int _charID, Food_Script _foodClass)
     {
         if(_charID == 999)
         {
@@ -517,7 +520,8 @@ public class Player_Data : MonoBehaviour
     {
         if(_isInventoryFood == true)
         {
-            int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
+            int _inventoryFoodID = _foodClass.placeID;
             inventoryFoodDataList[_inventoryFoodID].SetData_Func(_foodClass);
         }
         else if(_isInventoryFood == false)

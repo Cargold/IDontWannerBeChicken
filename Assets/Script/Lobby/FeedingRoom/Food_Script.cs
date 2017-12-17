@@ -37,10 +37,8 @@ public class Food_Script : MonoBehaviour
     public bool isDragState;
 
     public FoodPlaceState foodPlaceState;
-    public FoodState foodState;
-
-    public Unit_Script feederUnitClass;
-
+    public int placeID;
+    
     public void SetData_Func(Food_Data _foodData)
     {
         foodId = _foodData.foodId;
@@ -64,32 +62,14 @@ public class Food_Script : MonoBehaviour
         thisCol.isTrigger = true;
         this.transform.GetChild(0).transform.localScale = Vector3.one * 85f;
     }
-    public void Init_Func(FeedingRoom_Script _feedingRoomClass, FoodState _foodFeedState, int _level, float _exp = 0f)
+    public void Init_Func(FeedingRoom_Script _feedingRoomClass, FoodPlaceState _foodPlaceState, int _placeID, int _level, float _exp = 0f)
     {
         feedingRoomClass = _feedingRoomClass;
+        
+        SetState_Func(_foodPlaceState);
 
-        foodState = _foodFeedState;
-        switch (foodState)
-        {
-            case FoodState.Inventory:
-                foodPlaceState = FoodPlaceState.Inventory;
-                OnInventory_Func();
-                break;
-            case FoodState.Stomach:
-                foodPlaceState = FoodPlaceState.Stomach;
-                OnStomach_Func();
-                break;
-            case FoodState.FeedingByChain:
-                foodPlaceState = FoodPlaceState.Stomach;
-                FeedingByChain_Func();
-                break;
-            case FoodState.FeedingByInner:
-                foodPlaceState = FoodPlaceState.Stomach;
-                FeedingByInner_Func();
-                break;
-        }
+        placeID = _placeID;
             
-
         level = _level;
         
         remainExp = _exp;
@@ -116,13 +96,13 @@ public class Food_Script : MonoBehaviour
     {
         // 레벨업 연출
     }
-    public void Destroy_Func()
+    public void UseMaterialFood_Func()
     {
         // Call : 음식강화 시 재료로 사용됨
 
         // 제거 연출
 
-        feedingRoomClass.RemoveFood_Func(this);
+        feedingRoomClass.UseMaterialFood_Func(this);
     }
 
     public CalcFoodExpData GetCalcExpData_Func(float _getExp)
@@ -223,11 +203,6 @@ public class Food_Script : MonoBehaviour
         {
             foodPlaceState = FoodPlaceState.Stomach;
 
-            if(foodState == FoodState.Inventory)
-            {
-                OnStomach_Func();
-            }
-
             thisCol.isTrigger = false;
 
             thisRigid.gravityScale = 500f;
@@ -235,9 +210,8 @@ public class Food_Script : MonoBehaviour
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
             foodPlaceState = FoodPlaceState.Inventory;
-            OnInventory_Func();
 
-            isDragState = false;
+            SetDragState_Func(false);
 
             thisCol.isTrigger = true;
 
@@ -246,6 +220,18 @@ public class Food_Script : MonoBehaviour
             thisRigid.gravityScale = 0f;
 
             this.transform.rotation = Quaternion.identity;
+        }
+        else if (_foodPlaceState == FoodPlaceState.Dragging)
+        {
+            _foodPlaceState = FoodPlaceState.Dragging;
+
+            thisCol.isTrigger = true;
+
+            thisRigid.velocity = Vector2.zero;
+            thisRigid.angularVelocity = 0f;
+            thisRigid.gravityScale = 0f;
+
+            StartCoroutine("FeedingTimeCheck_Cor");
         }
     }
     public void SetDragState_Func(bool _isState)
@@ -270,23 +256,6 @@ public class Food_Script : MonoBehaviour
     {
         thisRigid.velocity = (_forcePos - this.transform.position) * 10f;
     }
-    public void FeedingByInner_Func()
-    {
-        foodState = FoodState.FeedingByInner;
-        foodImage.color = Color.red;
-    }
-    public void FeedingByChain_Func()
-    {
-        foodState = FoodState.FeedingByChain;
-        foodImage.color = Color.yellow;
-    }
-    public void OnStomach_Func()
-    {
-        foodState = FoodState.Stomach;
-        foodImage.color = Color.green;
-
-        StartCoroutine("FeedingTimeCheck_Cor");
-    }
     private IEnumerator FeedingTimeCheck_Cor()
     {
         float _calcTime = 1f;
@@ -299,41 +268,15 @@ public class Food_Script : MonoBehaviour
             {
                 _calcTime -= 0.02f;
             }
-            else if(foodState != FoodState.Stomach)
+            else if(foodPlaceState == FoodPlaceState.Inventory)
             {
                 yield break;
             }
         }
 
-        feedingRoomClass.stomachClass.FeedFoodByInner_Func(this);
-    }
-    public void OutFoodByInner_Func()
-    {
-        foodState = FoodState.Stomach;
-        foodImage.color = Color.green;
-    }
-    void OnInventory_Func()
-    {
-        foodState = FoodState.Inventory;
-        foodImage.color = Color.white;
+        feedingRoomClass.SetFoodPlaceState_Func(this, FoodPlaceState.Stomach);
     }
     #endregion
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.tag == "Food")
-        {
-            if(0 < (int)this.foodState)
-            {
-                Food_Script _foodClass = collision.transform.GetComponent<Food_Script>();
-
-                if (_foodClass.foodState == FoodState.Stomach)
-                {
-                    // CargoldFeed
-                    //feedingRoomClass.SetFeedFoodByChain_Func(_foodClass);
-                }
-            }
-        }
-    }
 }
 
 public struct CalcFoodExpData
