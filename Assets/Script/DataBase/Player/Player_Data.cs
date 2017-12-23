@@ -339,17 +339,15 @@ public class Player_Data : MonoBehaviour
     }
     void Hero_OutFood_Func(Food_Script _foodClass)
     {
-        //int _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
-        int _haveFoodID = _foodClass.placeID;
-        heroFoodDataList.Remove(heroFoodDataList[_haveFoodID]);
+        int _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
+        heroFoodDataList.RemoveAt (_haveFoodID);
 
         SetCharDataByFood_Func(heroClass, _foodClass, false);
     }
     void Hero_SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
         if (_haveFoodID == -1)
-            //_haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
-            _haveFoodID = _foodClass.placeID;
+            _haveFoodID = GetHaveFoodID_Func(heroFoodDataList, _foodClass);
 
         heroFoodDataList[_haveFoodID].SetData_Func(_foodClass);
     }
@@ -425,8 +423,12 @@ public class Player_Data : MonoBehaviour
     {
         int _inventoryFoodID = -1;
 
+        Debug.Log("Test, Food : " + _foodClass.name);
+
         for (int i = 0; i < _charFoodDataList.Count; i++)
         {
+            Debug.Log("Test, " + i + " : " + _charFoodDataList[i].GetFoodClass_Func().name);
+
             if (_foodClass == _charFoodDataList[i].GetFoodClass_Func())
             {
                 _inventoryFoodID = i;
@@ -435,7 +437,10 @@ public class Player_Data : MonoBehaviour
         }
 
         if (_inventoryFoodID == -1)
+        {
+            Cargold_Library.Log_Func(_charFoodDataList.ToString());
             Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
+        }
 
         return _inventoryFoodID;
     }
@@ -473,34 +478,28 @@ public class Player_Data : MonoBehaviour
         
         inventoryFoodDataList.Add(_playerFoodData);
     }
-    public void OutFoodInInventory_Func(Food_Script _foodClass)
+    public void UseMaterialFood_Func(Food_Script _foodClass)
     {
-        if (_foodClass.placeID == -1)
+        int _inventoryFoodID = GetHaveFoodID_Func(inventoryFoodDataList, _foodClass);
+
+        if (_inventoryFoodID == -1)
             Debug.LogError("Bug : 해당 음식을 인벤토리에 찾을 수 없습니다.");
 
-        inventoryFoodDataList.RemoveAt(_foodClass.placeID);
-        ObjectPool_Manager.Instance.Free_Func(_foodClass.gameObject);
+        inventoryFoodDataList.RemoveAt(_inventoryFoodID);
     }
     public void FeedFood_Func(int _charID, Food_Script _foodClass)
     {
+        int _inventoryFoodID = GetHaveFoodID_Func(inventoryFoodDataList, _foodClass);
+        inventoryFoodDataList.RemoveAt(_inventoryFoodID);
+
         if (_charID == 999)
         {
             // Hero
-
-            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
-            int _inventoryFoodID = _foodClass.placeID;
-            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
-
             Hero_FeedFood_Func(_foodClass);
         }
         else
         {
             // Unit
-
-            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
-            int _inventoryFoodID = _foodClass.placeID;
-            inventoryFoodDataList.RemoveAt(_inventoryFoodID);
-
             playerUnitDataArr[_charID].FeedFood_Func(_foodClass);
         }
     }
@@ -520,8 +519,7 @@ public class Player_Data : MonoBehaviour
     {
         if(_isInventoryFood == true)
         {
-            //int _inventoryFoodID = GetInventoryFoodID_Func(_foodClass);
-            int _inventoryFoodID = _foodClass.placeID;
+            int _inventoryFoodID = GetHaveFoodID_Func(inventoryFoodDataList, _foodClass);
             inventoryFoodDataList[_inventoryFoodID].SetData_Func(_foodClass);
         }
         else if(_isInventoryFood == false)
@@ -543,25 +541,6 @@ public class Player_Data : MonoBehaviour
     public void SetFoodClassInUnit_Func(Food_Script _foodClass, int _unitID, int _haveFoodID)
     {
         playerUnitDataArr[_unitID].SetFoodData_Func(_foodClass, _haveFoodID);
-    }
-
-    public int GetInventoryFoodID_Func(Food_Script _foodClass)
-    {
-        int _inventoryFoodID = -1;
-
-        for (int i = 0; i < inventoryFoodDataList.Count; i++)
-        {
-            if (_foodClass == inventoryFoodDataList[i].GetFoodClass_Func())
-            {
-                _inventoryFoodID = i;
-                break;
-            }
-        }
-
-        if (_inventoryFoodID == -1)
-            Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
-
-        return _inventoryFoodID;
     }
     public PlayerFood_ClassData GetPlayerFoodData_Func(int _inventoryFoodID)
     {

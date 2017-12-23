@@ -19,8 +19,8 @@ public class Game_Manager : MonoBehaviour
     public SmoothFollow_Script mainCameraSmoothClass;
 
     public GameState gameState;
-    public Image loadingImage;
-    public GameObject loadingObj;
+    public Button loadingBtn;
+    public Text loadingText;
 
     void Awake()
     {
@@ -29,8 +29,11 @@ public class Game_Manager : MonoBehaviour
 
     IEnumerator Init_Cor()
     {
-        yield return InitMain_Cor();
-        yield return translationSystem.Init_Cor();  // 1. 언어 설정
+        InitMain_Func();
+        translationSystem.Init_Func();  // 1. 언어 설정
+
+        loadingText.text = translationSystem.LoadingArr;
+
         yield return databaseClass.Init_Cor();      // 2. DB에서 고정 데이터 불러오기
         yield return objectPoolManager.Init_Cor();  // 3. DB 정보를 바탕으로 풀링 생성
         yield return playerDataClass.Init_Cor();    // 4. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
@@ -40,28 +43,21 @@ public class Game_Manager : MonoBehaviour
         yield return skillSystemManager.Init_Cor(); // 8. 스킬매니저 초기화
         yield return enviromentClass.Init_Cor();    // 9. 환경 생성
 
-        yield return Loading_Cor(true);
+        yield return Loading_Cor();
 
         LobbyEnter_Func();
     }
 
-    IEnumerator InitMain_Cor()
+    void InitMain_Func()
     {
         Instance = this;
-
-        yield break;
     }
     
-    IEnumerator Loading_Cor(bool _isLoadingClear)
+    IEnumerator Loading_Cor()
     {
-        if (_isLoadingClear == false)
-        {
-            loadingObj.SetActive(false);
-        }
-        else if(_isLoadingClear == true)
-        {
-            loadingObj.SetActive(false);
-        }
+        loadingText.text = translationSystem.PressToStartArr;
+
+        loadingBtn.interactable = true;
 
         yield break;
     }
@@ -94,14 +90,5 @@ public class Game_Manager : MonoBehaviour
         directionClass.EnterUI_Func(GameState.Lobby);
         
         lobbyClass.Enter_Func(LobbyState.MainLobby);
-    }
-
-    public void Loading_Func()
-    {
-        StartCoroutine(Loading_Cor(false));
-    }
-    public void LoadingClear_Func()
-    {
-        StartCoroutine(Loading_Cor(true));
     }
 }

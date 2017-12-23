@@ -21,6 +21,10 @@ public class HeroManagement_Script : LobbyUI_Parent
     public Image heroImage;
     public Text[] heroInfoTextArr;
 
+    public Text feedText;
+    public Text backText;
+    public Text upgradeText;
+
     #region Override Group
     protected override void InitUI_Func()
     {
@@ -69,6 +73,10 @@ public class HeroManagement_Script : LobbyUI_Parent
                 }
             }
         }
+
+        feedText.text = TranslationSystem_Manager.Instance.Feed;
+        backText.text = TranslationSystem_Manager.Instance.Back;
+        upgradeText.text = TranslationSystem_Manager.Instance.Upgrade;
 
         this.gameObject.SetActive(false);
     }

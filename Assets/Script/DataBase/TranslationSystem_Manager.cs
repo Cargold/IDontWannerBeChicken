@@ -241,11 +241,11 @@ public class TranslationSystem_Manager : MonoBehaviour
             return luxuryFoodArr[languageTypeID];
         }
     }
-    public string RandomTrophy
+    public string TrophyFishDesc
     {
         get
         {
-            return randomTrophyArr[languageTypeID];
+            return trophyFishDescArr[languageTypeID];
         }
     }
     public string PackageNameArr_0
@@ -473,80 +473,217 @@ public class TranslationSystem_Manager : MonoBehaviour
         }
     }
 
-    [SerializeField] private string[] trophyRoomNumDescArr;
-    [SerializeField] private string[] titleArr;
-    [SerializeField] private string[] battleUnitArr;
-    [SerializeField] private string[] feedArr;
-    [SerializeField] private string[] backArr;
-    [SerializeField] private string[] upgradeArr;
-    [SerializeField] private string[] foodDragGuideArr;
-    [SerializeField] private string[] healthArr;
-    [SerializeField] private string[] damageArr;
-    [SerializeField] private string[] criticalArr;
-    [SerializeField] private string[] defenceArr;
-    [SerializeField] private string[] spawnIntervalArr;
-    [SerializeField] private string[] expArr;
-    [SerializeField] private string[] preparingRaidArr;
-    [SerializeField] private string[] chickenRestaurantArr;
-    [SerializeField] private string[] chickenRestaurantDestroyedArr;
-    [SerializeField] private string[] raidArr;
-    [SerializeField] private string[] youAreFriedArr;
-    [SerializeField] private string[] okArr;
-    [SerializeField] private string[] retryArr;
-    [SerializeField] private string[] pauseArr;
-    [SerializeField] private string[] warArr;
-    [SerializeField] private string[] friedArr;
-    [SerializeField] private string[] devsArr;
-    [SerializeField] private string[] bgmArr;
-    [SerializeField] private string[] sfxArr;
-    [SerializeField] private string[] mineralArr;
-    [SerializeField] private string[] goldArr;
-    [SerializeField] private string[] foodBoxArr;
-    [SerializeField] private string[] luxuryFoodBoxArr;
-    [SerializeField] private string[] trophyFishingArr;
-    [SerializeField] private string[] foodArr;
-    [SerializeField] private string[] luxuryFoodArr;
-    [SerializeField] private string[] randomTrophyArr;
-    [SerializeField] private string[] packageNameArr_0;
-    [SerializeField] private string[] packageNameArr_1;
-    [SerializeField] private string[] packageNameArr_2;
-    [SerializeField] private string[] packageNameArr_3;
-    [SerializeField] private string[] packageDescArr_0;
-    [SerializeField] private string[] packageDescArr_1;
-    [SerializeField] private string[] packageDescArr_2;
-    [SerializeField] private string[] packageDescArr_3;
-    [SerializeField] private string[] reviewArr;
-    [SerializeField] private string[] reviewYesArr;
-    [SerializeField] private string[] reviewNoArr;
-    [SerializeField] private string[] tutorial_StartArr_0;
-    [SerializeField] private string[] tutorial_StartArr_1;
-    [SerializeField] private string[] tutorial_StartArr_2;
-    [SerializeField] private string[] tutorial_BattleArr_0;
-    [SerializeField] private string[] tutorial_BattleArr_1;
-    [SerializeField] private string[] tutorial_BattleArr_2;
-    [SerializeField] private string[] tutorial_BattleArr_3;
-    [SerializeField] private string[] tutorial_PartySettingArr_0;
-    [SerializeField] private string[] tutorial_PartySettingArr_1;
-    [SerializeField] private string[] tutorial_PartySettingArr_2;
-    [SerializeField] private string[] tutorial_PartySettingArr_3;
-    [SerializeField] private string[] tutorial_FeedingArr_0;
-    [SerializeField] private string[] tutorial_FeedingArr_1;
-    [SerializeField] private string[] tutorial_FeedingArr_2;
-    [SerializeField] private string[] tutorial_FeedingArr_3;
-    [SerializeField] private string[] tutorial_SpecialStageArr_0;
-    [SerializeField] private string[] tutorial_SpecialStageArr_1;
-    [SerializeField] private string[] tutorial_MuseumArr_0;
-    [SerializeField] private string[] tutorial_MuseumArr_1;
-    [SerializeField] private string[] loadingArr;
-    [SerializeField] private string[] pressToStartArr;
+    public string ChickenRestaurantArr2
+    {
+        get
+        {
+            return chickenRestaurantArr2[languageTypeID];
+        }
+    }
 
-    public IEnumerator Init_Cor()
+    public string MaterialFoodDesc
+    {
+        get
+        {
+            return materialFoodDesc[languageTypeID];
+        }
+    }
+    public string TabBtnName0
+    {
+        get
+        {
+            return tabBtnName0[languageTypeID];
+        }
+    }
+    public string TabBtnName1
+    {
+        get
+        {
+            return tabBtnName1[languageTypeID];
+        }
+    }
+    public string TabBtnName2
+    {
+        get
+        {
+            return tabBtnName2[languageTypeID];
+        }
+    }
+    public string TabBtnName3
+    {
+        get
+        {
+            return tabBtnName3[languageTypeID];
+        }
+    }
+    public string TabBtnName4
+    {
+        get
+        {
+            return tabBtnName4[languageTypeID];
+        }
+    }
+
+    public string MineralDesc_0
+    {
+        get
+        {
+            return mineralDesc_0[languageTypeID];
+        }
+    }
+
+    public string MineralDesc_1
+    {
+        get
+        {
+            return mineralDesc_1[languageTypeID];
+        }
+    }
+
+    public string MineralDesc_2
+    {
+        get
+        {
+            return mineralDesc_2[languageTypeID];
+        }
+    }
+
+    public string MineralDesc_3
+    {
+        get
+        {
+            return mineralDesc_3[languageTypeID];
+        }
+    }
+
+    public string GoldDesc_0
+    {
+        get
+        {
+            return goldDesc_0[languageTypeID];
+        }
+    }
+
+    public string GoldDesc_1
+    {
+        get
+        {
+            return goldDesc_1[languageTypeID];
+        }
+    }
+
+    public string GoldDesc_2
+    {
+        get
+        {
+            return goldDesc_2[languageTypeID];
+        }
+    }
+
+    public string GoldDesc_3
+    {
+        get
+        {
+            return goldDesc_3[languageTypeID];
+        }
+    }
+
+    public string TrophyName
+    {
+        get
+        {
+            return trophyName[languageTypeID];
+        }
+    }
+
+    [TextArea] [SerializeField] private string[] trophyRoomNumDescArr;
+    [TextArea] [SerializeField] private string[] titleArr;
+    [TextArea] [SerializeField] private string[] battleUnitArr;
+    [TextArea] [SerializeField] private string[] feedArr;
+    [TextArea] [SerializeField] private string[] backArr;
+    [TextArea] [SerializeField] private string[] upgradeArr;
+    [TextArea] [SerializeField] private string[] foodDragGuideArr;
+    [TextArea] [SerializeField] private string[] healthArr;
+    [TextArea] [SerializeField] private string[] damageArr;
+    [TextArea] [SerializeField] private string[] criticalArr;
+    [TextArea] [SerializeField] private string[] defenceArr;
+    [TextArea] [SerializeField] private string[] spawnIntervalArr;
+    [TextArea] [SerializeField] private string[] expArr;
+    [TextArea] [SerializeField] private string[] preparingRaidArr;
+    [TextArea] [SerializeField] private string[] chickenRestaurantArr;
+    [TextArea] [SerializeField] private string[] chickenRestaurantArr2;
+    [TextArea] [SerializeField] private string[] chickenRestaurantDestroyedArr;
+    [TextArea] [SerializeField] private string[] raidArr;
+    [TextArea] [SerializeField] private string[] youAreFriedArr;
+    [TextArea] [SerializeField] private string[] okArr;
+    [TextArea] [SerializeField] private string[] retryArr;
+    [TextArea] [SerializeField] private string[] pauseArr;
+    [TextArea] [SerializeField] private string[] warArr;
+    [TextArea] [SerializeField] private string[] friedArr;
+    [TextArea] [SerializeField] private string[] devsArr;
+    [TextArea] [SerializeField] private string[] bgmArr;
+    [TextArea] [SerializeField] private string[] sfxArr;
+    [TextArea] [SerializeField] private string[] mineralArr;
+    [TextArea] [SerializeField] private string[] mineralDesc_0;
+    [TextArea] [SerializeField] private string[] mineralDesc_1;
+    [TextArea] [SerializeField] private string[] mineralDesc_2;
+    [TextArea] [SerializeField] private string[] mineralDesc_3;
+    [TextArea] [SerializeField] private string[] goldArr;
+    [TextArea] [SerializeField] private string[] goldDesc_0;
+    [TextArea] [SerializeField] private string[] goldDesc_1;
+    [TextArea] [SerializeField] private string[] goldDesc_2;
+    [TextArea] [SerializeField] private string[] goldDesc_3;
+    [TextArea] [SerializeField] private string[] foodBoxArr;
+    [TextArea] [SerializeField] private string[] luxuryFoodBoxArr;
+    [TextArea] [SerializeField] private string[] trophyFishingArr;
+    [TextArea] [SerializeField] private string[] foodArr;
+    [TextArea] [SerializeField] private string[] luxuryFoodArr;
+    [TextArea] [SerializeField] private string[] trophyFishDescArr;
+    [TextArea] [SerializeField] private string[] packageNameArr_0;
+    [TextArea] [SerializeField] private string[] packageNameArr_1;
+    [TextArea] [SerializeField] private string[] packageNameArr_2;
+    [TextArea] [SerializeField] private string[] packageNameArr_3;
+    [TextArea] [SerializeField] private string[] packageDescArr_0;
+    [TextArea] [SerializeField] private string[] packageDescArr_1;
+    [TextArea] [SerializeField] private string[] packageDescArr_2;
+    [TextArea] [SerializeField] private string[] packageDescArr_3;
+    [TextArea] [SerializeField] private string[] reviewArr;
+    [TextArea] [SerializeField] private string[] reviewYesArr;
+    [TextArea] [SerializeField] private string[] reviewNoArr;
+    [TextArea] [SerializeField] private string[] tutorial_StartArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_StartArr_1;
+    [TextArea] [SerializeField] private string[] tutorial_StartArr_2;
+    [TextArea] [SerializeField] private string[] tutorial_BattleArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_BattleArr_1;
+    [TextArea] [SerializeField] private string[] tutorial_BattleArr_2;
+    [TextArea] [SerializeField] private string[] tutorial_BattleArr_3;
+    [TextArea] [SerializeField] private string[] tutorial_PartySettingArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_PartySettingArr_1;
+    [TextArea] [SerializeField] private string[] tutorial_PartySettingArr_2;
+    [TextArea] [SerializeField] private string[] tutorial_PartySettingArr_3;
+    [TextArea] [SerializeField] private string[] tutorial_FeedingArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_FeedingArr_1;
+    [TextArea] [SerializeField] private string[] tutorial_FeedingArr_2;
+    [TextArea] [SerializeField] private string[] tutorial_FeedingArr_3;
+    [TextArea] [SerializeField] private string[] tutorial_SpecialStageArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_SpecialStageArr_1;
+    [TextArea] [SerializeField] private string[] tutorial_MuseumArr_0;
+    [TextArea] [SerializeField] private string[] tutorial_MuseumArr_1;
+    [TextArea] [SerializeField] private string[] loadingArr;
+    [TextArea] [SerializeField] private string[] pressToStartArr;
+    [TextArea] [SerializeField] private string[] materialFoodDesc;
+    [TextArea] [SerializeField] private string[] tabBtnName0;
+    [TextArea] [SerializeField] private string[] tabBtnName1;
+    [TextArea] [SerializeField] private string[] tabBtnName2;
+    [TextArea] [SerializeField] private string[] tabBtnName3;
+    [TextArea] [SerializeField] private string[] tabBtnName4;
+    [TextArea] [SerializeField] private string[] trophyName; 
+
+    public void Init_Func()
     {
         Instance = this;
 
         SetLanguageType_Func();
-
-        yield break;
     }
     public void SetLanguageType_Func()
     {

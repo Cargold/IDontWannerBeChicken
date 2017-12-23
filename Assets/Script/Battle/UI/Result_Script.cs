@@ -82,25 +82,26 @@ public class Result_Script : MonoBehaviour
 
         if (_isVictory == false)
         {
-            titleText.text = "당신은 튀겨졌습니다...";
-            btnText_Left.text = "확인";
-            btnText_Right.text = "재시도";
+            titleText.text = TranslationSystem_Manager.Instance.YouAreFried;
+            btnText_Left.text = TranslationSystem_Manager.Instance.Ok;
+            btnText_Right.text = TranslationSystem_Manager.Instance.Retry;
             btnAD.SetActive(false);
         }
         else if (_isVictory == true)
         {
             if (_battleType == BattleType.Normal)
             {
-                titleText.text = "치킨집 파괴!";
-                btnText_Left.text = "약탈하기";
+                titleText.text = TranslationSystem_Manager.Instance.ChickenRestaurantDestroyed;
+                btnText_Left.text = TranslationSystem_Manager.Instance.Raid;
                 btnText_Right.text = "";
+                
                 btnAD.SetActive(true);
             }
             else if (_battleType == BattleType.Special)
             {
-                titleText.text = "악의 치킨집 파괴!";
-                btnText_Left.text = "전진하기";
-                btnText_Right.text = "끝내기";
+                titleText.text = TranslationSystem_Manager.Instance.ChickenRestaurantDestroyed;
+                btnText_Left.text = TranslationSystem_Manager.Instance.Raid;
+                btnText_Right.text = TranslationSystem_Manager.Instance.Ok;
                 btnAD.SetActive(false);
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TrophyRoom_Script : LobbyUI_Parent
 {
@@ -11,12 +12,14 @@ public class TrophyRoom_Script : LobbyUI_Parent
     public GameObject trophyListObj;
     public TrophyList_Script[] trophyListClassArr;
 
+    public Text titleText;
+
     #region Override Group
     protected override void InitUI_Func()
     {
-        this.gameObject.SetActive(false);
-
         Init_Func();
+
+        this.gameObject.SetActive(false);
     }
     protected override void EnterUI_Func(int _referenceID = -1)
     {
@@ -46,6 +49,8 @@ public class TrophyRoom_Script : LobbyUI_Parent
 
             trophyListClassArr[i].Init_Func(this, i);
         }
+
+        titleText.text = TranslationSystem_Manager.Instance.TrophyName;
     }
 
     void Active_Func()

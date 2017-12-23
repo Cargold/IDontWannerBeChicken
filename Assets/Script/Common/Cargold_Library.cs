@@ -140,4 +140,78 @@ public static class Cargold_Library
     //        );              
     //}
     #endregion
+
+    #region Log Group
+    public enum LogType
+    {
+        Log,
+        Warning,
+        Error,
+    }
+    public static void Log_Func(LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test");
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
+    public static void Log_Func(string content, LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test : " + content);
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
+    public static void Log_Func(string name, string content, LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test, " + name + " : " + content);
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
+    public static void Log_Func(int _id, LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test : " + _id);
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
+    public static void Log_Func(int _id, string content, LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test, " + _id + " : " + content);
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
+    #endregion
 }

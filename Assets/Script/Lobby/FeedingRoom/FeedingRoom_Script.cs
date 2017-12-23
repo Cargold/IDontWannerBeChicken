@@ -33,6 +33,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
     public Animation anim;
     public bool isActive = false;
 
+    public Text upgradeText;
+    public Text backText;
+
     public enum FeedingRoomState
     {
         None = -1,
@@ -53,6 +56,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
         inventoryClass.Init_Func(this);
 
         stomachClass.Init_Func(this);
+
+        upgradeText.text = TranslationSystem_Manager.Instance.Upgrade;
+        backText.text = TranslationSystem_Manager.Instance.Back;
 
         this.gameObject.SetActive(false);
     }
@@ -287,13 +293,13 @@ public class FeedingRoom_Script : LobbyUI_Parent
         switch (_foodClass.effectMain)
         {
             case FoodEffect_Main.None:
-                mainEffectText.text = "Just Material. Enjoy Yourself";
+                mainEffectText.text = TranslationSystem_Manager.Instance.MaterialFoodDesc;
                 break;
             case FoodEffect_Main.AttackPower:
-                mainEffectText.text = "Atk +" + _foodClass.GetMainEffectValue_Func() + "%";
+                mainEffectText.text = TranslationSystem_Manager.Instance.Damage + " +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.HealthPoint:
-                mainEffectText.text = "HP +" + _foodClass.GetMainEffectValue_Func() + "%";
+                mainEffectText.text = TranslationSystem_Manager.Instance.Health + " HP +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.Gizzard:
                 mainEffectText.text = "Nothing On You, Baby ~";
@@ -306,25 +312,19 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 subEffectText.text = "";
                 break;
             case FoodEffect_Sub.Critical:
-                subEffectText.text = "Crit +" + _foodClass.GetSubEffectValue_Func() + "%";
+                subEffectText.text = TranslationSystem_Manager.Instance.Critical + " +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.SpawnInterval:
-                subEffectText.text = "Spawn Timer -" + _foodClass.GetSubEffectValue_Func() + "%";
+                subEffectText.text = TranslationSystem_Manager.Instance.SpawnInterval + " -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DecreaseHP:
-                subEffectText.text = "HP -" + _foodClass.GetSubEffectValue_Func() + "%";
+                subEffectText.text = TranslationSystem_Manager.Instance.Health + " -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DefenceValue:
-                subEffectText.text = "Defence +" + _foodClass.GetSubEffectValue_Func() + "%";
+                subEffectText.text = TranslationSystem_Manager.Instance.Defence + " +" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
             case FoodEffect_Sub.DecreaseAttack:
-                subEffectText.text = "Atk -" + _foodClass.GetSubEffectValue_Func() + "%";
-                break;
-            case FoodEffect_Sub.Bounus_Fish:
-                subEffectText.text = "Fish Food +" + _foodClass.GetSubEffectValue_Func() + "%";
-                break;
-            case FoodEffect_Sub.Bonus_Apple:
-                subEffectText.text = "Fish Food +" + _foodClass.GetSubEffectValue_Func() + "%";
+                subEffectText.text = TranslationSystem_Manager.Instance.Damage + " -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
         }
 
@@ -517,7 +517,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public void UseMaterialFood_Func(Food_Script _foodClass)
     {
-        Player_Data.Instance.OutFoodInInventory_Func(_foodClass);
+        Player_Data.Instance.UseMaterialFood_Func(_foodClass);
 
         RemoveFoodInInventory_Func(_foodClass);
     }
@@ -561,6 +561,13 @@ public class FeedingRoom_Script : LobbyUI_Parent
             }
             else if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
             {
+                if(_setterFoodClass.isDragState == false)
+                {
+                    // 인벤토리로 음식 객체 이동
+                    ReplaceFood_Func(_setterFoodClass, true);
+                }
+                
+                // 음식을 인벤토리 상태로...
                 _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
             }
         }
@@ -589,7 +596,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 stomachClass.FeedFood_Func(_setterFoodClass);
 
                 // 플레이어 데이터 수정
-                Player_Data.Instance.OutFoodInInventory_Func(_setterFoodClass);
                 Player_Data.Instance.FeedFood_Func(selectUnitID, _setterFoodClass);
             }
             else

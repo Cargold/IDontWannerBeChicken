@@ -62,8 +62,6 @@ public enum FoodEffect_Sub
     DecreaseHP,
     DefenceValue,
     DecreaseAttack,
-    Bonus_Apple,
-    Bounus_Fish,
 }
 
 public enum FoodPlaceState

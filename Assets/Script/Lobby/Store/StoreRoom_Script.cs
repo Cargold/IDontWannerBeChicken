@@ -32,6 +32,8 @@ public class StoreRoom_Script : LobbyUI_Parent
     public int cardID;
     public int storeDataID;
 
+    public Text[] tabBtnTextArr;
+
     #region Override Group
     protected override void InitUI_Func()
     {
@@ -61,6 +63,12 @@ public class StoreRoom_Script : LobbyUI_Parent
         InitPackage_Func();
         InitUIData_Func();
         InitGacha_Func();
+
+        //tabBtnTextArr[0].text = TranslationSystem_Manager.Instance.TabBtnName0;
+        //tabBtnTextArr[1].text = TranslationSystem_Manager.Instance.TabBtnName1;
+        //tabBtnTextArr[2].text = TranslationSystem_Manager.Instance.TabBtnName2;
+        //tabBtnTextArr[3].text = TranslationSystem_Manager.Instance.TabBtnName3;
+        //tabBtnTextArr[4].text = TranslationSystem_Manager.Instance.TabBtnName4;
 
         resultMessageObj.SetActive(false);
     }
@@ -160,14 +168,142 @@ public class StoreRoom_Script : LobbyUI_Parent
             {
                 int _storeDataID = (_listID * 4) + _cardID;
 
+                #region Translate
+                if(_listID == 0)
+                {
+                    storeDataArr[_storeDataID].goodsTitle
+                    = TranslationSystem_Manager.Instance.Mineral;
+                    
+                    if (_cardID == 0)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.MineralDesc_0;
+                    }
+                    else if (_cardID == 1)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.MineralDesc_1;
+                    }
+                    else if (_cardID == 2)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.MineralDesc_2;
+                    }
+                    else if (_cardID == 3)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.MineralDesc_3;
+                    }
+                }
+                else if (_listID == 1)
+                {
+                    storeDataArr[_storeDataID].goodsTitle
+                    = TranslationSystem_Manager.Instance.Gold;
+
+                    if (_cardID == 0)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.GoldDesc_0;
+                    }
+                    else if (_cardID == 1)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.GoldDesc_1;
+                    }
+                    else if (_cardID == 2)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.GoldDesc_2;
+                    }
+                    else if (_cardID == 3)
+                    {
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.GoldDesc_3;
+                    }
+                }
+                else if (_listID == 2)
+                {
+                    if(_cardID == 0)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.FoodBox;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.Food;
+                    }
+                    else if (_cardID == 1)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.LuxuryFoodBox;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.LuxuryFood;
+                    }
+                    else if (_cardID == 2)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = string.Format(TranslationSystem_Manager.Instance.TrophyFishing, storeDataArr[_storeDataID].goodsAmount);
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = string.Format(TranslationSystem_Manager.Instance.TrophyFishDesc, storeDataArr[_storeDataID].goodsAmount);
+                    }
+                    else if (_cardID == 3)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = string.Format(TranslationSystem_Manager.Instance.TrophyFishing, storeDataArr[_storeDataID].goodsAmount);
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = string.Format(TranslationSystem_Manager.Instance.TrophyFishDesc, storeDataArr[_storeDataID].goodsAmount);
+                    }
+                }
+                else if (_listID == 3)
+                {
+                    storeDataArr[_storeDataID].goodsTitle
+                            = DataBase_Manager.Instance.drinkDataArr[_cardID].nameArr[TranslationSystem_Manager.Instance.languageTypeID];
+
+                    storeDataArr[_storeDataID].goodsDescArr[0]
+                            = DataBase_Manager.Instance.drinkDataArr[_cardID].descArr[TranslationSystem_Manager.Instance.languageTypeID];
+                }
+                else if (_listID == 4)
+                {
+                    if (_cardID == 0)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.PackageNameArr_0;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.PackageDescArr_0;
+                    }
+                    else if (_cardID == 1)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.PackageNameArr_1;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.PackageDescArr_1;
+                    }
+                    else if (_cardID == 2)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.PackageNameArr_2;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.PackageDescArr_2;
+                    }
+                    else if (_cardID == 3)
+                    {
+                        storeDataArr[_storeDataID].goodsTitle
+                            = TranslationSystem_Manager.Instance.PackageNameArr_3;
+
+                        storeDataArr[_storeDataID].goodsDescArr[0]
+                            = TranslationSystem_Manager.Instance.PackageDescArr_3;
+                    }
+                }
+                #endregion
+
                 storeCardTitleTextArr[_storeDataID].text
                     = storeDataArr[_storeDataID].goodsTitle;
-                if(0 < storeDataArr[_storeDataID].goodsAmount)
-                {
-                    storeCardTitleTextArr[_storeDataID].text
-                        += " " + string.Format("{0:N0}", storeDataArr[_storeDataID].goodsAmount);
-                }
-                
+
                 storeCardImageArr[_storeDataID].sprite = storeDataArr[_storeDataID].storeCardSprite;
                 storeCardImageArr[_storeDataID].SetNativeSize();
                 

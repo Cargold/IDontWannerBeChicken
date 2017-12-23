@@ -34,6 +34,9 @@ public class PartySetting_Script : LobbyUI_Parent
     private Vector3 touchOffsetPos;
     public bool isActive;
 
+    public Text feedText;
+    public Text backText;
+
     #region Override Group
     protected override void InitUI_Func()
     {
@@ -42,6 +45,10 @@ public class PartySetting_Script : LobbyUI_Parent
         InitPartymember_Func();
 
         isTouchOn = false;
+
+        feedText.text = TranslationSystem_Manager.Instance.Feed;
+        backText.text = TranslationSystem_Manager.Instance.Back;
+
         this.gameObject.SetActive(false);
     }
     protected override void EnterUI_Func(int _referenceID = -1)

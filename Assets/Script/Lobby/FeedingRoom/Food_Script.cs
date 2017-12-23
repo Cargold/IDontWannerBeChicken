@@ -37,8 +37,7 @@ public class Food_Script : MonoBehaviour
     public bool isDragState;
 
     public FoodPlaceState foodPlaceState;
-    public int placeID;
-    
+
     public void SetData_Func(Food_Data _foodData)
     {
         foodId = _foodData.foodId;
@@ -67,9 +66,7 @@ public class Food_Script : MonoBehaviour
         feedingRoomClass = _feedingRoomClass;
         
         SetState_Func(_foodPlaceState);
-
-        placeID = _placeID;
-            
+        
         level = _level;
         
         remainExp = _exp;
@@ -199,13 +196,28 @@ public class Food_Script : MonoBehaviour
     #region Stomach Group
     public void SetState_Func(FoodPlaceState _foodPlaceState)
     {
-        if(_foodPlaceState == FoodPlaceState.Stomach)
+        Debug.Log("Food State : " + _foodPlaceState);
+
+        if (_foodPlaceState == FoodPlaceState.Stomach)
         {
             foodPlaceState = FoodPlaceState.Stomach;
+
+            thisCol.isTrigger = false;
 
             SetRigid_Func(true);
 
             foodImage.color = Color.red;
+        }
+        else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
+        {
+            foodPlaceState = FoodPlaceState.Dragging_Inven;
+
+            thisCol.isTrigger = false;
+
+            StopCoroutine("FeedingTimeCheck_Cor");
+            StartCoroutine("FeedingTimeCheck_Cor");
+
+            foodImage.color = Color.yellow;
         }
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
@@ -220,17 +232,6 @@ public class Food_Script : MonoBehaviour
             this.transform.rotation = Quaternion.identity;
 
             foodImage.color = Color.green;
-        }
-        else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
-        {
-            foodPlaceState = FoodPlaceState.Dragging_Inven;
-
-            thisCol.isTrigger = false;
-
-            StopCoroutine("FeedingTimeCheck_Cor");
-            StartCoroutine("FeedingTimeCheck_Cor");
-
-            foodImage.color = Color.yellow;
         }
     }
     public void SetDragState_Func(bool _isState)
@@ -273,22 +274,26 @@ public class Food_Script : MonoBehaviour
     {
         float _calcTime = 1f;
 
-        while (0f < _calcTime)
+        while (true)
         {
             yield return new WaitForFixedUpdate();
 
             if(isDragState == false)
             {
                 _calcTime -= 0.02f;
+
+                if(_calcTime < 0f)
+                {
+                    feedingRoomClass.SetFoodPlaceState_Func(this, FoodPlaceState.Stomach);
+                    yield break;
+                }
             }
-            else if(foodPlaceState == FoodPlaceState.Inventory)
+
+            if (foodPlaceState == FoodPlaceState.Inventory)
             {
                 yield break;
             }
         }
-
-        Debug.Log("Test : " + _calcTime);
-        feedingRoomClass.SetFoodPlaceState_Func(this, FoodPlaceState.Stomach);
     }
     #endregion
 }

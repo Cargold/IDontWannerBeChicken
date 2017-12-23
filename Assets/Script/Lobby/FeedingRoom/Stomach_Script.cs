@@ -88,14 +88,18 @@ public class Stomach_Script : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Food")
+        Debug.Log("Enter");
+        if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Dragging_Inven);
+
+            if(_foodClass.foodPlaceState != FoodPlaceState.Stomach)
+                feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Dragging_Inven);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
+        Debug.Log("Exit : " + collision.transform.position);
         if (isActive == false) return;
 
         if (collision.tag == "Food")
@@ -108,7 +112,6 @@ public class Stomach_Script : MonoBehaviour
     public void FeedFood_Func(Food_Script _foodClass)
     {
         feedFoodClassList.Add(_foodClass);
-        _foodClass.placeID = feedFoodClassList.Count;
 
         ReplaceStomach_Func(_foodClass.transform);
     }
@@ -116,12 +119,11 @@ public class Stomach_Script : MonoBehaviour
     {
         if (isActive == false) return;
 
-        if (_foodClass.foodPlaceState != FoodPlaceState.Stomach)
+        if (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
         {
             if (feedFoodClassList.Contains(_foodClass) == true)
             {
                 feedFoodClassList.Remove(_foodClass);
-                _foodClass.placeID = -1;
             }
             else
             {

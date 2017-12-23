@@ -49,15 +49,13 @@ public class PlayerUnit_ClassData
     public void SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
         if(_haveFoodID == -1)
-            //_haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
-            _haveFoodID = _foodClass.placeID;
+            _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
 
         playerFoodDataList[_haveFoodID].SetData_Func(_foodClass);
     }
     public void OutFood_Func(Food_Script _foodClass)
     {
-        //int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
-        int _haveFoodID = _foodClass.placeID;
+        int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _foodClass);
         playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, false);

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Inventory_Script : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class Inventory_Script : MonoBehaviour
     public Vector2 sortGapPos;
     public int axisXNum;
     public int inventoryFoodNumMax;
+
+    public Text dragGuideText;
     
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
@@ -22,6 +25,8 @@ public class Inventory_Script : MonoBehaviour
 
         upgradePlateClass.Init_Func(_feedingRoomClass);
         replaceColClass.Init_Func(_feedingRoomClass);
+
+        dragGuideText.text = TranslationSystem_Manager.Instance.FoodDragGuide;
     }
 
     public void Active_Func(int _selectUnitID)
@@ -156,7 +161,6 @@ public class Inventory_Script : MonoBehaviour
         if(inventoryFoodClassList.Contains(_foodClass) == false)
         {
             inventoryFoodClassList.Add(_foodClass);
-            _foodClass.placeID = inventoryFoodClassList.Count;
         }
         else
         {
@@ -169,7 +173,6 @@ public class Inventory_Script : MonoBehaviour
         if (inventoryFoodClassList.Contains(_foodClass) == true)
         {
             inventoryFoodClassList.Remove(_foodClass);
-            _foodClass.placeID = -1;
         }
         else
         {
