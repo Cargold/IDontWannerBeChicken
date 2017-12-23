@@ -117,7 +117,7 @@ public class PlayerUnit_ClassData
     {
         for (int i = 0; i < playerFoodDataList.Count; i++)
         {
-            Food_Script _foodClass = playerFoodDataList[i].foodClass;
+            Food_Script _foodClass = playerFoodDataList[i].GetFoodClass_Func();
             Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, true, false);
         }
     }

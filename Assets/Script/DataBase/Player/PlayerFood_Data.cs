@@ -14,7 +14,8 @@ public class PlayerFood_ClassData
     public Vector3 pos;
     public Vector3 rot;
     
-    public Food_Script foodClass;
+    [SerializeField]
+    private Food_Script foodClass;
 
     public void SetData_Func(Food_Script _foodClass)
     {

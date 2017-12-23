@@ -205,9 +205,9 @@ public class FeedingRoom_Script : LobbyUI_Parent
                     UpgradeEnd_Func();
                 }
             }
-            else if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+            else
             {
-                materialFoodClass = _foodClass;
+
             }
         }
     }
@@ -238,10 +238,13 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         while (_foodClass.foodPlaceState != FoodPlaceState.Inventory)
         {
-            Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
+            if(_foodClass.isDragState == true)
+            {
+                Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
 
-            _foodClass.SetVelocity_Func(_dragPos);
-
+                _foodClass.SetVelocity_Func(_dragPos);
+            }
+            
             yield return null;
         }
 
@@ -251,12 +254,19 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         ReplaceInInventory_Func();
 
-        if(_foodClass.foodPlaceState != FoodPlaceState.Inventory)
-        {
-            _foodClass.SetState_Func(FoodPlaceState.Stomach);
-            _foodClass.SetDragState_Func(false);
+        _foodClass.SetDragState_Func(false);
 
+        if (_foodClass.foodPlaceState == FoodPlaceState.Inventory)
+        {
             StopCoroutine("DraggingPhysics_Cor");
+        }
+        else if(_foodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
+        {
+            _foodClass.SetRigid_Func(true);
+        }
+        else if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+        {
+            _foodClass.SetRigid_Func(true);
         }
     }
     void ReplaceInInventory_Func()
@@ -529,29 +539,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     #endregion
     public void SetFoodPlaceState_Func(Food_Script _setterFoodClass, FoodPlaceState _foodPlaceState)
     {
-        if (_foodPlaceState == FoodPlaceState.Stomach)
-        {
-            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
-            {
-                // 가방에서 음식을 꺼냄
-                inventoryClass.RemoveFood_Func(_setterFoodClass);
-
-                // 음식을 위장 상태로...
-                _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
-
-                // 위장으로 음식 이동
-                stomachClass.FeedFood_Func(_setterFoodClass);
-
-                // 플레이어 데이터 수정
-                Player_Data.Instance.OutFoodInInventory_Func(_setterFoodClass);
-                Player_Data.Instance.FeedFood_Func(selectUnitID, _setterFoodClass);
-            }
-            else
-            {
-                Debug.LogError("Bug : 섭취된 음식이 드래깅 상태 외 다른 상태일 수 없습니다.");
-            }
-        }
-        else if (_foodPlaceState == FoodPlaceState.Inventory)
+        if (_foodPlaceState == FoodPlaceState.Inventory)
         {
             if (_setterFoodClass.foodPlaceState == FoodPlaceState.Stomach)
             {
@@ -585,6 +573,29 @@ public class FeedingRoom_Script : LobbyUI_Parent
             else
             {
                 Debug.LogError("Bug : 음식의 상태 변경이 부적절합니다.");
+            }
+        }
+        else if (_foodPlaceState == FoodPlaceState.Stomach)
+        {
+            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
+            {
+                // 가방에서 음식을 꺼냄
+                inventoryClass.RemoveFood_Func(_setterFoodClass);
+
+                // 음식을 위장 상태로...
+                _setterFoodClass.SetState_Func(FoodPlaceState.Stomach);
+
+                // 위장으로 음식 이동
+                stomachClass.FeedFood_Func(_setterFoodClass);
+
+                // 플레이어 데이터 수정
+                Player_Data.Instance.OutFoodInInventory_Func(_setterFoodClass);
+                Player_Data.Instance.FeedFood_Func(selectUnitID, _setterFoodClass);
+            }
+            else
+            {
+                Debug.LogError("Bug : 음식의 상태 변경이 부적절합니다.");
+                Debug.LogError("기존 : " + _setterFoodClass.foodPlaceState + ", 변경 : " + _foodPlaceState);
             }
         }
     }

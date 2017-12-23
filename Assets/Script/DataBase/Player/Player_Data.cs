@@ -143,7 +143,7 @@ public class Player_Data : MonoBehaviour
     }
     void LoadInventory_Test_Func()
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 10; i++)
         {
             PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
 
@@ -392,7 +392,7 @@ public class Player_Data : MonoBehaviour
     {
         for (int i = 0; i < heroFoodDataList.Count; i++)
         {
-            Food_Script _foodClass = heroFoodDataList[i].foodClass;
+            Food_Script _foodClass = heroFoodDataList[i].GetFoodClass_Func();
             Player_Data.Instance.SetCharDataByFood_Func(heroClass, _foodClass, true, false);
         }
     }

@@ -202,8 +202,10 @@ public class Food_Script : MonoBehaviour
         if(_foodPlaceState == FoodPlaceState.Stomach)
         {
             foodPlaceState = FoodPlaceState.Stomach;
-            
-            thisRigid.gravityScale = 500f;
+
+            SetRigid_Func(true);
+
+            foodImage.color = Color.red;
         }
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
@@ -213,11 +215,11 @@ public class Food_Script : MonoBehaviour
 
             thisCol.isTrigger = true;
 
-            thisRigid.velocity = Vector2.zero;
-            thisRigid.angularVelocity = 0f;
-            thisRigid.gravityScale = 0f;
+            SetRigid_Func(false);
 
             this.transform.rotation = Quaternion.identity;
+
+            foodImage.color = Color.green;
         }
         else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
         {
@@ -225,7 +227,10 @@ public class Food_Script : MonoBehaviour
 
             thisCol.isTrigger = false;
 
+            StopCoroutine("FeedingTimeCheck_Cor");
             StartCoroutine("FeedingTimeCheck_Cor");
+
+            foodImage.color = Color.yellow;
         }
     }
     public void SetDragState_Func(bool _isState)
@@ -250,6 +255,20 @@ public class Food_Script : MonoBehaviour
     {
         thisRigid.velocity = (_forcePos - this.transform.position) * 10f;
     }
+    public void SetRigid_Func(bool _isOn)
+    {
+        if(_isOn == true)
+        {
+            thisRigid.gravityScale = 500f;
+        }
+        else
+        {
+            thisRigid.gravityScale = 0f;
+
+            thisRigid.angularVelocity = 0f;
+            thisRigid.velocity = Vector2.zero;
+        }    
+    }
     private IEnumerator FeedingTimeCheck_Cor()
     {
         float _calcTime = 1f;
@@ -268,6 +287,7 @@ public class Food_Script : MonoBehaviour
             }
         }
 
+        Debug.Log("Test : " + _calcTime);
         feedingRoomClass.SetFoodPlaceState_Func(this, FoodPlaceState.Stomach);
     }
     #endregion
