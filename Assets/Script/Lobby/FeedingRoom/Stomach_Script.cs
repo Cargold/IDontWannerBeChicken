@@ -91,7 +91,7 @@ public class Stomach_Script : MonoBehaviour
         if(collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
-            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Dragging);
+            feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Dragging_Inven);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -128,11 +128,6 @@ public class Stomach_Script : MonoBehaviour
                 Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
                 Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
             }
-        }
-        else
-        {
-            Debug.LogError("Bug : 뱃속에 없는 음식입니다.");
-            Debug.LogError("음식 이름 : " + _foodClass.nameArr[TranslationSystem_Manager.Instance.languageTypeID]);
         }
     }
 

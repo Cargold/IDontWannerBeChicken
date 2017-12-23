@@ -219,9 +219,9 @@ public class Food_Script : MonoBehaviour
 
             this.transform.rotation = Quaternion.identity;
         }
-        else if (_foodPlaceState == FoodPlaceState.Dragging)
+        else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
         {
-            foodPlaceState = FoodPlaceState.Dragging;
+            foodPlaceState = FoodPlaceState.Dragging_Inven;
 
             thisCol.isTrigger = false;
 

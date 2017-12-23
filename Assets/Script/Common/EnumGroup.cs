@@ -71,7 +71,7 @@ public enum FoodPlaceState
     None = -1,
     Stomach,
     Inventory,
-    Dragging,
+    Dragging_Inven
 }
 
 public enum FoodState

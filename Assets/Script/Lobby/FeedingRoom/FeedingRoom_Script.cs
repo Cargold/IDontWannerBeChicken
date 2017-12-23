@@ -216,23 +216,18 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         if(_foodClass.foodPlaceState == FoodPlaceState.Inventory)
         {
-            if (selectedFoodClass == _foodClass)
+            if (selectedFoodClass == _foodClass || materialFoodClass == _foodClass)
             {
-                // 선택된 음식을 드래그한 경우
+                // 선택된 음식 또는 재료 음식을 드래그한 경우
 
                 Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-                selectedFoodClass.transform.position = _dragPos;
-            }
-            else if (materialFoodClass == _foodClass)
-            {
-                // 재료 음식을 드래그한 경우
-
-                Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
-                materialFoodClass.transform.position = _dragPos;
+                _foodClass.transform.position = _dragPos;
             }
         }
-        else if (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+        else
         {
+            // 바깥 또는 위장 음식
+
             if(_foodClass.isDragState == false)
                 StartCoroutine("DraggingPhysics_Cor", _foodClass);
         }
@@ -241,7 +236,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         _foodClass.SetDragState_Func(true);
 
-        while (_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+        while (_foodClass.foodPlaceState != FoodPlaceState.Inventory)
         {
             Vector3 _dragPos = Input.mousePosition - touchOffsetPos;
 
@@ -252,12 +247,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         yield break;
     }
-
     public void DragEnd_Func(Food_Script _foodClass)
     {
         ReplaceInInventory_Func();
 
-        if(_foodClass.foodPlaceState == FoodPlaceState.Stomach)
+        if(_foodClass.foodPlaceState != FoodPlaceState.Inventory)
         {
             _foodClass.SetState_Func(FoodPlaceState.Stomach);
             _foodClass.SetDragState_Func(false);
@@ -537,7 +531,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
     {
         if (_foodPlaceState == FoodPlaceState.Stomach)
         {
-            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging)
+            if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
             {
                 // 가방에서 음식을 꺼냄
                 inventoryClass.RemoveFood_Func(_setterFoodClass);
@@ -577,20 +571,20 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 Player_Data.Instance.AddFoodInInventory_Func(_setterFoodClass);
                 Player_Data.Instance.OutFoodInChar_Func(selectUnitID, _setterFoodClass);
             }
-            else if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging)
+            else if (_setterFoodClass.foodPlaceState == FoodPlaceState.Dragging_Inven)
             {
                 _setterFoodClass.SetState_Func(FoodPlaceState.Inventory);
             }
         }
-        else if (_foodPlaceState == FoodPlaceState.Dragging)
+        else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
         {
             if (_setterFoodClass.foodPlaceState == FoodPlaceState.Inventory)
             {
-                _setterFoodClass.SetState_Func(FoodPlaceState.Dragging);
+                _setterFoodClass.SetState_Func(FoodPlaceState.Dragging_Inven);
             }
             else
             {
-                Debug.LogError("Bug : 가방의 음식만이 드래깅 상태가 될 수 있습니다.");
+                Debug.LogError("Bug : 음식의 상태 변경이 부적절합니다.");
             }
         }
     }
