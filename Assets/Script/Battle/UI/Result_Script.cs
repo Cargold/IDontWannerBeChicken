@@ -133,9 +133,9 @@ public class Result_Script : MonoBehaviour
                     SetRewardUnit_Func(i, _rewardID, _rewardAmount);
                     break;
 
-                case RewardType.PopulationPoint:
-                    SetRewardPopulationPoint_Func(i, _rewardID, _rewardAmount);
-                    break;
+                //case RewardType.PopulationPoint:
+                //    SetRewardPopulationPoint_Func(i, _rewardID, _rewardAmount);
+                //    break;
 
                 case RewardType.Skill:
                     SetRewardSkill_Func(i, _rewardID, _rewardAmount);
@@ -160,14 +160,14 @@ public class Result_Script : MonoBehaviour
 
         if (_rewardID == 0)
         {
-            resultRewardTextArr[_rewardObjID].text = "골드 " + _rewardAmount;
+            resultRewardTextArr[_rewardObjID].text = TranslationSystem_Manager.Instance.Gold + " " + _rewardAmount;
 
             resultRewardBGImageArr[_rewardObjID].sprite = resultRewardBGSpriteArr[0];
             resultRewardBGImageArr[_rewardObjID].SetNativeSize();
         }
         else if (_rewardID == 1)
         {
-            resultRewardTextArr[_rewardObjID].text = "미네랄 " + +_rewardAmount;
+            resultRewardTextArr[_rewardObjID].text = TranslationSystem_Manager.Instance.Mineral + " " +_rewardAmount;
         }
     }
     void SetRewardFood_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
@@ -184,7 +184,7 @@ public class Result_Script : MonoBehaviour
     }
     void SetRewardFoodBox_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
-        Debug.Log("Cargold : 가챠박스 보상 쪽 미작업");
+        Debug.LogError("Cargold : 가챠박스 보상 쪽 미작업");
     }
     void SetRewardUnit_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
@@ -199,14 +199,14 @@ public class Result_Script : MonoBehaviour
 
         resultRewardTextArr[_rewardObjID].text = _unitData.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
-    void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
-    {
-        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationPointSprite;
-        resultRewardImageArr[_rewardObjID].SetNativeSize();
-        resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
+    //void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
+    //{
+    //    resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationPointSprite;
+    //    resultRewardImageArr[_rewardObjID].SetNativeSize();
+    //    resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
 
-        resultRewardTextArr[_rewardObjID].text = "닭 한 마리 추가요!";
-    }
+    //    resultRewardTextArr[_rewardObjID].text = "닭 한 마리 추가요!";
+    //}
     void SetRewardSkill_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
         Skill_Data _skillData = DataBase_Manager.Instance.skillDataArr[_rewardID];
@@ -214,7 +214,7 @@ public class Result_Script : MonoBehaviour
         resultRewardImageArr[_rewardObjID].sprite = _skillData.skillSprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();
 
-        resultRewardTextArr[_rewardObjID].text = _skillData.skillName;
+        resultRewardTextArr[_rewardObjID].text = _skillData.skillNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
     void SetRewardTrophy_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
@@ -223,7 +223,7 @@ public class Result_Script : MonoBehaviour
         resultRewardImageArr[_rewardObjID].sprite = _trophyData.trophySprite;
         resultRewardImageArr[_rewardObjID].SetNativeSize();                                                                                 
 
-        resultRewardTextArr[_rewardObjID].text = "트로피";
+        resultRewardTextArr[_rewardObjID].text = _trophyData.nameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
 
     public void OnButton_Func(bool _isLeft)
@@ -282,7 +282,7 @@ public class Result_Script : MonoBehaviour
 
         Deactive_Func();
     }
-    public void WatchAD_Func(bool _isSuccess)
+    public void WatchAD_Func()
     {
 
     }

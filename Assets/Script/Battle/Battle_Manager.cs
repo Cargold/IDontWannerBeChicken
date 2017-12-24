@@ -503,7 +503,7 @@ public class Battle_Manager : MonoBehaviour
         GetRewardMineral_Func(_isVictory);
         GetRewardFood_Func(_isVictory);
         GetRewardUnit_Func(_isVictory);
-        GetRewardPopulationPoint_Func(_isVictory);
+        //GetRewardPopulationPoint_Func(_isVictory);
         GetRewardSkill_Func(_isVictory);
         GetRewardTrophy_Func(_isVictory);
         GetRewardFoodBox_Func(_isVictory);
@@ -641,33 +641,33 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
-    void GetRewardPopulationPoint_Func(bool _isVictory)
-    {
-        if (_isVictory == false) return;
+    //void GetRewardPopulationPoint_Func(bool _isVictory)
+    //{
+    //    if (_isVictory == false) return;
 
-        if(battleType == BattleType.Normal)
-        {
-            int _calcValue = -1;
+    //    if(battleType == BattleType.Normal)
+    //    {
+    //        int _calcValue = -1;
 
-            if (battleID <= 1) return;
+    //        if (battleID <= 1) return;
 
-            if(Player_Data.Instance.populationPoint < 8)
-            {
-                _calcValue = (battleID - 6) % 5;
-            }
-            else
-            {
-                _calcValue = (battleID - 1) % 10;
-            }
+    //        if(Player_Data.Instance.populationPoint < 8)
+    //        {
+    //            _calcValue = (battleID - 6) % 5;
+    //        }
+    //        else
+    //        {
+    //            _calcValue = (battleID - 1) % 10;
+    //        }
 
-            if(_calcValue == 0)
-            {
-                Reward_Data _rewardData = new Reward_Data();
-                _rewardData.SetData_Func(RewardType.PopulationPoint, 0, 1);
-                rewardDataList.Add(_rewardData);
-            }
-        }
-    }
+    //        if(_calcValue == 0)
+    //        {
+    //            Reward_Data _rewardData = new Reward_Data();
+    //            _rewardData.SetData_Func(RewardType.PopulationPoint, 0, 1);
+    //            rewardDataList.Add(_rewardData);
+    //        }
+    //    }
+    //}
     void GetRewardSkill_Func(bool _isVictory)
     {
         if (_isVictory == false) return;
@@ -802,9 +802,9 @@ public class Battle_Manager : MonoBehaviour
                     SetRewardOnPlayerUnit_Func(_rewardID, _rewardAmount);
                     break;
 
-                case RewardType.PopulationPoint:
-                    SetRewardOnPlayerPopulationPoint_Func(_rewardID, _rewardAmount);
-                    break;
+                //case RewardType.PopulationPoint:
+                //    SetRewardOnPlayerPopulationPoint_Func(_rewardID, _rewardAmount);
+                //    break;
 
                 case RewardType.Skill:
                     SetRewardOnPlayerSkill_Func(_rewardID, _rewardAmount);
@@ -832,10 +832,10 @@ public class Battle_Manager : MonoBehaviour
     {
         Player_Data.Instance.UnlockUnit_Func(_rewardID);
     }
-    void SetRewardOnPlayerPopulationPoint_Func(int _rewardID, int _rewardAmount)
-    {
-        Player_Data.Instance.AddPopulationPoint_Func();
-    }
+    //void SetRewardOnPlayerPopulationPoint_Func(int _rewardID, int _rewardAmount)
+    //{
+    //    Player_Data.Instance.AddPopulationPoint_Func();
+    //}
     void SetRewardOnPlayerSkill_Func(int _rewardID, int _rewardAmount)
     {
         Player_Data.Instance.UnlockSkill_Func(_rewardID);
