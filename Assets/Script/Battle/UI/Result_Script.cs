@@ -92,8 +92,8 @@ public class Result_Script : MonoBehaviour
             if (_battleType == BattleType.Normal)
             {
                 titleText.text = TranslationSystem_Manager.Instance.ChickenRestaurantDestroyed;
-                btnText_Left.text = TranslationSystem_Manager.Instance.Raid;
-                btnText_Right.text = "";
+                btnText_Left.text = TranslationSystem_Manager.Instance.Ok;
+                btnText_Right.text = TranslationSystem_Manager.Instance.Raid;
                 
                 btnAD.SetActive(true);
             }
@@ -184,7 +184,13 @@ public class Result_Script : MonoBehaviour
     }
     void SetRewardFoodBox_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
-        Debug.LogError("Cargold : 가챠박스 보상 쪽 미작업");
+        resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.gachaBoxSprite;
+        resultRewardImageArr[_rewardObjID].SetNativeSize();
+
+        resultRewardTextArr[_rewardObjID].text = TranslationSystem_Manager.Instance.GachaBox;
+
+        resultRewardBGImageArr[_rewardObjID].sprite = resultRewardBGSpriteArr[2];
+        resultRewardBGImageArr[_rewardObjID].SetNativeSize();
     }
     void SetRewardUnit_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
@@ -235,13 +241,13 @@ public class Result_Script : MonoBehaviour
             if (_isLeft == true)
             {
                 // Enter Lobby
-
+                
                 battleManager.ExitBattle_Func();
             }
             else if (_isLeft == false)
             {
                 // Retry
-
+                
                 battleManager.Retry_Func();
             }
         }
@@ -252,15 +258,14 @@ public class Result_Script : MonoBehaviour
                 if (_isLeft == true)
                 {
                     // Get Reward
-
+                    
                     battleManager.ExitBattle_Func();
                 }
                 else if (_isLeft == false)
                 {
-                    // Watch AD
+                    // Next Stage
 
-                    int _adValue = battleManager.GetGoldByWatchedAD_Func();
-                    resultRewardTextArr[0].text = "골드 " + _adValue;
+                    battleManager.NextStage_Func();
                 }
             }
             else if (battleType == BattleType.Special)
@@ -268,13 +273,13 @@ public class Result_Script : MonoBehaviour
                 if (_isLeft == true)
                 {
                     // Next Stage
-
+                    
                     battleManager.NextStage_Func();
                 }
                 else if (_isLeft == false)
                 {
                     // Enter Lobby
-
+                    
                     battleManager.ExitBattle_Func();
                 }
             }
@@ -284,7 +289,11 @@ public class Result_Script : MonoBehaviour
     }
     public void WatchAD_Func()
     {
+        int _adValue = battleManager.GetGoldByWatchedAD_Func();
+        resultRewardTextArr[0].text = "골드 " + _adValue;
+        rewardObjArr[0].transform.DOPunchScale(Vector3.one, 0.5f);
 
+        btnAD.gameObject.SetActive(false);
     }
 
     public void Deactive_Func()

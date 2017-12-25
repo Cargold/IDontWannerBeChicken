@@ -213,5 +213,18 @@ public static class Cargold_Library
                 break;
         }
     }
+    public static void Log_Func(string _name, int _value, LogType _logType = LogType.Log)
+    {
+        switch (_logType)
+        {
+            case LogType.Log:
+                Debug.Log("Test, " + _name + " : " + _value);
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Error:
+                break;
+        }
+    }
     #endregion
 }

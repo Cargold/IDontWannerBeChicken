@@ -19,7 +19,6 @@ public class Player_Data : MonoBehaviour
 
     [Header("Party")]
     public int[] partyUnitIdArr;
-    public int populationPoint;
 
     [Header("Unit")]
     [SerializeField]
@@ -320,10 +319,6 @@ public class Player_Data : MonoBehaviour
         {
             Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
         }
-    }
-    public void AddPopulationPoint_Func()
-    {
-        populationPoint++;
     }
     #endregion
     #region Unit Group

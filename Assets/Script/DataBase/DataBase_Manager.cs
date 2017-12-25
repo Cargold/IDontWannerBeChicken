@@ -119,6 +119,7 @@ public class DataBase_Manager : MonoBehaviour
     public Sprite[] rewardCardSpriteArr;
     public Color textColor;
     public float[] foodGradePenaltyValue;
+    public Sprite gachaBoxSprite;
 
     // Init
     public IEnumerator Init_Cor()

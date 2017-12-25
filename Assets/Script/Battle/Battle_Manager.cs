@@ -421,6 +421,8 @@ public class Battle_Manager : MonoBehaviour
     }
     void OnResult_Func(bool _isVictory)
     {
+        if (m_BattleState == BattleState.Result) return;
+
         // 결과창 연출
 
         if(_isVictory == true)
@@ -498,6 +500,7 @@ public class Battle_Manager : MonoBehaviour
         m_BattleState = BattleState.Result;
 
         // 2. 보상 계산
+        Cargold_Library.Log_Func();
         rewardDataList = new List<Reward_Data>();
         GetRewardGold_Func(_isVictory);
         GetRewardMineral_Func(_isVictory);
@@ -716,11 +719,12 @@ public class Battle_Manager : MonoBehaviour
         if (battleType == BattleType.Special)
         {
             int _calcValue = -1;
-
-            _calcValue = (battleID - 4) % 10;
-
+            Cargold_Library.Log_Func("battleID", battleID);
+            _calcValue = (battleID+1) % 5;
+            Cargold_Library.Log_Func("_calcValue", _calcValue);
             if (_calcValue == 0)
             {
+                Cargold_Library.Log_Func("Get");
                 Reward_Data _rewardData = new Reward_Data();
                 _rewardData.SetData_Func(RewardType.FoodBoxLevel, 0, 1);
                 rewardDataList.Add(_rewardData);

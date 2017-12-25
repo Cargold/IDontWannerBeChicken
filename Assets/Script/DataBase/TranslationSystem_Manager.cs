@@ -596,6 +596,14 @@ public class TranslationSystem_Manager : MonoBehaviour
         }
     }
 
+    public string GachaBox
+    {
+        get
+        {
+            return gachaBox[languageTypeID];
+        }
+    }
+
     [TextArea] [SerializeField] private string[] trophyRoomNumDescArr;
     [TextArea] [SerializeField] private string[] titleArr;
     [TextArea] [SerializeField] private string[] battleUnitArr;
@@ -677,7 +685,8 @@ public class TranslationSystem_Manager : MonoBehaviour
     [TextArea] [SerializeField] private string[] tabBtnName2;
     [TextArea] [SerializeField] private string[] tabBtnName3;
     [TextArea] [SerializeField] private string[] tabBtnName4;
-    [TextArea] [SerializeField] private string[] trophyName; 
+    [TextArea] [SerializeField] private string[] trophyName;
+    [TextArea] [SerializeField] private string[] gachaBox;
 
     public void Init_Func()
     {

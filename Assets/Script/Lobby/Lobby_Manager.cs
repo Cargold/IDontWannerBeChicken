@@ -68,6 +68,7 @@ public class Lobby_Manager : MonoBehaviour
         lobbyUIParentClassArr[_lobbyTypeID].Enter_Func(_referenceID);
 
         Player_Data.Instance.OnLobbyWealthUI_Func();
+        Player_Data.Instance.ActiveWealthUI_Func();
     }
     public void Exit_Func(LobbyState _lobbyState)
     {
