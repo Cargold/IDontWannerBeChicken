@@ -96,6 +96,36 @@ public class Lobby_Manager : MonoBehaviour
         {
             partySettingClass.ReturnUI_Func();
         }
+
+        StopCoroutine("SaveFeedData_Cor");
+        StartCoroutine("SaveFeedData_Cor", _selectUnitID);
+    }
+    IEnumerator SaveFeedData_Cor(int _selectUnitID)
+    {
+        if(_selectUnitID == 999)
+        {
+            PlayerFood_ClassData[] _playerFoodDataArr
+                = Player_Data.Instance.heroFoodDataList.ToArray();
+
+            for (int i = 0; i < _playerFoodDataArr.Length; i++)
+            {
+                SaveSystem_Manager.Instance.SaveData_Func(i, _playerFoodDataArr[i]);
+
+                yield return null;
+            }
+        }
+        else
+        {
+            PlayerFood_ClassData[] _playerFoodDataArr
+                = Player_Data.Instance.playerUnitDataArr[_selectUnitID].GetPlayerFoodDataArr_Func();
+
+            for (int i = 0; i < _playerFoodDataArr.Length; i++)
+            {
+                SaveSystem_Manager.Instance.SaveData_Func(_selectUnitID, i, _playerFoodDataArr[i]);
+
+                yield return null;
+            }
+        }
     }
     #endregion
     #region Stage Select Group

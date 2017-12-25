@@ -120,16 +120,13 @@ public class Battle_Manager : MonoBehaviour
         battleType = _battleType;
 
         battleID = _stageID;
-        
-        BattleEnter_Func();
-    }
-    void BattleEnter_Func()
-    {
+
         CheckSpawnMonsterID_Func();
         DirectingStart_Func();
         CheckDrink_Func();
         Player_Data.Instance.OnBattleWealthUI_Func();
-        OnSkillSystem_Func();
+
+        SoundSystem_Manager.Instance.PlayBGM_Func(Random.Range(2, 5));
     }
     void CheckSpawnMonsterID_Func()
     {
@@ -236,17 +233,13 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
-    void OnSkillSystem_Func()
-    {
-        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
-        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
-    }
     #endregion
     #region Play State
     public void HeroEnterStage_Func()
     {
         Lobby_Manager.Instance.mainLobbyClass.HidePartyMember_Func();
         BattlePlay_Func();
+        OnSkillSystem_Func();
     }
     void BattlePlay_Func()
     {
@@ -273,6 +266,11 @@ public class Battle_Manager : MonoBehaviour
         OnSpawnEnemyUnit_Func();
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
+    }
+    void OnSkillSystem_Func()
+    {
+        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
+        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
     }
 
     void OnSpawnAllyUnit_Func()
@@ -450,14 +448,7 @@ public class Battle_Manager : MonoBehaviour
             }
 
             // 6. 스테이지 데이터 기록
-            if (battleType == BattleType.Normal)
-            {
-                Player_Data.Instance.stageID_Normal = battleID;
-            }
-            else if (battleType == BattleType.Special)
-            {
-                Player_Data.Instance.stageID_Special = battleID;
-            }
+            Player_Data.Instance.SetStageID_Func(battleType, battleID);
         }
         else if(_isVictory == false)
         {
@@ -500,7 +491,6 @@ public class Battle_Manager : MonoBehaviour
         m_BattleState = BattleState.Result;
 
         // 2. 보상 계산
-        Cargold_Library.Log_Func();
         rewardDataList = new List<Reward_Data>();
         GetRewardGold_Func(_isVictory);
         GetRewardMineral_Func(_isVictory);
@@ -566,14 +556,20 @@ public class Battle_Manager : MonoBehaviour
             _wealthAmount = (int)(goldBonus / 2f);
         }
 
+        // 드링크 효과
         if(Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Gold) == true)
         {
             float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Gold].effectValue;
             _wealthAmount = (int)((float)_wealthAmount * _drinkEffectValue);
         }
 
+        // 트로피 효과
         float _trophyEffectValue = (Player_Data.Instance.GetCalcTrophyEffect_Func(TrophyType.GoldBonus, true) * 0.01f) + 1f;
         _wealthAmount = (int)(_wealthAmount * _trophyEffectValue);
+
+        // 광고 효과
+        if (Player_Data.Instance.isPackageAlreadyBuyArr[0] == true)
+            _wealthAmount *= 2;
 
         Reward_Data _rewardData = new Reward_Data();
         _rewardData.SetData_Func(RewardType.Wealth, 0, _wealthAmount);
@@ -720,7 +716,7 @@ public class Battle_Manager : MonoBehaviour
         {
             int _calcValue = -1;
             Cargold_Library.Log_Func("battleID", battleID);
-            _calcValue = (battleID+1) % 5;
+            _calcValue = battleID % 5;
             Cargold_Library.Log_Func("_calcValue", _calcValue);
             if (_calcValue == 0)
             {

@@ -190,7 +190,7 @@ public class Gacha_Script : MonoBehaviour
                 for (int i = 0; i < 5; i++)
                 {
                     // 플레이어 데이터 기록
-                    Player_Data.Instance.AddSource_Func(2);
+                    Player_Data.Instance.AddFood_Func(2, -1, FoodType.Source);
                 
                     // 가챠용 세팅
                     Food_Data _sourceData = DataBase_Manager.Instance.sauceDataArr[2];
@@ -208,7 +208,7 @@ public class Gacha_Script : MonoBehaviour
                     for (int j = 0; j < 3; j++)
                     {
                         // 플레이어 데이터 기록
-                        Player_Data.Instance.AddSource_Func(j);
+                        Player_Data.Instance.AddFood_Func(j, -1, FoodType.Source);
                     }
 
                     // 가챠용 세팅

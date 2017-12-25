@@ -9,13 +9,40 @@ public class PlayerFood_ClassData
     public int foodID;
     public int level;
     public float remainExp;
-    public string foodName;
-    public string[] nameArr;
     public Vector3 pos;
     public Vector3 rot;
     
     [SerializeField]
     private Food_Script foodClass;
+
+    public PlayerFood_ClassData(FoodType _foodType, int _foodID, int _level, float _exp = 0f)
+    {
+        foodType = _foodType;
+        foodID = _foodID;
+        level = _level;
+        remainExp = _exp;
+
+        pos = Vector3.zero;
+        rot = Vector3.zero;
+
+        foodClass = null;
+    }
+    public PlayerFood_ClassData(Food_Script _foodClass)
+    {
+        SetData_Func(_foodClass);
+    }
+    public PlayerFood_ClassData(SaveSystem_Manager.SaveFoodDataStr _saveFoodDataStr)
+    {
+        foodType = _saveFoodDataStr.foodType;
+        foodID = _saveFoodDataStr.foodID;
+        level = _saveFoodDataStr.foodLevel;
+        remainExp = _saveFoodDataStr.foodExp;
+
+        pos = _saveFoodDataStr.foodPos;
+        rot = _saveFoodDataStr.foodRot;
+
+        foodClass = null;
+    }
 
     public void SetData_Func(Food_Script _foodClass)
     {
@@ -23,7 +50,7 @@ public class PlayerFood_ClassData
         level = _foodClass.level;
         remainExp = _foodClass.remainExp;
         foodID = _foodClass.foodId;
-        nameArr = _foodClass.nameArr;
+
         pos = _foodClass.transform.position;
         rot = _foodClass.transform.rotation.eulerAngles;
 

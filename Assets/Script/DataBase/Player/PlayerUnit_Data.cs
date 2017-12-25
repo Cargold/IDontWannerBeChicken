@@ -15,7 +15,7 @@ public class PlayerUnit_ClassData
     [SerializeField]
     private List<PlayerFood_ClassData> playerFoodDataList;
 
-    public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass)
+    public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass, bool _isFirstPlay)
     {
         isHave = _isUnlock;
         unitID = _unitID;
@@ -26,13 +26,64 @@ public class PlayerUnit_ClassData
         SetLevel_Func(_unitLevel, true);
 
         // 유닛의 음식 정보 불러오기
-        for (int i = 0; i < 3; i++)
+        if (_isFirstPlay == false)
         {
-            //PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData();
+            string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, _unitID);
+            int _feedFoodNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
 
-            //Food_Script _foodClass = 
+            for (int i = 0; i < _feedFoodNum; i++)
+            {
+                SaveSystem_Manager.SaveFoodDataStr _saveFoodDataStr =
+                    SaveSystem_Manager.Instance.LoadDataUnitFood_Func(_unitID, i);
 
-            //_playerFoodClass.SetData_Func()
+                PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData(_saveFoodDataStr);
+
+                playerFoodDataList.Add(_playerFoodClass);
+
+                yield return null;
+            }
+        }
+        else
+        {
+            int _feedFoodType = 2;
+            int _feedFoodID = 0;
+            int _feedFoodLevel = 1;
+            float _feedFoodPosX = 0f;
+            float _feedFoodPosY = 0f;
+            float _feedFoodRotZ = 0f;
+
+            for (int i = 0; i < 3; i++)
+            {
+                PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData((FoodType)_feedFoodType, _feedFoodID, _feedFoodLevel);
+
+                if(i == 0)
+                {
+                    _feedFoodPosX = 1403.901f;
+                    _feedFoodPosY = 282.4627f;
+                    _feedFoodRotZ = 349.2703f;
+                }
+                else if(i == 1)
+                {
+                    _feedFoodPosX = 1565.891f;
+                    _feedFoodPosY = 310.1227f;
+                    _feedFoodRotZ = 85.3086f;
+                }
+                else if(i == 2)
+                {
+                    _feedFoodPosX = 1463.391f;
+                    _feedFoodPosY = 432.4628f;
+                    _feedFoodRotZ = 343.5417f;
+                }
+
+                _playerFoodClass.pos = new Vector2(_feedFoodPosX, _feedFoodPosY);
+                _playerFoodClass.rot = Vector3.forward * _feedFoodRotZ;
+
+                playerFoodDataList.Add(_playerFoodClass);
+
+                SaveSystem_Manager.Instance.SaveData_Func(_unitID, i, _playerFoodClass);
+
+                yield return null;
+            }
         }
 
         yield break;
@@ -40,11 +91,12 @@ public class PlayerUnit_ClassData
 
     public void FeedFood_Func(Food_Script _foodClass)
     {
-        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-        _playerFoodData.SetData_Func(_foodClass);
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodClass);
         playerFoodDataList.Add(_playerFoodData);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, true);
+
+        SaveFeedNum_Func();
     }
     public void SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
@@ -59,11 +111,24 @@ public class PlayerUnit_ClassData
         playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, false);
+
+        SaveFeedNum_Func();
     }
+    void SaveFeedNum_Func()
+    {
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, unitID);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, playerFoodDataList.Count);
+    }
+
     public PlayerFood_ClassData[] GetPlayerFoodDataArr_Func()
     {
         return playerFoodDataList.ToArray();
     }
+    public int GetPlayerFoodDataNum_Func()
+    {
+        return playerFoodDataList.Count;
+    }
+
     public void SetLevel_Func(float _levelValue, bool _isInit = false)
     {
         SetLevel_InitUnitData_Func();
@@ -73,6 +138,9 @@ public class PlayerUnit_ClassData
         
         if(_isInit == false)
             Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
+
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_Level, unitID);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _levelValue);
     }
     void SetLevel_InitUnitData_Func()
     {

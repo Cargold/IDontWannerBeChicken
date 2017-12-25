@@ -26,6 +26,8 @@ public class MainLobby_Script : LobbyUI_Parent
         PrintPartyMember_Func();
 
         thisRTrf.DOSizeDelta(new Vector3(0f, 0f), 0.5f);
+
+        SoundSystem_Manager.Instance.PlayBGM_Func(SoundType.BGM_Lobby);
     }
     public override void Exit_Func()
     {

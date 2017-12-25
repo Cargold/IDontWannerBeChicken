@@ -8,6 +8,7 @@ public class Game_Manager : MonoBehaviour
     public static Game_Manager Instance;
     
     public TranslationSystem_Manager translationSystem;
+    public SaveSystem_Manager saveSystemManager;
     public DataBase_Manager databaseClass;
     public ObjectPool_Manager objectPoolManager;
     public Player_Data playerDataClass;
@@ -17,6 +18,7 @@ public class Game_Manager : MonoBehaviour
     public SkillSystem_Manager skillSystemManager;
     public Enviroment_Manager enviromentClass;
     public SmoothFollow_Script mainCameraSmoothClass;
+    public SoundSystem_Manager soundManager;
 
     public GameState gameState;
     public Button loadingBtn;
@@ -30,10 +32,11 @@ public class Game_Manager : MonoBehaviour
     IEnumerator Init_Cor()
     {
         InitMain_Func();
-        translationSystem.Init_Func();  // 1. 언어 설정
+        translationSystem.Init_Func();  // 언어 설정
 
         loadingText.text = translationSystem.LoadingArr;
 
+        yield return saveSystemManager.Init_Cor();  // 1. 세이브 기능 세팅
         yield return databaseClass.Init_Cor();      // 2. DB에서 고정 데이터 불러오기
         yield return objectPoolManager.Init_Cor();  // 3. DB 정보를 바탕으로 풀링 생성
         yield return playerDataClass.Init_Cor();    // 4. 생성된 풀링들 중 샘플에 플레이어 데이터 적용
@@ -42,6 +45,7 @@ public class Game_Manager : MonoBehaviour
         yield return battleClass.Init_Cor();        // 7. 스폰매니저 등 전투 관련 데이터 활성화
         yield return skillSystemManager.Init_Cor(); // 8. 스킬매니저 초기화
         yield return enviromentClass.Init_Cor();    // 9. 환경 생성
+        yield return soundManager.Init_Cor();
 
         yield return Loading_Cor();
 

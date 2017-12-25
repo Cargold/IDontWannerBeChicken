@@ -6,7 +6,7 @@ using UnityEngine;
 public struct PlayerDrink_Data
 {
     public int drinkID;
-    public DrinkType trophyType;
+    public DrinkType drinkType;
     public int haveNum;
     public bool isUse;
 }

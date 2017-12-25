@@ -5,26 +5,28 @@ using UnityEngine;
 public class Player_Data : MonoBehaviour
 {
     public static Player_Data Instance;
-
+    
     [Header("Wealth")]
-    [SerializeField]
-    private int goldValue;
-    [SerializeField]
-    private int mineralValue;
-    [SerializeField]
-    private PlayerWealth_Script playerWealthClass;
+    [SerializeField] private bool isTest_Wealth;
+    [SerializeField] private int goldValue;
+    [SerializeField] private int mineralValue;
+    [SerializeField] private PlayerWealth_Script playerWealthClass;
 
-    [Header("Trophy")]
-    public PlayerTrophy_Data[] trophyDataArr;
+    [Header("Stage")]
+    [SerializeField] private bool isTest_Stage;
+    public int stageID_Normal;
+    public int stageID_Special;
 
     [Header("Party")]
+    [SerializeField] private bool isTest_Party;
     public int[] partyUnitIdArr;
 
     [Header("Unit")]
-    [SerializeField]
-    public PlayerUnit_ClassData[] playerUnitDataArr;
+    [SerializeField] private bool isTest_Unit;
+    [SerializeField] public PlayerUnit_ClassData[] playerUnitDataArr;
 
     [Header("Hero")]
+    [SerializeField] private bool isTest_Hero;
     public int heroLevel;
     public float hero_healthPoint_RelativeLevel;
     public float hero_attackValue_RelativeLevel;
@@ -32,39 +34,47 @@ public class Player_Data : MonoBehaviour
     public List<PlayerFood_ClassData> heroFoodDataList;
 
     [Header("Inventory")]
+    [SerializeField] private bool isTest_Inventory = false;
     public List<PlayerFood_ClassData> inventoryFoodDataList;
-    public int foodBoxLevel;
-
-    [Header("Stage")]
-    public int stageID_Normal;
-    public int stageID_Special;
+    
+    [Header("Trophy")]
+    [SerializeField] private bool isTest_Trophy = false;
+    public PlayerTrophy_Data[] trophyDataArr;
 
     [Header("Skill")]
+    [SerializeField] private bool isTest_Skill = false;
     public PlayerSkill_Data[] skillDataArr;
     public int[] selectSkillIDArr;
     public int[] test_SkillLevel;
 
     [Header("Drink")]
+    [SerializeField] private bool isTest_Drink = false;
     public PlayerDrink_Data[] drinkDataArr;
 
-    [Header("Package")]
+    [Header("Store")]
+    [SerializeField] private bool isTest_Store = false;
+    public int foodBoxLevel;
     public bool[] isPackageAlreadyBuyArr;
+    
+    [Header("PlayerData")]
+    public bool isBgmOn = false;
+    public bool isSfxOn = false;
 
     public IEnumerator Init_Cor()
     {
         Instance = this;
-
-        Debug.Log("Cargold : 데이터 불러오기, 미작업");
+        
         yield return LoadWealth_Cor();
+        yield return LoadStage_Cor();
         yield return LoadParty_Cor();
         yield return LoadUnit_Cor();
         yield return LoadHero_Cor();
         yield return LoadInventory_Cor();
         yield return LoadTrophy_Cor();
-        yield return LoadStage_Cor();
         yield return LoadSkill_Cor();
         yield return LoadDrink_Cor();
-        yield return LoadPackage_Cor();
+        yield return LoadStore_Cor();
+        yield return LoadPlayData_Cor();
 
         yield break;
     }
@@ -72,142 +82,486 @@ public class Player_Data : MonoBehaviour
     {
         // Cargold : 골드, 미네랄 데이터 불러오기
 
+        if(isTest_Wealth == false)
+        {
+            if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+            {
+                goldValue = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Wealth_Gold);
+                mineralValue = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Wealth_Mineral);
+            }
+            else
+            {
+                goldValue = 0;
+                mineralValue = 0;
+
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Gold, 0);
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Mineral, 0);
+            }
+        }
+        else
+        {
+
+        }
+
         playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
         playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
 
         yield break;
     }
+    IEnumerator LoadStage_Cor()
+    {
+        // Cargold : 스테이지 데이터 불러오기
+        
+        if(isTest_Stage == false)
+        {
+            if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+            {
+                stageID_Normal = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Normal);
+                stageID_Special = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Special);
+            }
+            else
+            {
+                stageID_Normal = 0;
+                stageID_Special = 0;
+
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Normal, 0);
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Special, 0);
+            }
+        }
+        else
+        {
+
+        }
+
+        yield break;
+    }
     IEnumerator LoadParty_Cor()
     {
-        //for (int i = 0; i < 5; i++)
-        //{
-        //    partyUnitIdArr[i] = 0;
-        //}
+        if(isTest_Party == false)
+        {
+            partyUnitIdArr = new int[5];
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
+                    partyUnitIdArr[i] = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                }
+                else
+                {
+                    partyUnitIdArr[i] = -1;
+
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1);
+                }
+            }
+        }
+        else
+        {
+
+        }
 
         yield break;
     }
     IEnumerator LoadUnit_Cor()
     {
-        for (int i = 0; i < playerUnitDataArr.Length; i++)
+        if(isTest_Unit == false)
         {
-            // Cargold : 캐릭터 정보 불러오기
-            bool _isUnlock = playerUnitDataArr[i].isHave; // Test
+            int _unitNum = DataBase_Manager.Instance.unitDataObjArr.Length;
+            playerUnitDataArr = new PlayerUnit_ClassData[_unitNum];
 
-            int _unitLevel = 1; // Test
+            for (int i = 0; i < _unitNum; i++)
+            {
+                bool _isUnlock = false;
+                int _unitLevel = 1;
 
-            Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    // 캐릭터 획득 여부 판단
+                    if (DataBase_Manager.Instance.GetUnitClass_Func(i).unlockLevel <= (stageID_Normal + 1))
+                    {
+                        _isUnlock = true;
+                    }
 
-            playerUnitDataArr[i] = new PlayerUnit_ClassData();
-            yield return playerUnitDataArr[i].Init_Cor(_isUnlock, i, _unitLevel, _unitClass);
+                    // 캐릭터 레벨 불러오기
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_Level, i);
+                    _unitLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                }
+                else
+                {
+                    // 첫 캐릭터 해금
+                    if (i == 0)
+                    {
+                        _isUnlock = true;
+                    }
+
+                    // 캐릭터 초기 레벨 저장
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_Level, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1);
+                }
+
+                Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
+
+                playerUnitDataArr[i] = new PlayerUnit_ClassData();
+                yield return playerUnitDataArr[i].Init_Cor(_isUnlock, i, _unitLevel, _unitClass, true);
+            }
         }
+        else
+        {
 
+        }
+        
         yield break;
     }
     IEnumerator LoadHero_Cor()
     {
-        //heroLevel = 0;
-
-        // 영웅의 음식 정보 불러오기
-        //heroFoodDataList = new List<PlayerFood_ClassData>();
-        //for (int i = 0; i < heroFoodDataList.Count; i++)
-        //{
-
-        //}
-
-        Hero_SetLevel_Func(heroLevel, true);
-
         DataBase_Manager.Instance.heroAttackRate = heroClass.GetAttackSpeedMax_Func();
+        heroFoodDataList = new List<PlayerFood_ClassData>();
+
+        if(isTest_Hero == false)
+        {
+            if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+            {
+                // 영웅 레벨 불러오기
+                heroLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Hero_Level);
+                Hero_SetLevel_Func(heroLevel, true);
+
+                // 영웅의 음식 정보 불러오기
+                int _feedFoodNum = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Hero_FoodHaveNum);
+                for (int i = 0; i < _feedFoodNum; i++)
+                {
+                    SaveSystem_Manager.SaveFoodDataStr _saveFoodDataStr =
+                        SaveSystem_Manager.Instance.LoadDataHeroFood_Func(i);
+
+                    PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData(_saveFoodDataStr);
+
+                    yield return null;
+                }
+            }
+            else
+            {
+                // 영웅 초기 레벨 저장
+                heroLevel = 1;
+                Hero_SetLevel_Func(heroLevel, true);
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Hero_Level, 1);
+
+                // 영웅 초기 모래주머니
+                SetHeroStone_Func();
+            }
+        }
+        else
+        {
+
+        }
 
         yield break;
+    }
+    void SetHeroStone_Func()
+    {
+        // 영웅의 음식 정보 불러오기
+        float _feedFoodPosX = 0f;
+        float _feedFoodPosY = 0f;
+        float _feedFoodRotZ = 0f;
+
+        for (int i = 0; i < 3; i++)
+        {
+            PlayerFood_ClassData _playerFoodClass = new PlayerFood_ClassData(FoodType.Stone, 0, 1);
+
+            if (i == 0)
+            {
+                _feedFoodPosX = 1403.901f;
+                _feedFoodPosY = 282.4627f;
+                _feedFoodRotZ = 349.2703f;
+            }
+            else if (i == 1)
+            {
+                _feedFoodPosX = 1565.891f;
+                _feedFoodPosY = 310.1227f;
+                _feedFoodRotZ = 85.3086f;
+            }
+            else if (i == 2)
+            {
+                _feedFoodPosX = 1463.391f;
+                _feedFoodPosY = 432.4628f;
+                _feedFoodRotZ = 343.5417f;
+            }
+
+            _playerFoodClass.pos = new Vector2(_feedFoodPosX, _feedFoodPosY);
+            _playerFoodClass.rot = Vector3.forward * _feedFoodRotZ;
+
+            heroFoodDataList.Add(_playerFoodClass);
+
+            SaveSystem_Manager.Instance.SaveData_Func(i, _playerFoodClass);
+        }
+
+        SaveSystem_Manager.Instance.SaveData_Func(SaveType.Hero_FoodHaveNum, 3);
     }
     IEnumerator LoadInventory_Cor()
     {
-        inventoryFoodDataList = new List<PlayerFood_ClassData>();
+        if (isTest_Inventory == false)
+        {
+            inventoryFoodDataList = new List<PlayerFood_ClassData>();
 
-        LoadInventory_Test_Func();
+            if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+            {
+                // 음식 정보 불러오기
+                int _foodHaveNum = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Inventory_FoodHaveNum);
+                for (int i = 0; i < _foodHaveNum; i++)
+                {
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodType, i);
+                    int _foodTypeID = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    FoodType _foodType = (FoodType)_foodTypeID;
 
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
+                    _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodID, i);
+                    int _foodID = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
 
-        //    _playerFoodData.foodType = FoodType.Stone;
-        //    _playerFoodData.foodID = 0;
-        //    _playerFoodData.level = 1;
-        //    _playerFoodData.remainExp = 0;
+                    _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodLevel, i);
+                    int _level = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
 
-        //    inventoryFoodDataList.Add(_playerFoodData);
-        //}
+                    _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodExp, i);
+                    float _remainExp = SaveSystem_Manager.Instance.LoadDataFloat_Func(_loadType);
+
+                    PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodType, _foodID, _level, _remainExp);
+
+                    inventoryFoodDataList.Add(_playerFoodData);
+                }
+            }
+            else
+            {
+                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Inventory_FoodHaveNum, 0);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
+                int _foodID = Random.Range(0, _foodIDMax);
+                int _level = Random.Range(1, 4);
+                float _remainExp = Random.Range(0f, 99f);
+                PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(FoodType.Normal, _foodID, _level, _remainExp);
+
+                inventoryFoodDataList.Add(_playerFoodData);
+            }
+        }
 
         yield break;
-    }
-    void LoadInventory_Test_Func()
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-
-            int _foodIDMax = DataBase_Manager.Instance.foodDataArr.Length;
-            _playerFoodData.foodID = Random.Range(0, _foodIDMax);
-            _playerFoodData.level = Random.Range(1, 4);
-            _playerFoodData.remainExp = Random.Range(0f, 99f);
-
-            inventoryFoodDataList.Add(_playerFoodData);
-        }
     }
     IEnumerator LoadTrophy_Cor()
     {
-        for (int i = 0; i < trophyDataArr.Length; i++)
+        if(isTest_Trophy == false)
         {
-            trophyDataArr[i].trophyID = i;
-            trophyDataArr[i].trophyType = (TrophyType)i;
+            int _trophyNum = DataBase_Manager.Instance.trophyObjArr.Length;
+            trophyDataArr = new PlayerTrophy_Data[_trophyNum];
 
-            // 트로피 보유량 불러오기 기능
+            for (int i = 0; i < _trophyNum; i++)
+            {
+                trophyDataArr[i].trophyID = i;
+                trophyDataArr[i].trophyType = (TrophyType)i;
 
-            SetTrophyEffect_Func(i, trophyDataArr[i].haveNum);
+                if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    // 트로피 보유량 불러오기 기능
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Trophy_zzzTrophyIDzzz_HaveNum, i);
+                    int _haveNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    trophyDataArr[i].haveNum = _haveNum;
+
+                    SetTrophyEffect_Func(i, trophyDataArr[i].haveNum);
+                }
+                else
+                {
+                    trophyDataArr[i].haveNum = 0;
+
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Trophy_zzzTrophyIDzzz_HaveNum, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                }
+            }
         }
+        else
+        {
 
-        yield break;
-    } // UnComplete
-    IEnumerator LoadStage_Cor()
-    {
-        // Cargold : 스테이지 데이터 불러오기
+        }
         
         yield break;
-    } // UnComplete
+    }
     IEnumerator LoadSkill_Cor()
     {
-        skillDataArr = new PlayerSkill_Data[10];
-        for (int i = 0; i < 10; i++)
+        if(isTest_Skill == false)
         {
-            skillDataArr[i].Init_Func(i);
-        }
-
-        for (int i = 0; i < skillDataArr.Length; i++)
-        {
-            if(skillDataArr[i].skillParentClass.unlockLevel <= stageID_Normal)
+            int _skillNum = DataBase_Manager.Instance.skillDataObjArr.Length;
+            skillDataArr = new PlayerSkill_Data[_skillNum];
+      
+            for (int i = 0; i < _skillNum; i++)
             {
-                skillDataArr[i].UnlockSkill_Func();
+                // 스킬 데이터 초기화
+                skillDataArr[i].Init_Func(i);
+                
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    // 스킬 해금
+                    if (skillDataArr[i].skillParentClass.unlockLevel <= (stageID_Normal + 1))
+                    {
+                        skillDataArr[i].UnlockSkill_Func();
+                    }
+
+                    // 스킬 레벨 불러오기
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, i);
+                    int _skillLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    LevelUpSkill_Func(i, _skillLevel);
+                }
+                else
+                {
+                    // 첫 스킬 해금
+                    if (i == 0)
+                    {
+                        skillDataArr[0].UnlockSkill_Func();
+                        
+                        selectSkillIDArr[0] = 0;
+                    }
+
+                    // 스킬 초기 레벨
+                    LevelUpSkill_Func(i, 1);
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1);
+                }
+            }
+
+            // 스킬 슬롯 불러오기
+            selectSkillIDArr = new int[5];
+            for (int i = 0; i < 5; i++)
+            {
+                if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
+                    int _slotSkillID = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                }
+                else
+                {
+                    if(i == 0)
+                    {
+                        selectSkillIDArr[i] = 0;
+
+                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
+                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                    }
+                    else
+                    {
+                        selectSkillIDArr[i] = -1;
+
+                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
+                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1);
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Test
+            for (int i = 0; i < test_SkillLevel.Length; i++)
+            {
+                if (0 < test_SkillLevel[i])
+                {
+                    UnlockSkill_Func(i);
+                    LevelUpSkill_Func(i, test_SkillLevel[i]);
+                }
             }
         }
 
-        // Test
-        for (int i = 0; i < test_SkillLevel.Length; i++)
-        {
-            if(0 < test_SkillLevel[i])
-            {
-                UnlockSkill_Func(i);
-                LevelUpSkill_Func(i, test_SkillLevel[i]);
-            }
-        }
-
-        yield break;
-    } // UnComplete
-    IEnumerator LoadDrink_Cor()
-    {
         yield break;
     }
-    IEnumerator LoadPackage_Cor()
+    IEnumerator LoadDrink_Cor()
     {
+        if(isTest_Drink == false)
+        {
+            int _drinkNum = DataBase_Manager.Instance.drinkDataArr.Length;
+            drinkDataArr = new PlayerDrink_Data[_drinkNum];
+            
+            for (int i = 0; i < _drinkNum; i++)
+            {
+                drinkDataArr[i].drinkID = i;
+                drinkDataArr[i].drinkType = (DrinkType)i;
+                drinkDataArr[i].isUse = false;
+
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    // 드링크 개수 불러오기
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, i);
+                    drinkDataArr[i].haveNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                }
+                else
+                {
+                    // 드링크 개수 불러오기
+                    drinkDataArr[i].haveNum = 0;
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                }
+            }
+        }
+        else
+        {
+
+        }
+        
+        yield break;
+    }
+    IEnumerator LoadStore_Cor()
+    {
+        if(isTest_Store == false)
+        {
+            if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+            {
+                // 가차박스 레벨 갱신
+                foodBoxLevel = ((int)((stageID_Special + 1) / 5)) + 1;
+            }
+            else
+            {
+                // 가차박스 초기 레벨
+                foodBoxLevel = 1;
+            }
+
+            // 패키지 구매 기록 불러오기
+            isPackageAlreadyBuyArr = new bool[4];
+            for (int i = 0; i < 4; i++)
+            {
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
+                {
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Store_zzzPackageIDzzz_IsBuyRecord, i);
+                    isPackageAlreadyBuyArr[i] = SaveSystem_Manager.Instance.LoadDataBool_Func(_loadType);
+                }
+                else
+                {
+                    isPackageAlreadyBuyArr[i] = false;
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Store_zzzPackageIDzzz_IsBuyRecord, i);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, false);
+                }
+            }
+        }
+        else
+        {
+
+        }
+
+        yield break;
+    }
+    IEnumerator LoadPlayData_Cor()
+    {
+        if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+        {
+            isBgmOn = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Player_BGM);
+            isSfxOn = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Player_SFX);
+        }
+        else
+        {
+            isBgmOn = true;
+            isSfxOn = true;
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Player_BGM, true);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Player_SFX, true);
+
+            SaveSystem_Manager.Instance.isContinuePlayer = true;
+        }
+        
         yield break;
     }
     
@@ -218,11 +572,15 @@ public class Player_Data : MonoBehaviour
         {
             goldValue += _value;
             playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Gold, goldValue);
         }
         else if (_wealthType == WealthType.Mineral)
         {
             mineralValue += _value;
             playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Mineral, mineralValue);
         }
     }
     public bool PayWealth_Func(WealthType _wealthType, int _value, bool _isJustCheck = false)
@@ -237,6 +595,8 @@ public class Player_Data : MonoBehaviour
                 {
                     goldValue -= _value;
                     playerWealthClass.PrintWealth_Func(WealthType.Gold, goldValue);
+
+                    SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Gold, goldValue);
                 }
 
                 return true;
@@ -256,6 +616,8 @@ public class Player_Data : MonoBehaviour
                 {
                     mineralValue -= _value;
                     playerWealthClass.PrintWealth_Func(WealthType.Mineral, mineralValue);
+
+                    SaveSystem_Manager.Instance.SaveData_Func(SaveType.Wealth_Mineral, mineralValue);
                 }
 
                 return true;
@@ -294,16 +656,34 @@ public class Player_Data : MonoBehaviour
         playerWealthClass.OnBattle_Func();
     }
     #endregion
+    #region Stage Group
+    public void SetStageID_Func(BattleType _battleType, int _stageID)
+    {
+        if(_battleType == BattleType.Normal)
+        {
+            stageID_Normal = _stageID;
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Normal, _stageID);
+        }
+        else if(_battleType == BattleType.Special)
+        {
+            stageID_Special = _stageID;
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Special, _stageID);
+        }
+    }
+    #endregion
     #region Party Group
     public void UnlockUnit_Func(int _unitID)
     {
         playerUnitDataArr[_unitID].isHave = true;
         Lobby_Manager.Instance.partySettingClass.UnlockCard_Func(_unitID);
-        //Debug.Log("Cargold : 유닛 해금 보상은 미구현됨, Unit ID : " + _unitID);
     }
     public void JoinParty_Func(int _partySlotId, int _unitId)
     {
         partyUnitIdArr[_partySlotId] = _unitId;
+
+        SavePartyData_Func(_partySlotId, _unitId);
     }
     public void DisbandParty_Func(int _partySlotId, int _unitId)
     {
@@ -319,15 +699,23 @@ public class Player_Data : MonoBehaviour
         {
             Debug.LogError("Bug : 파티해제하려는 유닛과 기존 파티 유닛이 서로 정보가 다릅니다.");
         }
+
+        SavePartyData_Func(_partySlotId, _unitId);
+    }
+    void SavePartyData_Func(int _partySlotId, int _unitId)
+    {
+        string _saveType =
+            SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, _partySlotId);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _unitId);
     }
     #endregion
     #region Unit Group
+
     #endregion
     #region Hero Group
     void Hero_FeedFood_Func(Food_Script _foodClass)
     {
-        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-        _playerFoodData.SetData_Func(_foodClass);
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodClass);
         heroFoodDataList.Add(_playerFoodData);
 
         SetCharDataByFood_Func(heroClass, _foodClass, true);
@@ -386,7 +774,7 @@ public class Player_Data : MonoBehaviour
         for (int i = 0; i < heroFoodDataList.Count; i++)
         {
             Food_Script _foodClass = heroFoodDataList[i].GetFoodClass_Func();
-            Player_Data.Instance.SetCharDataByFood_Func(heroClass, _foodClass, true, false);
+            SetCharDataByFood_Func(heroClass, _foodClass, true, false);
         }
     }
     void Hero_SetLevel_Trophy_Func()
@@ -440,26 +828,12 @@ public class Player_Data : MonoBehaviour
         return _inventoryFoodID;
     }
 
-    public void AddFood_Func(int _foodID, int _foodLevel = -1)
+    public void AddFood_Func(int _foodID, int _foodLevel = -1, FoodType _foodType = FoodType.Normal)
     {
-        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-
         if (_foodLevel == -1)
             _foodLevel = foodBoxLevel;
-        _playerFoodData.foodType = FoodType.Normal;
-        _playerFoodData.foodID = _foodID;
-        _playerFoodData.level = _foodLevel;
 
-        inventoryFoodDataList.Add(_playerFoodData);
-    }
-    public void AddSource_Func(int _sourceID, int _sourceLevel = -1)
-    {
-        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-
-        if (_sourceLevel == -1)
-            _sourceLevel = foodBoxLevel;
-        _playerFoodData.foodType = FoodType.Source;
-        _playerFoodData.foodID = _sourceID;
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodType, _foodID, _foodLevel);
 
         inventoryFoodDataList.Add(_playerFoodData);
     }
@@ -468,8 +842,7 @@ public class Player_Data : MonoBehaviour
         // 보상 또는 구매를 통해 인벤토리로...
         // 유닛 위장에서 인벤토리로...
 
-        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData();
-        _playerFoodData.SetData_Func(_foodClass);
+        PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodClass);
         
         inventoryFoodDataList.Add(_playerFoodData);
     }

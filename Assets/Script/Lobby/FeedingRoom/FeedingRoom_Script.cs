@@ -220,6 +220,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
     public void Dragging_Func(Food_Script _foodClass)
     {
+        if (_foodClass.foodType == FoodType.Stone) return;
+
         if(_foodClass.foodPlaceState == FoodPlaceState.Inventory)
         {
             if (selectedFoodClass == _foodClass || materialFoodClass == _foodClass)
@@ -299,7 +301,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 mainEffectText.text = TranslationSystem_Manager.Instance.Damage + " +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.HealthPoint:
-                mainEffectText.text = TranslationSystem_Manager.Instance.Health + " HP +" + _foodClass.GetMainEffectValue_Func() + "%";
+                mainEffectText.text = TranslationSystem_Manager.Instance.Health + " +" + _foodClass.GetMainEffectValue_Func() + "%";
                 break;
             case FoodEffect_Main.Gizzard:
                 mainEffectText.text = "Nothing On You, Baby ~";
@@ -520,6 +522,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
         Player_Data.Instance.UseMaterialFood_Func(_foodClass);
 
         RemoveFoodInInventory_Func(_foodClass);
+
+        ObjectPool_Manager.Instance.Free_Func(_foodClass.gameObject);
     }
     public void RemoveFoodInInventory_Func(Food_Script _foodClass)
     {

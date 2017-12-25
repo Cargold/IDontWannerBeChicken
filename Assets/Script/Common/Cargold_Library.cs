@@ -140,89 +140,101 @@ public static class Cargold_Library
     //        );              
     //}
     #endregion
-
     #region Log Group
-    public enum LogType
+    public enum ZLogType
     {
         Log,
         Warning,
         Error,
     }
-    public static void Log_Func(LogType _logType = LogType.Log)
+    public static void Log_Func(ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
                 Debug.Log("Test");
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }
-    public static void Log_Func(string content, LogType _logType = LogType.Log)
+    public static void Log_Func(string content, ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
                 Debug.Log("Test : " + content);
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }
-    public static void Log_Func(string name, string content, LogType _logType = LogType.Log)
+    public static void Log_Func(string name, bool _isBool, ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
+                Debug.Log("Test, name : " + _isBool);
+                break;
+            case ZLogType.Warning:
+                break;
+            case ZLogType.Error:
+                break;
+        }
+    }
+    public static void Log_Func(string name, string content, ZLogType _logType = ZLogType.Log)
+    {
+        switch (_logType)
+        {
+            case ZLogType.Log:
                 Debug.Log("Test, " + name + " : " + content);
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }
-    public static void Log_Func(int _id, LogType _logType = LogType.Log)
+    public static void Log_Func(int _id, ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
                 Debug.Log("Test : " + _id);
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }
-    public static void Log_Func(int _id, string content, LogType _logType = LogType.Log)
+    public static void Log_Func(int _id, string content, ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
                 Debug.Log("Test, " + _id + " : " + content);
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }
-    public static void Log_Func(string _name, int _value, LogType _logType = LogType.Log)
+    public static void Log_Func(string _name, int _value, ZLogType _logType = ZLogType.Log)
     {
         switch (_logType)
         {
-            case LogType.Log:
+            case ZLogType.Log:
                 Debug.Log("Test, " + _name + " : " + _value);
                 break;
-            case LogType.Warning:
+            case ZLogType.Warning:
                 break;
-            case LogType.Error:
+            case ZLogType.Error:
                 break;
         }
     }

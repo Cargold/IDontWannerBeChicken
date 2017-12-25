@@ -95,7 +95,10 @@ public class Result_Script : MonoBehaviour
                 btnText_Left.text = TranslationSystem_Manager.Instance.Ok;
                 btnText_Right.text = TranslationSystem_Manager.Instance.Raid;
                 
-                btnAD.SetActive(true);
+                if(Player_Data.Instance.isPackageAlreadyBuyArr[0] == false)
+                    btnAD.SetActive(true);
+                else
+                    btnAD.SetActive(false);
             }
             else if (_battleType == BattleType.Special)
             {
@@ -289,16 +292,29 @@ public class Result_Script : MonoBehaviour
     }
     public void WatchAD_Func()
     {
+        Cargold_Library.Log_Func("광고 기능 여기다가 붙이셈", Cargold_Library.ZLogType.Warning);
+
+        WatchAD_Clear_Func();
+    }
+    public void WatchAD_Clear_Func()
+    {
         int _adValue = battleManager.GetGoldByWatchedAD_Func();
         resultRewardTextArr[0].text = "골드 " + _adValue;
         rewardObjArr[0].transform.DOPunchScale(Vector3.one, 0.5f);
 
         btnAD.gameObject.SetActive(false);
     }
+    public void WatchAD_Fail_Func()
+    {
+
+    }
 
     public void Deactive_Func()
     {
         isActive = false;
+
+        Player_Data.Instance.heroClass.LobbyEnter_Func();
+
         this.gameObject.SetActive(false);
     }
 }

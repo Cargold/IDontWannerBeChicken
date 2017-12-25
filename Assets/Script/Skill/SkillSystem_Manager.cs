@@ -36,13 +36,6 @@ public class SkillSystem_Manager : MonoBehaviour
             skillBtnClassArr[i].Init_Func(this, i);
         }
 
-        yield break;
-    }
-
-    public void BattleStart_Func(bool _isManaDrinkOn)
-    {
-        isActive = true;
-
         for (int i = 0; i < 5; i++)
         {
             int _selectSkillID = Player_Data.Instance.selectSkillIDArr[i];
@@ -64,6 +57,13 @@ public class SkillSystem_Manager : MonoBehaviour
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
 
+        yield break;
+    }
+
+    public void BattleStart_Func(bool _isManaDrinkOn)
+    {
+        isActive = true;
+        
         mana_Recent = Player_Data.Instance.heroClass.manaStart;
 
         isManaDrinkOn = _isManaDrinkOn;
@@ -106,7 +106,6 @@ public class SkillSystem_Manager : MonoBehaviour
             if (mana_Recent < 0f)
             {
                 mana_Recent = 0f;
-                Debug.LogError("Bug : 아니 근데 이런 상황이 나올 순 있는 거임? 앞에서 체크하는데?");
             }
         }
         
@@ -137,6 +136,7 @@ public class SkillSystem_Manager : MonoBehaviour
     {
         isActive = false;
 
+        SetMana_Func(100, true);
         StopCoroutine("ManaRegen_Cor");
 
         for (int i = 0; i < 5; i++)

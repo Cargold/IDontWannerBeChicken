@@ -47,12 +47,15 @@ public class StoreRoom_Script : LobbyUI_Parent
     {
         this.gameObject.SetActive(true);
 
+        SoundSystem_Manager.Instance.PlayBGM_Func(SoundType.BGM_Store);
+
         OnTapBtn_Func(0);
     }
     public override void Exit_Func()
     {
+
+
         this.gameObject.SetActive(false);
-        
     }
     #endregion
     void Init_Func()
