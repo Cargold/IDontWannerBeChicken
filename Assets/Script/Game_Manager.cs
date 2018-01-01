@@ -55,6 +55,13 @@ public class Game_Manager : MonoBehaviour
     void InitMain_Func()
     {
         Instance = this;
+
+        Screen.SetResolution(1920, 1080, true);
+
+        //int _height = Screen.currentResolution.height;
+        //int _width = Screen.currentResolution.width;
+
+        //Debug.Log("Test : " + _width + ", " + _height);
     }
     
     IEnumerator Loading_Cor()

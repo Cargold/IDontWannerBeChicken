@@ -55,5 +55,8 @@ public struct PlayerSkill_Data
                 Debug.LogError("Bug : 스킬 레벨이 최대치에 도달했음에도 레벨업이 발생함");
             }
         }
+
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, skillID);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, skillLevel);
     }
 }

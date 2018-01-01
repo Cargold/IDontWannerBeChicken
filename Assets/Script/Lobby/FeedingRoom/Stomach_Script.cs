@@ -56,8 +56,8 @@ public class Stomach_Script : MonoBehaviour
             GameObject _foodObj = ObjectPool_Manager.Instance.Get_Func(_foodObjName);
             _foodObj.transform.position = _playerFoodDataArr[i].pos;
             _foodObj.transform.eulerAngles = _playerFoodDataArr[i].rot;
-            _foodObj.transform.localScale = Vector3.one;
             ReplaceStomach_Func(_foodObj.transform);
+            _foodObj.transform.localScale = Vector3.one;
 
             Food_Script _foodClass = _foodObj.GetComponent<Food_Script>();
             _foodClass.Init_Func
@@ -106,6 +106,8 @@ public class Stomach_Script : MonoBehaviour
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
 
+            if (_foodClass.foodType == FoodType.Stone) return;
+
             feedingRoomClass.SetFoodPlaceState_Func(_foodClass, FoodPlaceState.Inventory);
         }
     }
@@ -144,8 +146,21 @@ public class Stomach_Script : MonoBehaviour
     {
         return feedFoodClassList.Contains(_foodClass);
     }
+    public int GetStoneHaveNum_Func()
+    {
+        int _stoneNum = 0;
+        for (int i = 0; i < feedFoodClassList.Count; i++)
+        {
+            if(feedFoodClassList[i].foodType == FoodType.Stone)
+            {
+                _stoneNum++;
+            }
+        }
 
-    public void ReplaceStomach_Func(Transform _trf)
+        return _stoneNum;
+    }
+
+    void ReplaceStomach_Func(Transform _trf)
     {
         _trf.SetParent(foodGroupTrf);
     }

@@ -292,7 +292,7 @@ public class Result_Script : MonoBehaviour
     }
     public void WatchAD_Func()
     {
-        Cargold_Library.Log_Func("광고 기능 여기다가 붙이셈", Cargold_Library.ZLogType.Warning);
+        Debug.LogWarning("Warning : 광고 기능 여기다가 붙이셈");
 
         WatchAD_Clear_Func();
     }

@@ -61,6 +61,7 @@ public class DataBase_Manager : MonoBehaviour
         }
     }
     private Food_Data m_StoneData;
+    public int[] stoneRemoveCostArr;
 
     [Header("Sauce Data")]
     public GameObject[] sauceDataObjArr;

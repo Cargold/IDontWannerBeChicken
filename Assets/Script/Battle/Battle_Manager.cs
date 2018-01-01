@@ -124,7 +124,8 @@ public class Battle_Manager : MonoBehaviour
         CheckSpawnMonsterID_Func();
         DirectingStart_Func();
         CheckDrink_Func();
-        Player_Data.Instance.OnBattleWealthUI_Func();
+        if(false) Player_Data.Instance.OnBattleWealthUI_Func();
+        Player_Data.Instance.DeactiveWealthUI_Func();
 
         SoundSystem_Manager.Instance.PlayBGM_Func(Random.Range(2, 5));
     }
@@ -478,7 +479,11 @@ public class Battle_Manager : MonoBehaviour
             {
                 int _penalty = Player_Data.Instance.stageID_Special % 5;
 
-                Player_Data.Instance.stageID_Special -= _penalty;
+                int calcStageID = Player_Data.Instance.stageID_Special;
+
+                calcStageID -= _penalty;
+
+                Player_Data.Instance.SetStageID_Func(BattleType.Special, calcStageID);
             }
 
             // 5. 자연 파괴
@@ -687,12 +692,7 @@ public class Battle_Manager : MonoBehaviour
                 int _randTrophyID = Random.Range(0, _trophyDataNum);
                 while (true)
                 {
-                    int _amountLimit = DataBase_Manager.Instance.trophyDataArr[_randTrophyID].amountLimit;
-                    if (_amountLimit == 0)
-                    {
-                        break;
-                    }
-                    else if (Player_Data.Instance.trophyDataArr[_randTrophyID].haveNum < _amountLimit)
+                    if(Player_Data.Instance.AddTrophy_Func(_randTrophyID, false) == true)
                     {
                         break;
                     }
@@ -715,12 +715,11 @@ public class Battle_Manager : MonoBehaviour
         if (battleType == BattleType.Special)
         {
             int _calcValue = -1;
-            Cargold_Library.Log_Func("battleID", battleID);
+
             _calcValue = battleID % 5;
-            Cargold_Library.Log_Func("_calcValue", _calcValue);
+
             if (_calcValue == 0)
             {
-                Cargold_Library.Log_Func("Get");
                 Reward_Data _rewardData = new Reward_Data();
                 _rewardData.SetData_Func(RewardType.FoodBoxLevel, 0, 1);
                 rewardDataList.Add(_rewardData);

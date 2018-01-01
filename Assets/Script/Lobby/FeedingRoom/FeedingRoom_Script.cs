@@ -8,14 +8,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
 {
     public Inventory_Script inventoryClass;
     public Stomach_Script stomachClass;
+    public UpgradePlate_Script upgradePlateClass;
 
     public Text foodText;
     public Text mainEffectText;
     public Text subEffectText;
-    public GameObject guideInitObj;
-    public GameObject guideSelectObj;
-    public GameObject guideDragObj;
-    public Text upgradeCostText;
     public Image expMainImage;
     public Image expProgressImage;
 
@@ -54,8 +51,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     protected override void InitUI_Func()
     {
         inventoryClass.Init_Func(this);
-
         stomachClass.Init_Func(this);
+        upgradePlateClass.Init_Func(this);
 
         upgradeText.text = TranslationSystem_Manager.Instance.Upgrade;
         backText.text = TranslationSystem_Manager.Instance.Back;
@@ -67,7 +64,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         // 999 = Hero, Other = Unit
 
         this.gameObject.SetActive(true);
-
+        
         Player_Data.Instance.ActiveWealthUI_Func();
 
         selectUnitID = _referenceID;
@@ -83,6 +80,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
+        if (anim.isPlaying == true) return;
+ 
         selectedFoodClass = null;
 
         if(isActive == true)
@@ -108,32 +107,48 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             Debug.LogError("Bug : 피딩룸 닫은 후 파티세팅 또는 영웅관리 외에 다른 룸으로 가는 예외상황 발생");
         }
+
+        SaveFoodData_Func();
     }
     #endregion
     void InitSelect_Func()
     {
         feedingRoomState = FeedingRoomState.InitState;
-
-        guideInitObj.SetActive(true);
-
+        
         foodText.text = "";
         mainEffectText.text = "";
         subEffectText.text = "";
-        
-        guideSelectObj.SetActive(false);
 
         expMainImage.fillAmount = 0f;
         expProgressImage.fillAmount = 0f;
 
         selectPointingTrf.localPosition = Vector2.left * 1000f;
+
+        upgradePlateClass.SetInitState_Func();
+    }
+    void SaveFoodData_Func()
+    {
+        // Save Stomach
+        if(selectUnitID == 999)
+        {
+            Player_Data.Instance.Hero_SaveFeedData_Func();
+        }
+        else
+        {
+            Player_Data.Instance.SaveFeedData_Func(selectUnitID);
+        }
+
+        // Save Inventory
+        Player_Data.Instance.SaveInvenFoodData_Func();
     }
     #region Food Control Group
     public void PointDown_Func(Food_Script _foodClass)
     {
         // 여긴 쓰지 않는다.
         // 선택한 음식이, 선택음식을 바꾸기 위한 건지 재료음식을 선택한 건지 구분할 수 없음.
-    }
 
+        
+    }
     public void PointUp_Func(Food_Script _foodClass)
     {
         if (materialFoodClass == _foodClass)
@@ -160,10 +175,6 @@ public class FeedingRoom_Script : LobbyUI_Parent
     }
     void SelectNewFood_Func(Food_Script _foodClass)
     {
-        guideInitObj.SetActive(false);
-
-        PrintFoodInfo_Func(_foodClass);
-
         if(selectedFoodClass != null)
         {
             inventoryClass.SetRegroupTrf_Func(selectedFoodClass.transform);
@@ -177,8 +188,21 @@ public class FeedingRoom_Script : LobbyUI_Parent
         selectPointingTrf.SetParent(selectedFoodClass.transform);
         selectPointingTrf.localPosition = Vector3.zero;
 
-        guideSelectObj.SetActive(true);
-        guideDragObj.SetActive(false);
+        upgradePlateClass.SetDragState_Func();
+
+        PrintFoodInfo_Func(_foodClass);
+
+        if (_foodClass.foodType == FoodType.Stone)
+        {
+            SelectStone_Func(_foodClass);   
+        }
+    }
+    void SelectStone_Func(Food_Script _stoneClass)
+    {
+        int _stoneNum = stomachClass.GetStoneHaveNum_Func();
+
+        int _removeCost = DataBase_Manager.Instance.stoneRemoveCostArr[3 - _stoneNum];
+        upgradePlateClass.SetStoneRemove_Func(_removeCost, _stoneClass);
     }
     
     public void DragBegin_Func(Food_Script _foodClass)
@@ -329,9 +353,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
                 subEffectText.text = TranslationSystem_Manager.Instance.Damage + " -" + _foodClass.GetSubEffectValue_Func() + "%";
                 break;
         }
-
-        guideSelectObj.SetActive(true);
-        guideSelectObj.SetActive(false);
+        
+        upgradePlateClass.SetDragState_Func();
 
         float _expPer = _foodClass.remainExp / _foodClass.GetMaxExp_Func();
         expMainImage.fillAmount = _expPer;
@@ -349,6 +372,14 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             ReplaceInInventory_Func();
         }
+    }
+    public void RemoveStone_Func(Food_Script _stoneClass)
+    {
+        Player_Data.Instance.playerUnitDataArr[selectUnitID].RemoveStone_Func(_stoneClass);
+
+        stomachClass.OutFood_Func(_stoneClass);
+
+        upgradePlateClass.SetInitState_Func();
     }
 
     #region Char Upgrade Group
@@ -433,15 +464,10 @@ public class FeedingRoom_Script : LobbyUI_Parent
         }
 
         int _upgradeCost = selectedFoodClass.GetUpgradeCost_Func();
-        upgradeCostText.text = _upgradeCost.ToString();
         if (Player_Data.Instance.PayWealth_Func(WealthType.Gold, _upgradeCost, true) == false)
-        {
-            upgradeCostText.color = Color.red;
-        }
+            upgradePlateClass.SetUpgradeState_Func(_upgradeCost, Color.red);
         else
-        {
-            upgradeCostText.color = DataBase_Manager.Instance.textColor;
-        }
+            upgradePlateClass.SetUpgradeState_Func(_upgradeCost, DataBase_Manager.Instance.textColor);
     }
     private void UpgradeBegin_Func(Food_Script _foodClass)
     {
@@ -449,8 +475,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
         materialFoodClass = _foodClass;
 
-        guideSelectObj.SetActive(false);
-        guideDragObj.SetActive(true);
+        upgradePlateClass.SetDragState_Func();
 
         touchOffsetPos = Input.mousePosition - materialFoodClass.transform.position;
         
@@ -487,9 +512,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
             materialFoodClass = null;
         }
-
-        guideSelectObj.SetActive(true);
-        guideDragObj.SetActive(false);
+        
+        upgradePlateClass.SetDragState_Func();
 
         upgradeFocusImage.SetNaturalAlphaColor_Func(0f);
 

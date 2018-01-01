@@ -14,8 +14,22 @@ public class Player_Data : MonoBehaviour
 
     [Header("Stage")]
     [SerializeField] private bool isTest_Stage;
-    public int stageID_Normal;
-    public int stageID_Special;
+    public int stageID_Normal
+    {
+        get
+        {
+            return m_stageID_Normal;
+        }
+    }
+    private int m_stageID_Normal;
+    public int stageID_Special
+    {
+        get
+        {
+            return m_stageID_Special;
+        }
+    }
+    private int m_stageID_Special;
 
     [Header("Party")]
     [SerializeField] private bool isTest_Party;
@@ -27,7 +41,14 @@ public class Player_Data : MonoBehaviour
 
     [Header("Hero")]
     [SerializeField] private bool isTest_Hero;
-    public int heroLevel;
+    public int heroLevel
+    {
+        get
+        {
+            return m_heroLevel;
+        }
+    }
+    private int m_heroLevel;
     public float hero_healthPoint_RelativeLevel;
     public float hero_attackValue_RelativeLevel;
     public Player_Script heroClass;
@@ -116,13 +137,13 @@ public class Player_Data : MonoBehaviour
         {
             if(SaveSystem_Manager.Instance.isContinuePlayer == true)
             {
-                stageID_Normal = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Normal);
-                stageID_Special = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Special);
+                m_stageID_Normal = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Normal);
+                m_stageID_Special = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Stage_Special);
             }
             else
             {
-                stageID_Normal = 0;
-                stageID_Special = 0;
+                m_stageID_Normal = 0;
+                m_stageID_Special = 0;
 
                 SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Normal, 0);
                 SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Special, 0);
@@ -146,14 +167,14 @@ public class Player_Data : MonoBehaviour
                 if (SaveSystem_Manager.Instance.isContinuePlayer == true)
                 {
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
-                    partyUnitIdArr[i] = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    partyUnitIdArr[i] = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType); // Party_Member_zzzSlotIDzzz_UnitID
                 }
                 else
                 {
                     partyUnitIdArr[i] = -1;
 
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1); // Party_Member_zzzSlotIDzzz_UnitID
                 }
             }
         }
@@ -179,7 +200,7 @@ public class Player_Data : MonoBehaviour
                 if (SaveSystem_Manager.Instance.isContinuePlayer == true)
                 {
                     // 캐릭터 획득 여부 판단
-                    if (DataBase_Manager.Instance.GetUnitClass_Func(i).unlockLevel <= (stageID_Normal + 1))
+                    if (DataBase_Manager.Instance.GetUnitClass_Func(i).unlockLevel <= (m_stageID_Normal + 1))
                     {
                         _isUnlock = true;
                     }
@@ -198,13 +219,13 @@ public class Player_Data : MonoBehaviour
 
                     // 캐릭터 초기 레벨 저장
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_Level, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1); // Unit_zzzUnitIDzzz_Level
                 }
 
                 Unit_Script _unitClass = DataBase_Manager.Instance.GetUnitClass_Func(i);
 
                 playerUnitDataArr[i] = new PlayerUnit_ClassData();
-                yield return playerUnitDataArr[i].Init_Cor(_isUnlock, i, _unitLevel, _unitClass, true);
+                yield return playerUnitDataArr[i].Init_Cor(_isUnlock, i, _unitLevel, _unitClass);
             }
         }
         else
@@ -224,8 +245,8 @@ public class Player_Data : MonoBehaviour
             if (SaveSystem_Manager.Instance.isContinuePlayer == true)
             {
                 // 영웅 레벨 불러오기
-                heroLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Hero_Level);
-                Hero_SetLevel_Func(heroLevel, true);
+                m_heroLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Hero_Level);
+                Hero_SetLevel_Func(m_heroLevel, true);
 
                 // 영웅의 음식 정보 불러오기
                 int _feedFoodNum = SaveSystem_Manager.Instance.LoadDataInt_Func(SaveType.Hero_FoodHaveNum);
@@ -242,8 +263,8 @@ public class Player_Data : MonoBehaviour
             else
             {
                 // 영웅 초기 레벨 저장
-                heroLevel = 1;
-                Hero_SetLevel_Func(heroLevel, true);
+                m_heroLevel = 1;
+                Hero_SetLevel_Func(m_heroLevel, true);
                 SaveSystem_Manager.Instance.SaveData_Func(SaveType.Hero_Level, 1);
 
                 // 영웅 초기 모래주머니
@@ -292,7 +313,7 @@ public class Player_Data : MonoBehaviour
 
             heroFoodDataList.Add(_playerFoodClass);
 
-            SaveSystem_Manager.Instance.SaveData_Func(i, _playerFoodClass);
+            SaveSystem_Manager.Instance.SaveData_HeroFood_Func(i, _playerFoodClass);
         }
 
         SaveSystem_Manager.Instance.SaveData_Func(SaveType.Hero_FoodHaveNum, 3);
@@ -374,7 +395,7 @@ public class Player_Data : MonoBehaviour
                     trophyDataArr[i].haveNum = 0;
 
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Trophy_zzzTrophyIDzzz_HaveNum, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0); // Trophy_zzzTrophyIDzzz_HaveNum
                 }
             }
         }
@@ -387,87 +408,85 @@ public class Player_Data : MonoBehaviour
     }
     IEnumerator LoadSkill_Cor()
     {
-        if(isTest_Skill == false)
+        if (isTest_Skill == false)
         {
             int _skillNum = DataBase_Manager.Instance.skillDataObjArr.Length;
             skillDataArr = new PlayerSkill_Data[_skillNum];
-      
-            for (int i = 0; i < _skillNum; i++)
+
+            // 스킬 데이터 관리
+            for (int skillID = 0; skillID < _skillNum; skillID++)
             {
                 // 스킬 데이터 초기화
-                skillDataArr[i].Init_Func(i);
-                
+                skillDataArr[skillID].Init_Func(skillID);
+
                 if (SaveSystem_Manager.Instance.isContinuePlayer == true)
                 {
                     // 스킬 해금
-                    if (skillDataArr[i].skillParentClass.unlockLevel <= (stageID_Normal + 1))
+                    if (skillDataArr[skillID].skillParentClass.unlockLevel <= (m_stageID_Normal + 1))
                     {
-                        skillDataArr[i].UnlockSkill_Func();
+                        skillDataArr[skillID].UnlockSkill_Func();
                     }
 
                     // 스킬 레벨 불러오기
-                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, i);
-                    int _skillLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
-                    LevelUpSkill_Func(i, _skillLevel);
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, skillID);
+                    int _skillLevel = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType); // Skill_zzzSkillIDzzz_Level
+                    LevelUpSkill_Func(skillID, _skillLevel);
                 }
                 else
                 {
                     // 첫 스킬 해금
-                    if (i == 0)
+                    if (skillID == 0)
                     {
                         skillDataArr[0].UnlockSkill_Func();
-                        
+
                         selectSkillIDArr[0] = 0;
                     }
 
                     // 스킬 초기 레벨
-                    LevelUpSkill_Func(i, 1);
-                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1);
+                    LevelUpSkill_Func(skillID, 1);
+                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSkillIDzzz_Level, skillID);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 1); // Skill_zzzSkillIDzzz_Level
                 }
             }
 
-            // 스킬 슬롯 불러오기
             selectSkillIDArr = new int[5];
-            for (int i = 0; i < 5; i++)
+            for (int slotID = 0; slotID < 5; slotID++)
             {
-                if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+                string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, slotID);
+
+                if (SaveSystem_Manager.Instance.isContinuePlayer == true)
                 {
-                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
-                    int _slotSkillID = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    // 선택한 스킬 슬롯 불러오기
+
+                    int _selectSkillID = SaveSystem_Manager.Instance.LoadDataInt_Func(_saveType); // Skill_zzzSlotIDzzz_SkillID
+                    selectSkillIDArr[slotID] = _selectSkillID;
                 }
                 else
                 {
-                    if(i == 0)
-                    {
-                        selectSkillIDArr[i] = 0;
+                    // 초기 선택 스킬 슬롯
 
-                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
-                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                    if (0 < slotID)
+                    {
+                        selectSkillIDArr[slotID] = -1;
                     }
                     else
                     {
-                        selectSkillIDArr[i] = -1;
-
-                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, i);
-                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1);
+                        selectSkillIDArr[slotID] = 0;
                     }
+
+                    SaveSystem_Manager.Instance.SaveData_Func(_saveType, selectSkillIDArr[slotID]); // Skill_zzzSlotIDzzz_SkillID
                 }
             }
         }
         else
         {
-            // Test
-            for (int i = 0; i < test_SkillLevel.Length; i++)
-            {
-                if (0 < test_SkillLevel[i])
-                {
-                    UnlockSkill_Func(i);
-                    LevelUpSkill_Func(i, test_SkillLevel[i]);
-                }
-            }
+            //if (0 < test_SkillLevel[i])
+            //{
+            //    UnlockSkill_Func(i);
+            //    LevelUpSkill_Func(i, test_SkillLevel[i]);
+            //}
         }
-
+            
         yield break;
     }
     IEnumerator LoadDrink_Cor()
@@ -487,14 +506,14 @@ public class Player_Data : MonoBehaviour
                 {
                     // 드링크 개수 불러오기
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, i);
-                    drinkDataArr[i].haveNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
+                    drinkDataArr[i].haveNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType); // Drink_zzzDrinkIDzzz_HaveNum
                 }
                 else
                 {
-                    // 드링크 개수 불러오기
+                    // 초기 드링크 개수 저장
                     drinkDataArr[i].haveNum = 0;
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0); // Drink_zzzDrinkIDzzz_HaveNum
                 }
             }
         }
@@ -512,7 +531,7 @@ public class Player_Data : MonoBehaviour
             if(SaveSystem_Manager.Instance.isContinuePlayer == true)
             {
                 // 가차박스 레벨 갱신
-                foodBoxLevel = ((int)((stageID_Special + 1) / 5)) + 1;
+                foodBoxLevel = ((int)((m_stageID_Special + 1) / 5)) + 1;
             }
             else
             {
@@ -527,13 +546,13 @@ public class Player_Data : MonoBehaviour
                 if (SaveSystem_Manager.Instance.isContinuePlayer == true)
                 {
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Store_zzzPackageIDzzz_IsBuyRecord, i);
-                    isPackageAlreadyBuyArr[i] = SaveSystem_Manager.Instance.LoadDataBool_Func(_loadType);
+                    isPackageAlreadyBuyArr[i] = SaveSystem_Manager.Instance.LoadDataBool_Func(_loadType); // Store_zzzPackageIDzzz_IsBuyRecord
                 }
                 else
                 {
                     isPackageAlreadyBuyArr[i] = false;
                     string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Store_zzzPackageIDzzz_IsBuyRecord, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, false);
+                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, false); // Store_zzzPackageIDzzz_IsBuyRecord
                 }
             }
         }
@@ -661,13 +680,13 @@ public class Player_Data : MonoBehaviour
     {
         if(_battleType == BattleType.Normal)
         {
-            stageID_Normal = _stageID;
+            m_stageID_Normal = _stageID;
 
             SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Normal, _stageID);
         }
         else if(_battleType == BattleType.Special)
         {
-            stageID_Special = _stageID;
+            m_stageID_Special = _stageID;
 
             SaveSystem_Manager.Instance.SaveData_Func(SaveType.Stage_Special, _stageID);
         }
@@ -706,11 +725,14 @@ public class Player_Data : MonoBehaviour
     {
         string _saveType =
             SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, _partySlotId);
-        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _unitId);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _unitId); // Party_Member_zzzSlotIDzzz_UnitID
     }
     #endregion
     #region Unit Group
-
+    public void SaveFeedData_Func(int _unitID)
+    {
+        playerUnitDataArr[_unitID].SaveFeedData_Func();
+    }
     #endregion
     #region Hero Group
     void Hero_FeedFood_Func(Food_Script _foodClass)
@@ -738,7 +760,7 @@ public class Player_Data : MonoBehaviour
     public void Hero_SetLevel_Func(float _levelValue = -1f, bool _isInit = false)
     {
         if (_levelValue == -1f)
-            _levelValue = heroLevel;
+            _levelValue = m_heroLevel;
 
         Hero_SetLevel_InitUnitData_Func();
         Hero_SetLevel_Level_Func(_levelValue);
@@ -755,7 +777,8 @@ public class Player_Data : MonoBehaviour
     }
     void Hero_SetLevel_Level_Func(float _levelValue)
     {
-        heroLevel = (int)_levelValue;
+        m_heroLevel = (int)_levelValue;
+        SaveSystem_Manager.Instance.SaveData_Func(SaveType.Hero_Level, m_heroLevel);
         _levelValue -= 1f;
 
         float _levelPerBonus = DataBase_Manager.Instance.hero_LevelPerBonus;
@@ -800,18 +823,26 @@ public class Player_Data : MonoBehaviour
         heroClass.manaStart += _manaStart;
         heroClass.manaRegen += _manaRegen;
     }
+
+    public void Hero_SaveFeedData_Func()
+    {
+        int _heroFoodDataNum = heroFoodDataList.Count;
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Hero_FoodHaveNum, _heroFoodDataNum);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _heroFoodDataNum); // Hero_FoodHaveNum
+
+        for (int i = 0; i < _heroFoodDataNum; i++)
+        {
+            SaveSystem_Manager.Instance.SaveData_HeroFood_Func(i, heroFoodDataList[i]);
+        }
+    }
     #endregion
-    #region Food Group
+    #region Inventory Group
     public int GetHaveFoodID_Func(List<PlayerFood_ClassData> _charFoodDataList, Food_Script _foodClass)
     {
         int _inventoryFoodID = -1;
-
-        Debug.Log("Test, Food : " + _foodClass.name);
-
+        
         for (int i = 0; i < _charFoodDataList.Count; i++)
         {
-            Debug.Log("Test, " + i + " : " + _charFoodDataList[i].GetFoodClass_Func().name);
-
             if (_foodClass == _charFoodDataList[i].GetFoodClass_Func())
             {
                 _inventoryFoodID = i;
@@ -821,8 +852,8 @@ public class Player_Data : MonoBehaviour
 
         if (_inventoryFoodID == -1)
         {
-            Cargold_Library.Log_Func(_charFoodDataList.ToString());
             Debug.LogError("Bug : 음식을 찾을 수 없습니다.");
+            Debug.LogError("Bug : _charFoodDataList.ToString()");
         }
 
         return _inventoryFoodID;
@@ -830,21 +861,38 @@ public class Player_Data : MonoBehaviour
 
     public void AddFood_Func(int _foodID, int _foodLevel = -1, FoodType _foodType = FoodType.Normal)
     {
+        // 획득 경로1 : 전투 보상
+        // 획득 경로2 : 상점 구매
+
         if (_foodLevel == -1)
             _foodLevel = foodBoxLevel;
 
         PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodType, _foodID, _foodLevel);
+        int _invenFoodNum = inventoryFoodDataList.Count;
 
+        SaveSystem_Manager.Instance.SaveData_Func(SaveType.Inventory_FoodHaveNum, _invenFoodNum);
+        SaveSystem_Manager.Instance.SaveData_InvenFood_Func(_invenFoodNum, _playerFoodData);
+        
         inventoryFoodDataList.Add(_playerFoodData);
     }
     public void AddFoodInInventory_Func(Food_Script _foodClass)
     {
-        // 보상 또는 구매를 통해 인벤토리로...
         // 유닛 위장에서 인벤토리로...
 
         PlayerFood_ClassData _playerFoodData = new PlayerFood_ClassData(_foodClass);
         
         inventoryFoodDataList.Add(_playerFoodData);
+    }
+    public void SaveInvenFoodData_Func()
+    {
+        int _invenFoodNum = inventoryFoodDataList.Count;
+
+        SaveSystem_Manager.Instance.SaveData_Func(SaveType.Inventory_FoodHaveNum, _invenFoodNum);
+
+        for (int i = 0; i < _invenFoodNum; i++)
+        {
+            SaveSystem_Manager.Instance.SaveData_InvenFood_Func(i, inventoryFoodDataList[i]);
+        }
     }
     public void UseMaterialFood_Func(Food_Script _foodClass)
     {
@@ -1124,6 +1172,10 @@ public class Player_Data : MonoBehaviour
             if(_isReturnValue == true)
             {
                 trophyDataArr[_trophyID].haveNum++;
+
+                string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Trophy_zzzTrophyIDzzz_HaveNum, _trophyID);
+                SaveSystem_Manager.Instance.SaveData_Func(_saveType, trophyDataArr[_trophyID].haveNum);
+
                 SetTrophyEffect_Func(_trophyID);
             }
         }
@@ -1265,12 +1317,12 @@ public class Player_Data : MonoBehaviour
     }
     public void SelectSkill_Func(int _grade, bool _isUpSkill)
     {
-        selectSkillIDArr[_grade] = _grade * 2;
+        int _selectSkillID = _grade * 2;
+        if (_isUpSkill == false) _selectSkillID++;
+        selectSkillIDArr[_grade] = _selectSkillID;
 
-        if (_isUpSkill == false)
-        {
-            selectSkillIDArr[_grade]++;
-        }
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Skill_zzzSlotIDzzz_SkillID, _grade);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _selectSkillID);
     }
     public int GetSkillLevel_Func(int _skillID)
     {
@@ -1298,6 +1350,9 @@ public class Player_Data : MonoBehaviour
     public void AddDrink_Func(int _drinkID, int _addNum = 1)
     {
         drinkDataArr[_drinkID].haveNum += _addNum;
+
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, _drinkID);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, drinkDataArr[_drinkID].haveNum);
     }
     public bool SetDrinkUse_Func(DrinkType _drinkType, bool _isOn)
     {
@@ -1335,10 +1390,15 @@ public class Player_Data : MonoBehaviour
     public void UseDrink_Func(int _drinkID)
     {
         if (drinkDataArr[_drinkID].haveNum <= 0)
+        {
             Debug.LogError("Bug : 다음 드링크의 재고가 없습니다." + (DrinkType)_drinkID);
+        }
         else
         {
             drinkDataArr[_drinkID].haveNum--;
+
+            string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Drink_zzzDrinkIDzzz_HaveNum, _drinkID);
+            SaveSystem_Manager.Instance.SaveData_Func(_saveType, drinkDataArr[_drinkID].haveNum);
 
             if (drinkDataArr[_drinkID].haveNum <= 0)
             {
@@ -1367,15 +1427,20 @@ public class Player_Data : MonoBehaviour
         return drinkDataArr[_drinkID].haveNum;
     }
     #endregion
+    #region Store Group
     public void BuyPackage_Func(int _packageID)
     {
         if (isPackageAlreadyBuyArr[_packageID] == false)
         {
             isPackageAlreadyBuyArr[_packageID] = true;
+
+            string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Store_zzzPackageIDzzz_IsBuyRecord, _packageID);
+            SaveSystem_Manager.Instance.SaveData_Func(_saveType, true);
         }
         else if(isPackageAlreadyBuyArr[_packageID] == true)
         {
             Debug.LogError("Bug : 패키지 구매 이력이 이미 있습니다.");
         }
     }
+    #endregion
 }

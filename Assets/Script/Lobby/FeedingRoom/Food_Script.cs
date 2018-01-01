@@ -55,10 +55,21 @@ public class Food_Script : MonoBehaviour
         foodImage.alphaHitTestMinimumThreshold = 0.5f;
 
         thisRigid = this.GetComponent<Rigidbody2D>();
-        spriteRend= this.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        spriteRend = this.transform.GetChild(0).GetComponent<SpriteRenderer>();
         spriteRend.sprite = _foodData.foodSprite;
         thisCol = this.transform.GetChild(0).gameObject.GetComponent<PolygonCollider2D>();
-        thisCol.isTrigger = true;
+
+        if(foodType != FoodType.Stone)
+        {
+            thisCol.isTrigger = true;
+        }
+        else
+        {
+            thisRigid.bodyType = RigidbodyType2D.Kinematic;
+            thisCol.isTrigger = false;
+        }
+        
+        this.transform.localScale = Vector3.one;
         this.transform.GetChild(0).transform.localScale = Vector3.one * 85f;
     }
     public void Init_Func(FeedingRoom_Script _feedingRoomClass, FoodPlaceState _foodPlaceState, int _placeID, int _level, float _exp = 0f)
@@ -221,6 +232,9 @@ public class Food_Script : MonoBehaviour
         }
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
+            if (foodType == FoodType.Stone)
+                Debug.LogError("Bug : 모래주머니가 인벤토리로 이동되었습니다.");
+
             foodPlaceState = FoodPlaceState.Inventory;
 
             SetDragState_Func(false);
@@ -236,7 +250,9 @@ public class Food_Script : MonoBehaviour
     }
     public void SetDragState_Func(bool _isState)
     {
-        if(_isState == true)
+        //if (foodType == FoodType.Stone) return;
+
+        if (_isState == true)
         {
             if (isDragState == false)
             {
@@ -254,10 +270,14 @@ public class Food_Script : MonoBehaviour
     }
     public void SetVelocity_Func(Vector3 _forcePos)
     {
+        if (foodType == FoodType.Stone) return;
+
         thisRigid.velocity = (_forcePos - this.transform.position) * 10f;
     }
     public void SetRigid_Func(bool _isOn)
     {
+        if (foodType == FoodType.Stone) return;
+
         if(_isOn == true)
         {
             thisRigid.gravityScale = 500f;

@@ -66,6 +66,8 @@ public class PartySetting_Script : LobbyUI_Parent
     }
     public override void Exit_Func()
     {
+        // Btn Event
+
         isActive = false;
 
         Player_Data.Instance.ActiveWealthUI_Func();
@@ -260,7 +262,6 @@ public class PartySetting_Script : LobbyUI_Parent
                 else
                 {
                     // 파티에서 이탈하는 경우
-
                     disbandCardClass.OnEmpty_Func();
                     disbandCardClass = null;
 

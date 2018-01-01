@@ -15,7 +15,7 @@ public class PlayerUnit_ClassData
     [SerializeField]
     private List<PlayerFood_ClassData> playerFoodDataList;
 
-    public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass, bool _isFirstPlay)
+    public IEnumerator Init_Cor(bool _isUnlock, int _unitID, int _unitLevel, Unit_Script _unitClass)
     {
         isHave = _isUnlock;
         unitID = _unitID;
@@ -26,11 +26,11 @@ public class PlayerUnit_ClassData
         SetLevel_Func(_unitLevel, true);
 
         // 유닛의 음식 정보 불러오기
-        if (_isFirstPlay == false)
+        if (SaveSystem_Manager.Instance.isContinuePlayer == true)
         {
             string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, _unitID);
             int _feedFoodNum = SaveSystem_Manager.Instance.LoadDataInt_Func(_loadType);
-
+            
             for (int i = 0; i < _feedFoodNum; i++)
             {
                 SaveSystem_Manager.SaveFoodDataStr _saveFoodDataStr =
@@ -47,10 +47,13 @@ public class PlayerUnit_ClassData
         {
             int _feedFoodType = 2;
             int _feedFoodID = 0;
-            int _feedFoodLevel = 1;
+            int _feedFoodLevel = 999;
             float _feedFoodPosX = 0f;
             float _feedFoodPosY = 0f;
             float _feedFoodRotZ = 0f;
+
+            string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, _unitID);
+            SaveSystem_Manager.Instance.SaveData_Func(_saveType, 3);
 
             for (int i = 0; i < 3; i++)
             {
@@ -80,7 +83,7 @@ public class PlayerUnit_ClassData
 
                 playerFoodDataList.Add(_playerFoodClass);
 
-                SaveSystem_Manager.Instance.SaveData_Func(_unitID, i, _playerFoodClass);
+                SaveSystem_Manager.Instance.SaveData_UnitFood_Func(_unitID, i, _playerFoodClass);
 
                 yield return null;
             }
@@ -95,8 +98,6 @@ public class PlayerUnit_ClassData
         playerFoodDataList.Add(_playerFoodData);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, true);
-
-        SaveFeedNum_Func();
     }
     public void SetFoodData_Func(Food_Script _foodClass, int _haveFoodID = -1)
     {
@@ -111,15 +112,26 @@ public class PlayerUnit_ClassData
         playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
         Player_Data.Instance.SetCharDataByFood_Func(unitClass, _foodClass, false);
-
-        SaveFeedNum_Func();
     }
-    void SaveFeedNum_Func()
+    public void RemoveStone_Func(Food_Script _stoneClass)
     {
-        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, unitID);
-        SaveSystem_Manager.Instance.SaveData_Func(_saveType, playerFoodDataList.Count);
-    }
+        int _haveFoodID = Player_Data.Instance.GetHaveFoodID_Func(playerFoodDataList, _stoneClass);
+        playerFoodDataList.Remove(playerFoodDataList[_haveFoodID]);
 
+        ObjectPool_Manager.Instance.Free_Func(_stoneClass.gameObject);
+    }
+    public void SaveFeedData_Func()
+    {
+        int _playerFoodDataNum = GetPlayerFoodDataNum_Func();
+
+        string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_FoodHaveNum, unitID);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _playerFoodDataNum); // Unit_zzzUnitIDzzz_FoodHaveNum
+
+        for (int i = 0; i < _playerFoodDataNum; i++)
+        {
+            SaveSystem_Manager.Instance.SaveData_UnitFood_Func(unitID, i, playerFoodDataList[i]);
+        }
+    }
     public PlayerFood_ClassData[] GetPlayerFoodDataArr_Func()
     {
         return playerFoodDataList.ToArray();
@@ -140,7 +152,7 @@ public class PlayerUnit_ClassData
             Lobby_Manager.Instance.partySettingClass.PrintInfoUI_Func();
 
         string _saveType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Unit_zzzUnitIDzzz_Level, unitID);
-        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _levelValue);
+        SaveSystem_Manager.Instance.SaveData_Func(_saveType, _levelValue); // Unit_zzzUnitIDzzz_Level
     }
     void SetLevel_InitUnitData_Func()
     {

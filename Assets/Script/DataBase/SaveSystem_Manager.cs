@@ -23,7 +23,7 @@ public class SaveSystem_Manager : MonoBehaviour
     void CheckContinuePlayer_Func()
     {
         isContinuePlayer = LoadDataBool_Func(SaveType.Player_IsContinuePlayer);
-        Cargold_Library.Log_Func("isContinuePlayer", isContinuePlayer);
+        Debug.Log("Test, isContinuePlayer : " + isContinuePlayer);
 
         if (isContinuePlayer == false)
         {
@@ -49,6 +49,9 @@ public class SaveSystem_Manager : MonoBehaviour
             case SaveType.Unit_zzzUnitIDzzz_FoodHaveNum:
                 _rename = "Unit_" + _idArr[0] + "_FoodHaveNum";
                 break;
+            case SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodType:
+                _rename = "Unit_" + _idArr[0] + "_" + _idArr[1] + "_FoodType";
+                break;
             case SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodID:
                 _rename = "Unit_" + _idArr[0] + "_" + _idArr[1] + "_FoodID";
                 break;
@@ -66,6 +69,9 @@ public class SaveSystem_Manager : MonoBehaviour
                 break;
             case SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_RotZ:
                 _rename = "Unit_" + _idArr[0] + "_" + _idArr[1] + "_RotZ";
+                break;
+            case SaveType.Hero_zzzFoodHaveIDzzz_FoodType:
+                _rename = "Hero_" + _idArr[0] + "_FoodType";
                 break;
             case SaveType.Hero_zzzFoodHaveIDzzz_FoodID:
                 _rename = "Hero_" + _idArr[0] + "_FoodID";
@@ -85,6 +91,9 @@ public class SaveSystem_Manager : MonoBehaviour
             case SaveType.Hero_zzzFoodHaveIDzzz_RotZ:
                 _rename = "Hero_" + _idArr[0] + "_" + "_RotZ";
                 break;
+            case SaveType.Inventory_zzzFoodHaveIDzzz_FoodType:
+                _rename = "Inventory_" + _idArr[0] + "_FoodType";
+                break;
             case SaveType.Inventory_zzzFoodHaveIDzzz_FoodID:
                 _rename = "Inventory_" + _idArr[0] + "_FoodID";
                 break;
@@ -99,6 +108,9 @@ public class SaveSystem_Manager : MonoBehaviour
                 break;
             case SaveType.Skill_zzzSkillIDzzz_Level:
                 _rename = "Skill_" + _idArr[0] + "_Level";
+                break;
+            case SaveType.Skill_zzzSlotIDzzz_SkillID:
+                _rename = "Skill_" + _idArr[0] + "_SkillID";
                 break;
             case SaveType.Drink_zzzDrinkIDzzz_HaveNum:
                 _rename = "Drink_" + _idArr[0] + "_HaveNum";
@@ -163,8 +175,28 @@ public class SaveSystem_Manager : MonoBehaviour
 
         PlayerPrefs.SetString(_saveType, _saveValue);
     }
-    public void SaveData_Func(int _feedID, PlayerFood_ClassData _playerFoodData)
+    public void SaveData_InvenFood_Func(int _invenFoodID, PlayerFood_ClassData _playerFoodData)
     {
+        // Inventory Food
+
+        string _saveType = "";
+
+        _saveType = this.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodID, _invenFoodID);
+        SaveData_Func(_saveType, (int)_playerFoodData.foodType);
+
+        _saveType = this.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodID, _invenFoodID);
+        SaveData_Func(_saveType, _playerFoodData.foodID);
+
+        _saveType = this.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodLevel, _invenFoodID);
+        SaveData_Func(_saveType, _playerFoodData.level);
+
+        _saveType = this.SetRename_Func(SaveType.Inventory_zzzFoodHaveIDzzz_FoodExp, _invenFoodID);
+        SaveData_Func(_saveType, _playerFoodData.remainExp);
+    }
+    public void SaveData_HeroFood_Func(int _feedID, PlayerFood_ClassData _playerFoodData)
+    {
+        // Hero Feed Food
+
         string _loadType = SetRename_Func(SaveType.Hero_zzzFoodHaveIDzzz_FoodType, _feedID);
         SaveData_Func(_loadType, (int)_playerFoodData.foodType);
 
@@ -186,28 +218,32 @@ public class SaveSystem_Manager : MonoBehaviour
         _loadType = SetRename_Func(SaveType.Hero_zzzFoodHaveIDzzz_RotZ, _feedID);
         SaveData_Func(_loadType, _playerFoodData.rot.z);
     }
-    public void SaveData_Func(int _unitID, int _feedID, PlayerFood_ClassData _playerFoodData)
+    public void SaveData_UnitFood_Func(int _unitID, int _feedID, PlayerFood_ClassData _playerFoodData)
     {
-        string _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodType, _unitID, _feedID);
-        SaveData_Func(_loadType, (int)_playerFoodData.foodType);
+        // Unit Feed Food
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodID, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.foodID);
+        string _saveType = "";
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodLevel, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.level);
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodType, _unitID, _feedID);
+        SaveData_Func(_saveType, (int)_playerFoodData.foodType);
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodExp, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.remainExp);
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodID, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.foodID);
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_PosX, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.pos.x);
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodLevel, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.level);
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_PosY, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.pos.y);
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodExp, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.remainExp);
 
-        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_RotZ, _unitID, _feedID);
-        SaveData_Func(_loadType, _playerFoodData.rot.z);
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_PosX, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.pos.x);
+
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_PosY, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.pos.y);
+
+        _saveType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_RotZ, _unitID, _feedID);
+        SaveData_Func(_saveType, _playerFoodData.rot.z);
     }
     #endregion
     #region Load Group
@@ -241,9 +277,10 @@ public class SaveSystem_Manager : MonoBehaviour
     }
     public SaveFoodDataStr LoadDataUnitFood_Func(int _unitID, int _feedID)
     {
-        string _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodType, _unitID, _feedID);
+        string _loadType = "";
+
+        _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodType, _unitID, _feedID);
         int _feedFoodTypeID = LoadDataInt_Func(_loadType);
-        FoodType _feedFoodType = (FoodType)_feedFoodTypeID;
 
         _loadType = SetRename_Func(SaveType.Unit_zzzUnitIDzzz_zzzFoodHaveIDzzz_FoodID, _unitID, _feedID);
         int _feedFoodID = LoadDataInt_Func(_loadType);
@@ -264,7 +301,7 @@ public class SaveSystem_Manager : MonoBehaviour
         float _feedFoodRotZ = LoadDataFloat_Func(_loadType);
         
         SaveFoodDataStr _returnData = new SaveFoodDataStr();
-        _returnData.foodType = _feedFoodType;
+        _returnData.foodType = (FoodType)_feedFoodTypeID;
         _returnData.foodID = _feedFoodID;
         _returnData.foodLevel = _feedFoodLevel;
         _returnData.foodExp = _feedFoodExp;
@@ -317,5 +354,27 @@ public class SaveSystem_Manager : MonoBehaviour
         public float foodExp;
         public Vector2 foodPos;
         public Vector3 foodRot;
+    }
+
+    public struct PlayerPrefData
+    {
+        public string dataKey;
+        public string dataValue;
+
+        public void Save_Func(string _key, int _value)
+        {
+            dataKey = _key;
+            dataValue = _value.ToString();
+        }
+        public void Save_Func(string _key, float _value)
+        {
+            dataKey = _key;
+            dataValue = _value.ToString();
+        }
+        public void Save_Func(string _key, bool _value)
+        {
+            dataKey = _key;
+            dataValue = _value.ToString();
+        }
     }
 }

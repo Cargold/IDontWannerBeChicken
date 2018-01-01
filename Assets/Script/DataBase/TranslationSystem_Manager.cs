@@ -472,7 +472,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return pressToStartArr[languageTypeID];
         }
     }
-
     public string ChickenRestaurantArr2
     {
         get
@@ -480,7 +479,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return chickenRestaurantArr2[languageTypeID];
         }
     }
-
     public string MaterialFoodDesc
     {
         get
@@ -523,7 +521,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return tabBtnName4[languageTypeID];
         }
     }
-
     public string MineralDesc_0
     {
         get
@@ -531,7 +528,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return mineralDesc_0[languageTypeID];
         }
     }
-
     public string MineralDesc_1
     {
         get
@@ -539,7 +535,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return mineralDesc_1[languageTypeID];
         }
     }
-
     public string MineralDesc_2
     {
         get
@@ -547,7 +542,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return mineralDesc_2[languageTypeID];
         }
     }
-
     public string MineralDesc_3
     {
         get
@@ -555,7 +549,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return mineralDesc_3[languageTypeID];
         }
     }
-
     public string GoldDesc_0
     {
         get
@@ -563,7 +556,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return goldDesc_0[languageTypeID];
         }
     }
-
     public string GoldDesc_1
     {
         get
@@ -571,7 +563,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return goldDesc_1[languageTypeID];
         }
     }
-
     public string GoldDesc_2
     {
         get
@@ -579,7 +570,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return goldDesc_2[languageTypeID];
         }
     }
-
     public string GoldDesc_3
     {
         get
@@ -587,7 +577,6 @@ public class TranslationSystem_Manager : MonoBehaviour
             return goldDesc_3[languageTypeID];
         }
     }
-
     public string TrophyName
     {
         get
@@ -595,12 +584,25 @@ public class TranslationSystem_Manager : MonoBehaviour
             return trophyName[languageTypeID];
         }
     }
-
     public string GachaBox
     {
         get
         {
             return gachaBox[languageTypeID];
+        }
+    }
+    public string FeedingRoom_InitText
+    {
+        get
+        {
+            return feedingRoom_InitText[languageTypeID];
+        }
+    }
+    public string FeedingRoom_RemoveText
+    {
+        get
+        {
+            return feedingRoom_RemoveText[languageTypeID];
         }
     }
 
@@ -687,6 +689,8 @@ public class TranslationSystem_Manager : MonoBehaviour
     [TextArea] [SerializeField] private string[] tabBtnName4;
     [TextArea] [SerializeField] private string[] trophyName;
     [TextArea] [SerializeField] private string[] gachaBox;
+    [TextArea] [SerializeField] private string[] feedingRoom_InitText;
+    [TextArea] [SerializeField] private string[] feedingRoom_RemoveText;
 
     public void Init_Func()
     {

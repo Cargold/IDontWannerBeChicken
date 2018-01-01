@@ -332,6 +332,7 @@ public enum SaveType
     Drink_zzzDrinkIDzzz_HaveNum,
 
     Store_zzzPackageIDzzz_IsBuyRecord,
+    //Store_BoxLevel, 공식에 의해 계산됨
 
     Player_IsContinuePlayer,
     Player_zzzTutorialIDzzz_IsClear,

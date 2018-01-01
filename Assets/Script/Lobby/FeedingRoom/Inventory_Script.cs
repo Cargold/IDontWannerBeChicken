@@ -16,19 +16,13 @@ public class Inventory_Script : MonoBehaviour
     public Vector2 sortGapPos;
     public int axisXNum;
     public int inventoryFoodNumMax;
-
-    public Text dragGuideText;
     
     public void Init_Func(FeedingRoom_Script _feedingRoomClass)
     {
         feedingRoomClass = _feedingRoomClass;
 
-        upgradePlateClass.Init_Func(_feedingRoomClass);
         replaceColClass.Init_Func(_feedingRoomClass);
-
-        dragGuideText.text = TranslationSystem_Manager.Instance.FoodDragGuide;
     }
-
     public void Active_Func(int _selectUnitID)
     {
         SettingInventoryFood_Func();

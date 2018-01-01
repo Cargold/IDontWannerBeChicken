@@ -137,6 +137,8 @@ public class HeroManagement_Script : LobbyUI_Parent
     }
     public void SkillLevelUp_Func()
     {
+        // Btn Event
+
         int _skillID = selectCardClass.cardID;
         int _skillLevel = Player_Data.Instance.GetSkillLevel_Func(_skillID);
         if (_skillLevel < 20)
@@ -171,10 +173,16 @@ public class HeroManagement_Script : LobbyUI_Parent
     public void PrintCardInfo_Func(SkillCard_Script _selectCardClass = null)
     {
         if (_selectCardClass == null)
-            _selectCardClass = selectCardClass;
+        {
+            selectCardClass = skillCardClassArr[0];
+        }
+        else
+        {
+            selectCardClass = _selectCardClass;
+        }
 
-        skillInfoClass.PrintSelectCardInfo_Func(_selectCardClass);
-        PrintSkillUpCost_Func(_selectCardClass.cardID);
+        skillInfoClass.PrintSelectCardInfo_Func(selectCardClass);
+        PrintSkillUpCost_Func(selectCardClass.cardID);
     }
     void PrintSkillUpCost_Func(int _skillDataID)
     {
