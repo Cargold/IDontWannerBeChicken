@@ -58,6 +58,9 @@ public class UnitCard_Script : MonoBehaviour
 
     public void OnSelect_Func(bool _isTouchOn)
     {
+        if (_isTouchOn == true)
+            SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_btn_press);
+
         if (CardState.Active <= cardState)
             partySettingClass.SelectUnit_Func(this, _isTouchOn);
         else if (cardState == CardState.Lock)

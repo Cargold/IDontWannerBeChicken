@@ -19,4 +19,10 @@ public class Test_Script : MonoBehaviour
     {
         Debug.Log("Test : " + other.transform.position);
     }
+
+
+    public void Test_Func()
+    {
+        Debug.Log("Test");
+    }
 }

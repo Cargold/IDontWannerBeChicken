@@ -81,6 +81,10 @@ public class Character_Script : MonoBehaviour
 
     public bool isControlOut = false;
 
+    [Header("Sound Data")]
+    public SoundType[] sfxArr_Fire;
+    public SoundType[] sfxArr_Hitted;
+
     [System.Serializable]
     public struct KnockBackData
     {
@@ -489,6 +493,8 @@ public class Character_Script : MonoBehaviour
         if (0 < healthPoint_Recent)
         {
             CalcHP_Func();
+
+            SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Hitted);
         }
         else
         {
@@ -646,6 +652,8 @@ public class Character_Script : MonoBehaviour
                     Debug.LogError("Bug : 고정된 사거리 방식인 경우, 광역 공격만 가능합니다.");
                 }
             }
+
+            SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Fire);
         }
     }
     private void OnAttack_Func()

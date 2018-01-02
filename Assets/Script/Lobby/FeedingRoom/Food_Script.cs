@@ -182,10 +182,12 @@ public class Food_Script : MonoBehaviour
         return 1000;
     }
 
-    #region Event Group
+    #region Control Group
     public void PointDown_Func()
     {
         feedingRoomClass.PointDown_Func(this);
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_btn_press);
     }
     public void PointUp_Func()
     {

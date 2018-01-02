@@ -197,7 +197,8 @@ public class Player_Script : Character_Script
 
                     if (animator.GetBool("AttackReady") == true)
                     {
-                        SetState_Func(CharacterState.Attack);
+                        if(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") == false)
+                            SetState_Func(CharacterState.Attack);
                     }
                 }
             }
@@ -242,6 +243,8 @@ public class Player_Script : Character_Script
                 spawnShellClass.Init_Func(this, _sortingOrder);
 
                 spawnShellClass.OnAttack_Func();
+
+                SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Fire);
             }
             else
                 SetState_Func(CharacterState.Idle);

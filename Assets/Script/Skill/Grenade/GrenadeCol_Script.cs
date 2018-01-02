@@ -11,6 +11,8 @@ public class GrenadeCol_Script : MonoBehaviour
     public bool isActive;
     public CharEffectData effectData_Bomb;
 
+    public SoundType[] sfxArr_Bomb;
+
     public void Init_Func(Grenade_Script _grenadeClass)
     {
         grenadeClass = _grenadeClass;
@@ -50,6 +52,8 @@ public class GrenadeCol_Script : MonoBehaviour
         charClassList.Clear();
 
         effectData_Bomb.ActiveEffect_Func();
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
 
         Deactive_Func();
     }

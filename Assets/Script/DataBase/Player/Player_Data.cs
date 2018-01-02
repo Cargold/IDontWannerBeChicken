@@ -21,6 +21,7 @@ public class Player_Data : MonoBehaviour
             return m_stageID_Normal;
         }
     }
+    [SerializeField]
     private int m_stageID_Normal;
     public int stageID_Special
     {
@@ -29,6 +30,7 @@ public class Player_Data : MonoBehaviour
             return m_stageID_Special;
         }
     }
+    [SerializeField]
     private int m_stageID_Special;
 
     [Header("Party")]
@@ -48,6 +50,7 @@ public class Player_Data : MonoBehaviour
             return m_heroLevel;
         }
     }
+    [SerializeField]
     private int m_heroLevel;
     public float hero_healthPoint_RelativeLevel;
     public float hero_attackValue_RelativeLevel;
@@ -76,7 +79,14 @@ public class Player_Data : MonoBehaviour
     [SerializeField] private bool isTest_Store = false;
     public int foodBoxLevel;
     public bool[] isPackageAlreadyBuyArr;
-    
+
+    [Header("Tutorial")]
+    public bool isTutorial_BattleClear;
+    public bool isTutorial_PartySetting;
+    public bool isTutorial_Feeding;
+    public bool isTutorial_SpecialBattle;
+    public bool isTutorial_Museum;
+
     [Header("PlayerData")]
     public bool isBgmOn = false;
     public bool isSfxOn = false;
@@ -96,6 +106,7 @@ public class Player_Data : MonoBehaviour
         yield return LoadDrink_Cor();
         yield return LoadStore_Cor();
         yield return LoadPlayData_Cor();
+        yield return LoadTutorialData_Cor();
 
         yield break;
     }
@@ -563,6 +574,33 @@ public class Player_Data : MonoBehaviour
 
         yield break;
     }
+    IEnumerator LoadTutorialData_Cor()
+    {
+        if(SaveSystem_Manager.Instance.isContinuePlayer == true)
+        {
+            isTutorial_BattleClear = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_BattleClear);
+            isTutorial_PartySetting = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_PartySetting);
+            isTutorial_Feeding = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Feeding);
+            isTutorial_SpecialBattle = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_SpecialBattle);
+            isTutorial_Museum = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Museum);
+        }
+        else
+        {
+            isTutorial_BattleClear = false;     
+            isTutorial_PartySetting = false;    
+            isTutorial_Feeding = false;         
+            isTutorial_SpecialBattle = false;   
+            isTutorial_Museum = false;
+
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_BattleClear, false);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_PartySetting, false);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_Feeding, false);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_SpecialBattle, false);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_Museum, false);
+        }
+
+        yield break;
+    }
     IEnumerator LoadPlayData_Cor()
     {
         if(SaveSystem_Manager.Instance.isContinuePlayer == true)
@@ -583,7 +621,7 @@ public class Player_Data : MonoBehaviour
         
         yield break;
     }
-    
+
     #region Wealth Group
     public void AddWealth_Func(WealthType _wealthType, int _value)
     {
@@ -1442,5 +1480,8 @@ public class Player_Data : MonoBehaviour
             Debug.LogError("Bug : 패키지 구매 이력이 이미 있습니다.");
         }
     }
+    #endregion
+    #region Tutorial
+
     #endregion
 }

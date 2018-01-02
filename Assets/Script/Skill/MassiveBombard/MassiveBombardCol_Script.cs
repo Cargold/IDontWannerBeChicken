@@ -11,6 +11,8 @@ public class MassiveBombardCol_Script : MonoBehaviour
     public bool isActive;
     public CharEffectData effectData_Bomb;
 
+    public SoundType[] sfxArr_Bomb;
+
     public void Init_Func(MassiveBombard_Script _massiveBombardClass)
     {
         massiveBombardClass = _massiveBombardClass;
@@ -50,6 +52,8 @@ public class MassiveBombardCol_Script : MonoBehaviour
         charClassList.Clear();
 
         effectData_Bomb.ActiveEffect_Func();
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
 
         Deactive_Func();
     }

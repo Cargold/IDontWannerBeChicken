@@ -31,6 +31,8 @@ public class HealPack_Script : Skill_Parent
         healObj.transform.SetParent(playerTrf);
         healObj.transform.localPosition = Vector3.zero;
 
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Use);
+
         StartCoroutine(Healling_Cor());
     }
     IEnumerator Healling_Cor()

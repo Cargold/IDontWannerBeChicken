@@ -152,6 +152,8 @@ public class Result_Script : MonoBehaviour
             rewardObjArr[i].SetActive(true);
             rewardObjArr[i].transform.DOPunchScale(Vector3.one, 0.5f);
 
+            SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_UI_ItemAdded);
+
             yield return new WaitForSeconds(0.5f);
         }
     }

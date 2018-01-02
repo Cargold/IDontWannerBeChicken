@@ -338,4 +338,20 @@ public enum SaveType
     Player_zzzTutorialIDzzz_IsClear,
     Player_BGM,
     Player_SFX,
+
+    Tutorial_BattleClear,
+    Tutorial_PartySetting,
+    Tutorial_Feeding,
+    Tutorial_SpecialBattle,
+    Tutorial_Museum,
+}
+
+public enum TutorialType
+{
+    None = -1,
+    BattleClear,
+    PartySetting,
+    Feeding,
+    SpecialBattle,
+    Museum,
 }

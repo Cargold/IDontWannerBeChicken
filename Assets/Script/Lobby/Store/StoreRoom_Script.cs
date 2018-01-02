@@ -67,11 +67,11 @@ public class StoreRoom_Script : LobbyUI_Parent
         InitUIData_Func();
         InitGacha_Func();
 
-        //tabBtnTextArr[0].text = TranslationSystem_Manager.Instance.TabBtnName0;
-        //tabBtnTextArr[1].text = TranslationSystem_Manager.Instance.TabBtnName1;
-        //tabBtnTextArr[2].text = TranslationSystem_Manager.Instance.TabBtnName2;
-        //tabBtnTextArr[3].text = TranslationSystem_Manager.Instance.TabBtnName3;
-        //tabBtnTextArr[4].text = TranslationSystem_Manager.Instance.TabBtnName4;
+        tabBtnTextArr[0].text = TranslationSystem_Manager.Instance.TabBtnName0;
+        tabBtnTextArr[1].text = TranslationSystem_Manager.Instance.TabBtnName1;
+        tabBtnTextArr[2].text = TranslationSystem_Manager.Instance.TabBtnName2;
+        tabBtnTextArr[3].text = TranslationSystem_Manager.Instance.TabBtnName3;
+        tabBtnTextArr[4].text = TranslationSystem_Manager.Instance.TabBtnName4;
 
         resultMessageObj.SetActive(false);
     }
@@ -422,5 +422,15 @@ public class StoreRoom_Script : LobbyUI_Parent
         _drinkID += 12;
         
         return storeDataArr[_drinkID].goodsAmount;
+    }
+
+    public void OnButton_FaceBook_Func()
+    {
+        
+    }
+
+    public void OnButton_PlayStore_Func()
+    {
+
     }
 }

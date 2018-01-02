@@ -8,4 +8,9 @@ public class BattleStart_Script : MonoBehaviour
     {
         Battle_Manager.Instance.HeroEnterStage_Func();
     }
+
+    public void PlaySfx_Func()
+    {
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_btn_start1);
+    }
 }

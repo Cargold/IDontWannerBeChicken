@@ -35,5 +35,7 @@ public class ChickenHouse_Script : Character_Script
         contactCharClassList.Clear();
 
         Battle_Manager.Instance.GameClear_Func();
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_baseExplosion);
     }
 }

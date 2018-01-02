@@ -55,6 +55,8 @@ public class SoundSystem_Manager : MonoBehaviour
 
     public void PlayBGM_Func(SoundType _soundType)
     {
+        if (_soundType == SoundType.None) return;
+
         PlayBGM_Func((int)_soundType);
     }
     public void PlayBGM_Func(int _soundTypeID)
@@ -76,12 +78,22 @@ public class SoundSystem_Manager : MonoBehaviour
 
     public void PlaySFX_Func(SoundType _soundType)
     {
+        if (_soundType == SoundType.None) return;
+
         sfxSourceArr[currentSfxID].clip = audioClipArr[(int)_soundType];
 
         if(Player_Data.Instance.isSfxOn == true)
             sfxSourceArr[currentSfxID].Play();
 
         CheckPlaySfxID_Func();
+    }
+    public void PlaySFX_Func(SoundType[] _soundTypeArr)
+    {
+        if (_soundTypeArr.Length == 0) return;
+
+        int _randValue = Random.Range(0, _soundTypeArr.Length);
+
+        PlaySFX_Func(_soundTypeArr[_randValue]);
     }
 
     void CheckPlayBgmID_Func()

@@ -20,6 +20,8 @@ public class OverDrive_Script : Skill_Parent
     {
         isActive = true;
 
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Use);
+
         StartCoroutine(Overdrive_Cor());
     }
     IEnumerator Overdrive_Cor()

@@ -424,6 +424,8 @@ public class Battle_Manager : MonoBehaviour
 
         // 결과창 연출
 
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_gameover_unitKilled);
+
         if(_isVictory == true)
         {
             // 승리한 경우

@@ -48,7 +48,7 @@ public class SkillCard_Script : MonoBehaviour
             // 잠겨진 카드를 선택한 경우
 
             this.transform.DOPunchScale(Vector3.one * 0.1f, 0.5f, 15).OnComplete(ResetScale_Func);
-            heroManagementClass.PrintCardInfo_Func(this);
+            //heroManagementClass.PrintCardInfo_Func(this);
         }
         else if(isUnlock == true)
         {

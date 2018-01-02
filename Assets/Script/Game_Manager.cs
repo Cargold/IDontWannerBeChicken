@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Game_Manager : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class Game_Manager : MonoBehaviour
     public Enviroment_Manager enviromentClass;
     public SmoothFollow_Script mainCameraSmoothClass;
     public SoundSystem_Manager soundManager;
+    public TutorialSystem_Manager tutorialManager;
 
     public GameState gameState;
     public Button loadingBtn;
@@ -45,7 +47,8 @@ public class Game_Manager : MonoBehaviour
         yield return battleClass.Init_Cor();        // 7. 스폰매니저 등 전투 관련 데이터 활성화
         yield return skillSystemManager.Init_Cor(); // 8. 스킬매니저 초기화
         yield return enviromentClass.Init_Cor();    // 9. 환경 생성
-        yield return soundManager.Init_Cor();
+        yield return soundManager.Init_Cor();       // 10. 사운드매니저 초기화
+        yield return tutorialManager.Init_Cor();    // 11. 튜토리얼매니저 초기화
 
         yield return Loading_Cor();
 
@@ -68,9 +71,21 @@ public class Game_Manager : MonoBehaviour
     {
         loadingText.text = translationSystem.PressToStartArr;
 
+        AlphaOn_Func();
+
         loadingBtn.interactable = true;
 
         yield break;
+    }
+
+    void AlphaOn_Func()
+    {
+        loadingText.DOFade(0f, 0.5f).OnComplete(AlphaOff_Func);
+    }
+
+    void AlphaOff_Func()
+    {
+        loadingText.DOFade(1f, 0.5f).OnComplete(AlphaOn_Func);
     }
 
     public void BattleEnter_Func(BattleType _battleType, int _stageID_Next = -1)

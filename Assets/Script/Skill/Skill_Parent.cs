@@ -17,6 +17,8 @@ public abstract class Skill_Parent : MonoBehaviour
     public SkillVar[] skillVarArr;
     public bool isActive;
 
+    public SoundType[] sfxArr_Use;
+
     public abstract void Init_Func();
     public void BattleEnter_Func()
     {

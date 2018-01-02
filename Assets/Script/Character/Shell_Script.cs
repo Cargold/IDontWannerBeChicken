@@ -14,6 +14,9 @@ public class Shell_Script : MonoBehaviour
     public CharEffectData effectData_ArriveTarget;
     public CharEffectData effectData_Deactive;
 
+    public SoundType[] sfxArr_Fire;
+    public SoundType[] sfxArr_Bomb;
+
     public void Init_Func(Character_Script _charClass, int _sortingOrder)
     {
         charClass = _charClass;
@@ -33,6 +36,8 @@ public class Shell_Script : MonoBehaviour
             contactCharClassList = new List<Character_Script>();
             StartCoroutine(OnAttackByContact_Cor());
         }
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Fire);
     }
 
     public void OnAttack_Func()
@@ -49,6 +54,8 @@ public class Shell_Script : MonoBehaviour
         yield return new WaitForFixedUpdate();
 
         sphereCol.enabled = false;
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
     }
@@ -80,6 +87,8 @@ public class Shell_Script : MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
     }
 
     private void OnTriggerEnter(Collider collision)

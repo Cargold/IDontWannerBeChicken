@@ -40,6 +40,8 @@ public class GachaCard_Script : MonoBehaviour
     {
         isActive = true;
         this.transform.DOScale(Vector3.one, 0.25f).OnComplete(ResizeClear_Func);
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_btn_card);
     }
 
     void ResizeClear_Func()

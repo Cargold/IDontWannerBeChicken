@@ -38,6 +38,8 @@ public class BloodThirst_Script : Skill_Parent
         bloodThirstColClass.Active_Func();
 
         bloodThirstColClass.Haste_Func();
+
+        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Use);
     }
     public void SetTarget_Func(Character_Script[] _charClassArr)
     {
