@@ -69,6 +69,19 @@ public class Lobby_Manager : MonoBehaviour
 
         if(false) Player_Data.Instance.OnLobbyWealthUI_Func();
         Player_Data.Instance.ActiveWealthUI_Func();
+
+        if(Player_Data.Instance.isTutorial_BattleClear == false)
+        {
+            // 처음 접속한 유저
+
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.BattleClear, true);
+        }
+        else if (Player_Data.Instance.isTutorial_PartySetting == false)
+        {
+            // 1스테이지를 해본 유저
+
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.PartySetting, true);
+        }
     }
     public void Exit_Func(LobbyState _lobbyState)
     {
