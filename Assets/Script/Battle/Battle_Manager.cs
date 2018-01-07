@@ -124,7 +124,9 @@ public class Battle_Manager : MonoBehaviour
         CheckSpawnMonsterID_Func();
         DirectingStart_Func();
         CheckDrink_Func();
-        if(false) Player_Data.Instance.OnBattleWealthUI_Func();
+        OnSkillSystem_Ready_Func();
+
+        if (false) Player_Data.Instance.OnBattleWealthUI_Func();
         Player_Data.Instance.DeactiveWealthUI_Func();
 
         SoundSystem_Manager.Instance.PlayBGM_Func(Random.Range(2, 5));
@@ -234,13 +236,19 @@ public class Battle_Manager : MonoBehaviour
             }
         }
     }
+    void OnSkillSystem_Ready_Func()
+    {
+        SkillSystem_Manager.Instance.BattleEnter_Func();
+    }
     #endregion
     #region Play State
     public void HeroEnterStage_Func()
     {
         Lobby_Manager.Instance.mainLobbyClass.HidePartyMember_Func();
+
+        if (battleState == BattleState.Result) return;
         BattlePlay_Func();
-        OnSkillSystem_Func();
+        OnSkillSystem_ManaRegen_Func();
     }
     void BattlePlay_Func()
     {
@@ -268,10 +276,9 @@ public class Battle_Manager : MonoBehaviour
         StartCoroutine(OnBattleTimer_Cor());
         killCount = 0;
     }
-    void OnSkillSystem_Func()
+    void OnSkillSystem_ManaRegen_Func()
     {
-        bool _isManaDrinkOn = Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana);
-        SkillSystem_Manager.Instance.BattleStart_Func(_isManaDrinkOn);
+        SkillSystem_Manager.Instance.ManaRegen_Func();
     }
 
     void OnSpawnAllyUnit_Func()
@@ -416,16 +423,20 @@ public class Battle_Manager : MonoBehaviour
     }
     public void GameOver_Func(bool _isPause)
     {
+        // True : 일시정지 패배 선택
+        // False : 영웅 체력 0
+
+        if (m_BattleState == BattleState.Result) return;
+
         OnResult_Func(false);
     }
     void OnResult_Func(bool _isVictory)
     {
         if (m_BattleState == BattleState.Result) return;
 
-        // 결과창 연출
-
-        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_gameover_unitKilled);
-
+        // 상태 전환
+        m_BattleState = BattleState.Result;
+        
         if(_isVictory == true)
         {
             // 승리한 경우
@@ -459,6 +470,7 @@ public class Battle_Manager : MonoBehaviour
 
             // 1. 플레이어 사망
             playerClass.SetControlOut_Func(true);
+            playerClass.Die_Func();
 
             // 2. 아군 사망
             for (int i = 0; i < spawnClassArr_Ally.Length; i++)
@@ -539,7 +551,10 @@ public class Battle_Manager : MonoBehaviour
             }
         }
 
-        // 6. UI 출력
+        // 패배음 출력
+        SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_gameover_unitKilled);
+
+        // UI 출력
         StartCoroutine(ResultUI_Cor(_isVictory));
     }
     void GetRewardGold_Func(bool _isVictory)

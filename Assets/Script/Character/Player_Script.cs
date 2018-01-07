@@ -7,6 +7,7 @@ using DG.Tweening;
 public class Player_Script : Character_Script
 {
     [Header("Hero Data")]
+    public bool isInit = false;
     public int heroLevel;
     public Transform spawnPos;
     public GameObject rendGroupObj;
@@ -21,9 +22,7 @@ public class Player_Script : Character_Script
 
     public float limitPos_Left;
     public float limitPos_Right;
-
-    public float attackRate_Init;
-
+    
     [SerializeField]
     private int isControlOutCount_Player;
 
@@ -76,6 +75,8 @@ public class Player_Script : Character_Script
     }
     void InitPlayer_Func()
     {
+        isInit = true;
+
         base.Init_Func(GroupType.Ally);
 
         // Set Renderer
@@ -91,7 +92,7 @@ public class Player_Script : Character_Script
         isControlOutCount_Player = 0;
 
         // Set Attack
-        attackRate_Speed = attackRate_Init / attackRate_Max;
+        attackRate_AniSpeed = 1f;
         StartCoroutine(base.CheckAttackRate_Cor());
         StartCoroutine(this.CheckAttack_Cor());
     }
@@ -121,6 +122,8 @@ public class Player_Script : Character_Script
     }
     void Update()
     {
+        if (isInit == false) return;
+
         if(isControlOutCount_Player == 0)
         {
             if (Input.GetKey(KeyCode.A) == true)
@@ -141,6 +144,8 @@ public class Player_Script : Character_Script
     }
     void MovePlayer_Func()
     {
+        if (Battle_Manager.Instance.battleState == Battle_Manager.BattleState.Result) return;
+
         if (moveDir == MoveDir.Left)
         {
             SetState_Func(CharacterState.Move);
@@ -180,7 +185,8 @@ public class Player_Script : Character_Script
     {
         charState = CharacterState.Attack;
 
-        animator.speed = attackRate_Speed;
+        animator.speed = attackRate_AniSpeed;
+        Debug.Log("Test : " + animator.speed);
         animator.Play("Attack");
     }
     protected override IEnumerator CheckAttack_Cor()
@@ -210,6 +216,48 @@ public class Player_Script : Character_Script
             yield return null;
         }
     }
+    //public override void AniEvent_OnAttack_Func()
+    //{
+    //    // Call : Ani Event
+
+    //    if (GetCollideCheck_Func() == true)
+    //    {
+    //        // 목표대상이 사정권 내에 있다면
+
+    //        if (animator.GetBool("AttackReady") == true)
+    //        {
+    //            animator.SetBool("AttackReady", false);
+    //            attackRate_Recent = 0f;
+
+    //            attackValue_Calc = attackValue;
+    //            if (Random.Range(0f, 100f) < criticalPercent)
+    //            {
+    //                attackValue_Calc *= criticalBonus;
+    //            }
+
+    //            effectData_AttackAniOn.ActiveEffect_Func();
+
+    //            // 범위 공격이라는 전제...
+    //            Vector3 _contactCharPos = contactCharClassList[0].transform.position;
+    //            targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
+
+    //            GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
+    //            _spawnShellObj.transform.position = targetPos;
+
+    //            spawnShellClass = _spawnShellObj.GetComponent<Shell_Script>();
+    //            int _sortingOrder = (int)(this.transform.position.y * -100f) + 209;
+    //            spawnShellClass.Init_Func(this, _sortingOrder);
+
+    //            spawnShellClass.OnAttack_Func();
+
+    //            SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Fire);
+    //        }
+    //        else
+    //            SetState_Func(CharacterState.Idle);
+    //    }
+    //    else
+    //        SetState_Func(CharacterState.Idle);
+    //}
     public override void AniEvent_OnAttack_Func()
     {
         // Call : Ani Event
@@ -230,10 +278,9 @@ public class Player_Script : Character_Script
                 }
 
                 effectData_AttackAniOn.ActiveEffect_Func();
-                    
+
                 // 범위 공격이라는 전제...
-                Vector3 _contactCharPos = contactCharClassList[0].transform.position;
-                targetPos = new Vector3(_contactCharPos.x, 0f, 0f);
+                targetPos = new Vector3(shellPivotTrf.position.x, 0f, 0f);
 
                 GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
                 _spawnShellObj.transform.position = targetPos;
@@ -255,6 +302,8 @@ public class Player_Script : Character_Script
 
     public override void Damaged_Func(float _damageValue)
     {
+        if (charState == CharacterState.Die) return;
+
         if(0f < shieldValue_Recent)
         {
             _damageValue *= defenceValue_Calc;

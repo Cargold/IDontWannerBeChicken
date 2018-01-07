@@ -74,13 +74,13 @@ public class Lobby_Manager : MonoBehaviour
         {
             // 처음 접속한 유저
 
-            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.BattleClear, true);
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.BattleClear);
         }
         else if (Player_Data.Instance.isTutorial_PartySetting == false)
         {
             // 1스테이지를 해본 유저
 
-            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.PartySetting, true);
+            //TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.PartySetting);
         }
     }
     public void Exit_Func(LobbyState _lobbyState)

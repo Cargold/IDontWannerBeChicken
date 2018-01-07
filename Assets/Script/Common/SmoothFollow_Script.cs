@@ -19,7 +19,7 @@ public class SmoothFollow_Script : MonoBehaviour
     public float limitPos_Left;
     public float limitPos_Right;
 
-    private void Awake()
+    public void Init_Func()
     {
         thisTransform = this.transform;
         velocity = new Vector3(0.5f, 0.5f, 0.5f);
@@ -29,6 +29,8 @@ public class SmoothFollow_Script : MonoBehaviour
 
     void Update()
     {
+        //if (Player_Data.Instance.heroClass.isAlive == false) return;
+
         var newPos = Vector3.zero;
 
         if (isUseSmoothing)

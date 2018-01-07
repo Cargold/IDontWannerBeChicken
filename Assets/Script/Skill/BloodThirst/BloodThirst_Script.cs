@@ -12,8 +12,7 @@ public class BloodThirst_Script : Skill_Parent
     private Transform playerTrf;
     [SerializeField]
     private List<Character_Script> hasteCharList;
-    private List<float> hasteValueList;
-    
+
     public override void Init_Func()
     {
         hasteObj = this.transform.GetChild(0).gameObject;
@@ -23,7 +22,6 @@ public class BloodThirst_Script : Skill_Parent
         playerTrf = Player_Data.Instance.heroClass.transform;
 
         hasteCharList = new List<Character_Script>();
-        hasteValueList = new List<float>();
     }
     protected override void BattleEnterChild_Func()
     {
@@ -67,9 +65,7 @@ public class BloodThirst_Script : Skill_Parent
     {
         for (int i = 0; i < hasteCharList.Count; i++)
         {
-            hasteValueList.Add(hasteCharList[i].GetAttackSpeedMax_Func());
-            float _attackSpeed = hasteCharList[i].GetAttackSpeedMax_Func() / hasteData.recentValue;
-            hasteCharList[i].SetAttackSpeed_Func(_attackSpeed);
+            hasteCharList[i].SetAttackSpeed_Func(hasteData.recentValue);
         }
 
         yield return new WaitForSeconds(hasteTime);
@@ -77,11 +73,10 @@ public class BloodThirst_Script : Skill_Parent
         for (int i = 0; i < hasteCharList.Count; i++)
         {
             if(hasteCharList[i].isAlive == true)
-                hasteCharList[i].SetAttackSpeed_Func(hasteValueList[i]);
+                hasteCharList[i].SetAttackSpeed_Func(1f);
         }
 
         hasteCharList.Clear();
-        hasteValueList.Clear();
 
         hasteObj.transform.SetParent(this.transform);
         Deactive_Func();

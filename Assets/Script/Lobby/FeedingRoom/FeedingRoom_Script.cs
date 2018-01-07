@@ -87,6 +87,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         if(isActive == true)
         {
             stomachClass.Deactive_Func();
+            inventoryClass.Deactive_Func();
 
             anim["FeedingRoom"].time = anim["FeedingRoom"].length;
             anim["FeedingRoom"].speed = -1f;
@@ -604,6 +605,8 @@ public class FeedingRoom_Script : LobbyUI_Parent
             if (_setterFoodClass.foodPlaceState == FoodPlaceState.Inventory)
             {
                 _setterFoodClass.SetState_Func(FoodPlaceState.Dragging_Inven);
+
+                stomachClass.ReplaceStomach_Func(_setterFoodClass.transform);
             }
             else
             {
@@ -642,7 +645,7 @@ public class FeedingRoom_Script : LobbyUI_Parent
         {
             isActive = false;
 
-            inventoryClass.Deactive_Func();
+            //inventoryClass.Deactive_Func();
 
             this.gameObject.SetActive(false);
         }

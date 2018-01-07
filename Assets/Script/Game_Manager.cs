@@ -21,6 +21,7 @@ public class Game_Manager : MonoBehaviour
     public SmoothFollow_Script mainCameraSmoothClass;
     public SoundSystem_Manager soundManager;
     public TutorialSystem_Manager tutorialManager;
+    public SmoothFollow_Script cameraClass;
 
     public GameState gameState;
     public Button loadingBtn;
@@ -49,6 +50,8 @@ public class Game_Manager : MonoBehaviour
         yield return enviromentClass.Init_Cor();    // 9. 환경 생성
         yield return soundManager.Init_Cor();       // 10. 사운드매니저 초기화
         yield return tutorialManager.Init_Cor();    // 11. 튜토리얼매니저 초기화
+        cameraClass.enabled = true;
+        cameraClass.Init_Func();                    // 12. 카메라 초기화
 
         yield return Loading_Cor();
 

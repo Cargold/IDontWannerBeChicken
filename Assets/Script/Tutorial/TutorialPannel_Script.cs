@@ -16,12 +16,14 @@ public class TutorialPannel_Script : MonoBehaviour
 
         for (int i = 0; i < pannelImageArr.Length; i++)
         {
-            pannelImageArr[i].color.GetNaturalAlphaColor_Func(_tutorialManager.pannelAlphaValue);
+            pannelImageArr[i].SetNaturalAlphaColor_Func(_tutorialManager.pannelAlphaValue);
         }
     }
 
     public void OnTutorial_Func(TutorialSystem_Manager.TutorialData _tutoridalData)
     {
+        this.gameObject.SetActive(true);
+
         thisRTrf.anchoredPosition = _tutoridalData.pannelPos;
         thisRTrf.sizeDelta = _tutoridalData.pannelSize;
     }
@@ -29,5 +31,10 @@ public class TutorialPannel_Script : MonoBehaviour
     public void OnButton_Func()
     {
         tutorialManager.OnButton_Func();
+    }
+
+    public void Deactive_Func()
+    {
+        this.gameObject.SetActive(false);
     }
 }

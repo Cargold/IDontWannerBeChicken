@@ -163,6 +163,7 @@ public class ObjectPool_Manager : MonoBehaviour
         for (int i = 0; i < poolList.Count; i++)
         {
             ObjectPool objectPool = new ObjectPool();
+            objectPool.unusedList = new List<GameObject>();
             objectPool.source = poolList[i];
             objectPoolDic[poolList[i].name] = objectPool;
 
@@ -186,7 +187,7 @@ public class ObjectPool_Manager : MonoBehaviour
                 // 꺼져, 느려
                 //yield return null;
             }
-            
+
             yield return null;
         }
     }
@@ -209,6 +210,7 @@ public class ObjectPool_Manager : MonoBehaviour
             GameObject obj = pool.unusedList[0];            
             pool.unusedList.RemoveAt(0);
             obj.SetActive(true);
+
             return obj;
         }
         else // 사용 가능한 오브젝트가 없을때
@@ -237,12 +239,4 @@ public class ObjectPool_Manager : MonoBehaviour
             obj.transform.SetParent(pool.folder.transform);
         }
     }
-}
-
-public class ObjectPool
-{
-    public GameObject source;
-    public GameObject folder;
-
-    public List<GameObject> unusedList = new List<GameObject>();
 }

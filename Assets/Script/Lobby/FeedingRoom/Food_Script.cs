@@ -209,8 +209,6 @@ public class Food_Script : MonoBehaviour
     #region Stomach Group
     public void SetState_Func(FoodPlaceState _foodPlaceState)
     {
-        Debug.Log("Food State : " + _foodPlaceState);
-
         if (_foodPlaceState == FoodPlaceState.Stomach)
         {
             foodPlaceState = FoodPlaceState.Stomach;
@@ -219,7 +217,7 @@ public class Food_Script : MonoBehaviour
 
             SetRigid_Func(true);
 
-            foodImage.color = Color.red;
+            //foodImage.color = Color.red;
         }
         else if (_foodPlaceState == FoodPlaceState.Dragging_Inven)
         {
@@ -230,7 +228,7 @@ public class Food_Script : MonoBehaviour
             StopCoroutine("FeedingTimeCheck_Cor");
             StartCoroutine("FeedingTimeCheck_Cor");
 
-            foodImage.color = Color.yellow;
+            //foodImage.color = Color.yellow;
         }
         else if (_foodPlaceState == FoodPlaceState.Inventory)
         {
@@ -247,7 +245,7 @@ public class Food_Script : MonoBehaviour
 
             this.transform.rotation = Quaternion.identity;
 
-            foodImage.color = Color.green;
+            //foodImage.color = Color.green;
         }
     }
     public void SetDragState_Func(bool _isState)

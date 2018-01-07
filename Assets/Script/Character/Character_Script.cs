@@ -24,11 +24,13 @@ public class Character_Script : MonoBehaviour
     public float attackValue;
     [SerializeField]
     protected float attackValue_Calc;
-    public float attackRate_Speed;
+    public float attackRate_AniSpeed;
     [SerializeField]
     protected float attackRate_Max;
     [SerializeField]
     protected float attackRate_Recent;
+    [SerializeField]
+    protected float attackRate_AddValue;
     public float attackRange;
     public float moveSpeed;
     public float criticalPercent;
@@ -84,6 +86,7 @@ public class Character_Script : MonoBehaviour
     [Header("Sound Data")]
     public SoundType[] sfxArr_Fire;
     public SoundType[] sfxArr_Hitted;
+    public bool isTest;
 
     [System.Serializable]
     public struct KnockBackData
@@ -291,7 +294,7 @@ public class Character_Script : MonoBehaviour
     {
         if (charState != CharacterState.Attack)
         {
-            animator.speed = attackRate_Speed;
+            animator.speed = attackRate_AniSpeed;
             charState = CharacterState.Attack;
         }
     }
@@ -338,6 +341,7 @@ public class Character_Script : MonoBehaviour
     {
         animator.SetBool("AttackReady", true);
         attackRate_Recent = 0f;
+        attackRate_AddValue = 0.02f;
 
         while (isAlive == true)
         {
@@ -347,7 +351,7 @@ public class Character_Script : MonoBehaviour
                 {
                     if (attackRate_Recent < attackRate_Max)
                     {
-                        attackRate_Recent += 0.02f;
+                        attackRate_Recent += attackRate_AddValue;
                         yield return new WaitForFixedUpdate();
                     }
                     else
@@ -363,14 +367,14 @@ public class Character_Script : MonoBehaviour
     }
     public void SetAttackSpeed_Func(float _hasteValue)
     {
-        attackRate_Max = _hasteValue;
+        attackRate_AddValue = 0.02f * _hasteValue;
         if(unitID == 999)
-            attackRate_Speed = DataBase_Manager.Instance.heroAttackRate / attackRate_Max;
+            attackRate_AniSpeed = _hasteValue;
         else
-            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / attackRate_Max;
+            attackRate_AniSpeed = _hasteValue;
 
         if(charState == CharacterState.Attack)
-            animator.speed = attackRate_Speed;
+            animator.speed = attackRate_AniSpeed;
     }
     public float GetAttackSpeedMax_Func()
     {
@@ -486,6 +490,8 @@ public class Character_Script : MonoBehaviour
     }
     public virtual void Damaged_Func(float _damageValue)
     {
+        if (charState == CharacterState.Die) return;
+
         _damageValue *= defenceValue_Calc;
         
         healthPoint_Recent -= _damageValue;
@@ -519,8 +525,10 @@ public class Character_Script : MonoBehaviour
         charState = CharacterState.Die;
         contactCharClassList.Clear();
 
-        //StopCoroutine("Move_Cor");
         StopAllCoroutines();
+        
+        animator.SetBool("AttackReady", false);
+        animator.SetBool("OnContact", false);
 
         hpRend_Group.gameObject.SetActive(false);
 
@@ -529,10 +537,12 @@ public class Character_Script : MonoBehaviour
             effectData_Die.ActiveEffect_Func();
         }
 
-        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
-
         if(groupType == GroupType.Enemy)
             Battle_Manager.Instance.CountKillMonster_Func(unitID);
+
+        isTest = false;
+
+        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
     }
 
     #region Animation Group
@@ -561,7 +571,7 @@ public class Character_Script : MonoBehaviour
             else if(shootType == ShootType.Projectile)
             {
                 GameObject _spawnShellObj = ObjectPool_Manager.Instance.Get_Func(shellObj.name);
-                _spawnShellObj.transform.SetParent(shellPivotTrf);
+                _spawnShellObj.transform.SetParent(null);
                 _spawnShellObj.transform.position = shellPivotTrf.position;
                 _spawnShellObj.transform.rotation = shellPivotTrf.rotation;
 
@@ -592,46 +602,17 @@ public class Character_Script : MonoBehaviour
 
                 if (attackType == AttackType.Single)
                 {
-                    if (isContactAttackTiming == false)
-                    {
-                        bool _isRealShot = false;
-
-                        if (CheckTargetAlive_Func() == true)
-                        {
-                            // 목표대상이 살아있다면
-
-                            if (GetCollideCheck_Func() == true)
-                            {
-                                // 목표대상이 사정권 내에 있다면
-
-                                _isRealShot = true;
-                            }
-
-                            if (_isRealShot == true)
-                            {
-                                _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(OnAttack_Func);
-                            }
-                            else if (_isRealShot == false)
-                            {
-                                _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
-                            }
-                        }
-                    }
-                    else if(isContactAttackTiming == true)
-                    {
-                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
-                    }
+                    _spawnShellObj.transform
+                            .DOJump(targetPos, shootHeight, 1, shootTime)
+                            .SetEase(Ease.Linear)
+                            .OnComplete(spawnShellClass.Deactive_Func);
                 }
                 else if (attackType == AttackType.Plural)
                 {
-                    if (isContactAttackTiming == false)
-                    {
-                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.OnAttack_Func);
-                    }
-                    else if (isContactAttackTiming == true)
-                    {
-                        _spawnShellObj.transform.DOJump(targetPos, shootHeight, 1, shootTime).SetEase(Ease.Linear).OnComplete(spawnShellClass.Deactive_Func);
-                    }
+                    _spawnShellObj.transform
+                            .DOJump(targetPos, shootHeight, 1, shootTime)
+                            .SetEase(Ease.Linear)
+                            .OnComplete(spawnShellClass.OnAttack_Func);
                 }
             }
             else if(shootType == ShootType.FixedRange)
@@ -699,10 +680,6 @@ public class Character_Script : MonoBehaviour
                 _targetCharClass.CheckKnockBack_Func(knockBackData);
             }
         }
-    }
-    public void SelfDie_Func()
-    {
-        Die_Func(true);
     }
     #endregion
     #region Skill Group
@@ -804,4 +781,12 @@ public class Character_Script : MonoBehaviour
         animator.SetBool("AttackReady", false);
     }
     #endregion
+
+    public void Test_Func()
+    {
+        if (isTest == true)
+            Debug.LogError("Test");
+        else
+            isTest = true;
+    }
 }

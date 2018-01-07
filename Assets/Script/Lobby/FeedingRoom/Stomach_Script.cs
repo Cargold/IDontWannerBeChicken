@@ -88,7 +88,6 @@ public class Stomach_Script : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Enter");
         if (collision.tag == "Food")
         {
             Food_Script _foodClass = collision.transform.parent.GetComponent<Food_Script>();
@@ -99,7 +98,6 @@ public class Stomach_Script : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        Debug.Log("Exit : " + collision.transform.position);
         if (isActive == false) return;
 
         if (collision.tag == "Food")
@@ -115,7 +113,7 @@ public class Stomach_Script : MonoBehaviour
     {
         feedFoodClassList.Add(_foodClass);
 
-        ReplaceStomach_Func(_foodClass.transform);
+        //ReplaceStomach_Func(_foodClass.transform);
     }
     public void OutFood_Func(Food_Script _foodClass)
     {
@@ -160,7 +158,7 @@ public class Stomach_Script : MonoBehaviour
         return _stoneNum;
     }
 
-    void ReplaceStomach_Func(Transform _trf)
+    public void ReplaceStomach_Func(Transform _trf)
     {
         _trf.SetParent(foodGroupTrf);
     }

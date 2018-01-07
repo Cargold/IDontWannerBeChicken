@@ -16,7 +16,6 @@ public class SkillSystem_Manager : MonoBehaviour
     public bool isActive = false;
     public float mana_Max;
     public float mana_Recent;
-    public bool isManaDrinkOn = false;
 
     public Image manaImage;
 
@@ -35,6 +34,13 @@ public class SkillSystem_Manager : MonoBehaviour
         {
             skillBtnClassArr[i].Init_Func(this, i);
         }
+
+        yield break;
+    }
+    
+    public void BattleEnter_Func()
+    {
+        isActive = true;
 
         for (int i = 0; i < 5; i++)
         {
@@ -56,26 +62,18 @@ public class SkillSystem_Manager : MonoBehaviour
 
             skillBtnClassArr[i].Active_Func(playerSkillClassArr[i]);
         }
-
-        yield break;
     }
 
-    public void BattleStart_Func(bool _isManaDrinkOn)
+    public void ManaRegen_Func()
     {
-        isActive = true;
-        
-        mana_Recent = Player_Data.Instance.heroClass.manaStart;
-
-        isManaDrinkOn = _isManaDrinkOn;
-
         StartCoroutine("ManaRegen_Cor");
     }
-
     IEnumerator ManaRegen_Cor()
     {
+        mana_Recent = Player_Data.Instance.heroClass.manaStart;
         float _mana_RegenValue = Player_Data.Instance.heroClass.manaRegen;
 
-        if (isManaDrinkOn == true)
+        if (Player_Data.Instance.CheckDrinkUse_Func(DrinkType.Mana) == true)
         {
             float _drinkEffectValue = DataBase_Manager.Instance.drinkDataArr[(int)DrinkType.Mana].effectValue;
             _mana_RegenValue = _mana_RegenValue * _drinkEffectValue;

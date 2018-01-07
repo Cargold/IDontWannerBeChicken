@@ -174,6 +174,8 @@ public class BattleSpawn_Script : MonoBehaviour
     }
     private void OnSpawnAllyDirection_Func(Unit_Script _spawnUnitClass)
     {
+        _spawnUnitClass.Test_Func();
+
         Transform _spawnUnitTrf = _spawnUnitClass.transform;
 
         float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);
@@ -189,10 +191,10 @@ public class BattleSpawn_Script : MonoBehaviour
                 _spawnUnitTrf.position.y + spawnPosY_Calc - 3f,
                 0f
             );
-        
+
         _spawnUnitTrf.DOLocalJump(_landingPos, spawnJumpPower_Calc, 1, spawnJumpTime_Calc)
             .OnComplete(_spawnUnitClass.OnLanding_Func);
-        
+
         StartCoroutine(SpawnUnitRotate_Cor(_spawnUnitTrf, spawnJumpTime_Calc));
 
         _spawnUnitTrf.localScale = Vector3.zero;

@@ -57,7 +57,7 @@ public class Shell_Script : MonoBehaviour
 
         SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
 
-        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
+        Deactive_Func();
     }
     IEnumerator OnAttackByContact_Cor()
     {
@@ -79,6 +79,8 @@ public class Shell_Script : MonoBehaviour
 
                     sphereCol.enabled = false;
 
+                    SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
+
                     ObjectPool_Manager.Instance.Free_Func(this.gameObject);
 
                     yield break;
@@ -87,8 +89,6 @@ public class Shell_Script : MonoBehaviour
 
             yield return new WaitForFixedUpdate();
         }
-
-        SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Bomb);
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -122,10 +122,17 @@ public class Shell_Script : MonoBehaviour
     }
     public void Deactive_Func()
     {
+        if (this.gameObject.activeInHierarchy == false) return;
+
         effectData_Deactive.ActiveEffect_Func();
 
         sphereCol.enabled = false;
         StopAllCoroutines();
+
+        contactCharClassList.Clear();
+
+        charClass.spawnShellClass = null;
+
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
     }
 }

@@ -103,11 +103,11 @@ public class Unit_Script : Character_Script
 
         if(groupType == GroupType.Ally)
         {
-            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+            attackRate_AniSpeed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitClass.attackRate_Max;
         }
         else if (groupType == GroupType.Enemy)
         {
-            attackRate_Speed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitClass.attackRate_Max;
+            attackRate_AniSpeed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitClass.attackRate_Max;
         }
     }
     public void SetDataByPlayerUnit_Func(Unit_Data _unitData)
@@ -125,11 +125,11 @@ public class Unit_Script : Character_Script
 
         if (groupType == GroupType.Ally)
         {
-            attackRate_Speed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitData.attackRate;
+            attackRate_AniSpeed = DataBase_Manager.Instance.unitDataArr[unitID].attackRate / _unitData.attackRate;
         }
         else if (groupType == GroupType.Enemy)
         {
-            attackRate_Speed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitData.attackRate;
+            attackRate_AniSpeed = DataBase_Manager.Instance.monsterDataArr[unitID].attackRate / _unitData.attackRate;
         }
     }
     public void SetMutant_Func(MutantType _mutantType)
@@ -139,7 +139,7 @@ public class Unit_Script : Character_Script
         if (_mutantType == MutantType.Attack)
         {
             attackRate_Max *= 0.5f;
-            attackRate_Speed *= 0.5f;
+            attackRate_AniSpeed *= 0.5f;
             attackValue *= 2f;
 
             unitRend.color = new Color(1f, 0.5f, 0.5f, 1f);
@@ -200,26 +200,11 @@ public class Unit_Script : Character_Script
 
     public override void Die_Func(bool _isImmediate = false)
     {
-        isAlive = false;
         sphereCol.enabled = false;
-        charState = CharacterState.Die;
-        contactCharClassList.Clear();
-        
-        StopCoroutine("Move_Cor");
 
-        hpRend_Group.gameObject.SetActive(false);
-
-        if (_isImmediate == false)
-        {
-            effectData_Die.ActiveEffect_Func();
-        }
-        
-        if(spawnClass != null)
+        if (spawnClass != null)
             spawnClass.UnitDie_Func(this);
 
-        ObjectPool_Manager.Instance.Free_Func(this.gameObject);
-
-        if (groupType == GroupType.Enemy)
-            Battle_Manager.Instance.CountKillMonster_Func(unitID);
+        base.Die_Func(_isImmediate);
     }
 }
