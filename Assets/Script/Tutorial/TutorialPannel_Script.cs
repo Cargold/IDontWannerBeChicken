@@ -26,6 +26,11 @@ public class TutorialPannel_Script : MonoBehaviour
 
         thisRTrf.anchoredPosition = _tutoridalData.pannelPos;
         thisRTrf.sizeDelta = _tutoridalData.pannelSize;
+
+        if(_tutoridalData.isButtonDisable == false)
+            pannelImageArr[8].gameObject.SetActive(true);
+        else
+            pannelImageArr[8].gameObject.SetActive(false);
     }
 
     public void OnButton_Func()

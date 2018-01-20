@@ -339,6 +339,8 @@ public enum SaveType
     Player_BGM,
     Player_SFX,
 
+    Tutorial_FirstTutorial,
+    Tutorial_ControlGuide,
     Tutorial_BattleClear,
     Tutorial_PartySetting,
     Tutorial_Feeding,
@@ -349,6 +351,8 @@ public enum SaveType
 public enum TutorialType
 {
     None = -1,
+    FirstTutorial,
+    ControlGuide,
     BattleClear,
     PartySetting,
     Feeding,

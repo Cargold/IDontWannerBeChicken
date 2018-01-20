@@ -247,8 +247,21 @@ public class Battle_Manager : MonoBehaviour
         Lobby_Manager.Instance.mainLobbyClass.HidePartyMember_Func();
 
         if (battleState == BattleState.Result) return;
+
         BattlePlay_Func();
         OnSkillSystem_ManaRegen_Func();
+
+        if(Player_Data.Instance.isTutorial_ControlGuide == false)
+        {
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.ControlGuide);
+        }
+        else
+        {
+            if (Player_Data.Instance.isTutorial_SpecialBattle == false)
+            {
+                TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.SpecialBattle);
+            }
+        }
     }
     void BattlePlay_Func()
     {

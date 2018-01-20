@@ -223,6 +223,11 @@ public class PartySetting_Script : LobbyUI_Parent
             contactCardClass = null;
 
             selectCardClass = null;
+
+            if (Player_Data.Instance.isTutorial_PartySetting == false)
+            {
+                TutorialSystem_Manager.Instance.OnButton_Func();
+            }
         }
         else
         {

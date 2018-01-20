@@ -28,6 +28,11 @@ public class TrophyRoom_Script : LobbyUI_Parent
         anim.Play();
 
         Active_Func();
+
+        if(Player_Data.Instance.isTutorial_Museum == false)
+        {
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.Museum);
+        }
     }
     public override void Exit_Func()
     {

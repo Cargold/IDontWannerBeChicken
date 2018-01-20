@@ -64,23 +64,24 @@ public class Lobby_Manager : MonoBehaviour
     public void Enter_Func(LobbyState _lobbyState, int _referenceID = -1)
     {
         int _lobbyTypeID = (int)_lobbyState;
-        
+
         lobbyUIParentClassArr[_lobbyTypeID].Enter_Func(_referenceID);
 
-        if(false) Player_Data.Instance.OnLobbyWealthUI_Func();
+        if (false) Player_Data.Instance.OnLobbyWealthUI_Func();
         Player_Data.Instance.ActiveWealthUI_Func();
 
-        if(Player_Data.Instance.isTutorial_BattleClear == false)
+        if (Player_Data.Instance.isTutorial_FirstTutorial == false)
         {
             // 처음 접속한 유저
 
-            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.BattleClear);
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.FirstTutorial);
         }
-        else if (Player_Data.Instance.isTutorial_PartySetting == false)
+        else
         {
-            // 1스테이지를 해본 유저
-
-            //TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.PartySetting);
+            if (Player_Data.Instance.isTutorial_PartySetting == false)
+            {
+                TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.PartySetting);
+            }
         }
     }
     public void Exit_Func(LobbyState _lobbyState)

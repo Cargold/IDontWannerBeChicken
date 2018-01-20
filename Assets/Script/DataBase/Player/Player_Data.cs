@@ -81,6 +81,8 @@ public class Player_Data : MonoBehaviour
     public bool[] isPackageAlreadyBuyArr;
 
     [Header("Tutorial")]
+    public bool isTutorial_FirstTutorial;
+    public bool isTutorial_ControlGuide;
     public bool isTutorial_BattleClear;
     public bool isTutorial_PartySetting;
     public bool isTutorial_Feeding;
@@ -182,10 +184,20 @@ public class Player_Data : MonoBehaviour
                 }
                 else
                 {
-                    partyUnitIdArr[i] = -1;
+                    if(i == 0)
+                    {
+                        partyUnitIdArr[0] = 0;
 
-                    string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
-                    SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1); // Party_Member_zzzSlotIDzzz_UnitID
+                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, 0);
+                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, 0); // Party_Member_zzzSlotIDzzz_UnitID
+                    }
+                    else
+                    {
+                        partyUnitIdArr[i] = -1;
+
+                        string _loadType = SaveSystem_Manager.Instance.SetRename_Func(SaveType.Party_Member_zzzSlotIDzzz_UnitID, i);
+                        SaveSystem_Manager.Instance.SaveData_Func(_loadType, -1); // Party_Member_zzzSlotIDzzz_UnitID
+                    }
                 }
             }
         }
@@ -223,7 +235,7 @@ public class Player_Data : MonoBehaviour
                 else
                 {
                     // 첫 캐릭터 해금
-                    if (i == 0)
+                    if (i == 0 || i == 1)
                     {
                         _isUnlock = true;
                     }
@@ -361,7 +373,7 @@ public class Player_Data : MonoBehaviour
             }
             else
             {
-                SaveSystem_Manager.Instance.SaveData_Func(SaveType.Inventory_FoodHaveNum, 0);
+                AddFood_Func(0);
             }
         }
         else
@@ -578,20 +590,26 @@ public class Player_Data : MonoBehaviour
     {
         if(SaveSystem_Manager.Instance.isContinuePlayer == true)
         {
-            isTutorial_BattleClear = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_BattleClear);
-            isTutorial_PartySetting = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_PartySetting);
-            isTutorial_Feeding = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Feeding);
-            isTutorial_SpecialBattle = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_SpecialBattle);
-            isTutorial_Museum = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Museum);
+            isTutorial_FirstTutorial    = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_FirstTutorial);
+            isTutorial_ControlGuide     = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_ControlGuide);
+            isTutorial_BattleClear      = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_BattleClear);
+            isTutorial_PartySetting     = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_PartySetting);
+            isTutorial_Feeding          = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Feeding);
+            isTutorial_SpecialBattle    = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_SpecialBattle);
+            isTutorial_Museum           = SaveSystem_Manager.Instance.LoadDataBool_Func(SaveType.Tutorial_Museum);
         }
         else
         {
-            isTutorial_BattleClear = false;     
-            isTutorial_PartySetting = false;    
-            isTutorial_Feeding = false;         
-            isTutorial_SpecialBattle = false;   
-            isTutorial_Museum = false;
+            isTutorial_FirstTutorial    = false;
+            isTutorial_ControlGuide     = false;
+            isTutorial_BattleClear      = false;     
+            isTutorial_PartySetting     = false;    
+            isTutorial_Feeding          = false;         
+            isTutorial_SpecialBattle    = false;   
+            isTutorial_Museum           = false;
 
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_FirstTutorial, false);
+            SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_ControlGuide, false);
             SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_BattleClear, false);
             SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_PartySetting, false);
             SaveSystem_Manager.Instance.SaveData_Func(SaveType.Tutorial_Feeding, false);

@@ -628,6 +628,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
 
                 // 플레이어 데이터 수정
                 Player_Data.Instance.FeedFood_Func(selectUnitID, _setterFoodClass);
+
+                if(Player_Data.Instance.isTutorial_Feeding == false)
+                {
+                    TutorialSystem_Manager.Instance.OnButton_Func();
+                }
             }
             else
             {
@@ -659,6 +664,11 @@ public class FeedingRoom_Script : LobbyUI_Parent
             isActive = true;
 
             stomachClass.Active_Func(selectUnitID);
+
+            if (Player_Data.Instance.isTutorial_Feeding == false)
+            {
+                TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.Feeding);
+            }
         }
     }
     #endregion

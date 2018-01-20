@@ -136,10 +136,6 @@ public class Result_Script : MonoBehaviour
                     SetRewardUnit_Func(i, _rewardID, _rewardAmount);
                     break;
 
-                //case RewardType.PopulationPoint:
-                //    SetRewardPopulationPoint_Func(i, _rewardID, _rewardAmount);
-                //    break;
-
                 case RewardType.Skill:
                     SetRewardSkill_Func(i, _rewardID, _rewardAmount);
                     break;
@@ -155,6 +151,11 @@ public class Result_Script : MonoBehaviour
             SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_UI_ItemAdded);
 
             yield return new WaitForSeconds(0.5f);
+        }
+
+        if (Player_Data.Instance.isTutorial_BattleClear == false)
+        {
+            TutorialSystem_Manager.Instance.OnTutorial_Func(TutorialType.BattleClear);
         }
     }
     void SetRewardWealth_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
@@ -210,14 +211,6 @@ public class Result_Script : MonoBehaviour
 
         resultRewardTextArr[_rewardObjID].text = _unitData.charNameArr[TranslationSystem_Manager.Instance.languageTypeID];
     }
-    //void SetRewardPopulationPoint_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
-    //{
-    //    resultRewardImageArr[_rewardObjID].sprite = DataBase_Manager.Instance.populationPointSprite;
-    //    resultRewardImageArr[_rewardObjID].SetNativeSize();
-    //    resultRewardImageArr[_rewardObjID].rectTransform.localScale = Vector3.one * 2f;
-
-    //    resultRewardTextArr[_rewardObjID].text = "닭 한 마리 추가요!";
-    //}
     void SetRewardSkill_Func(int _rewardObjID, int _rewardID, int _rewardAmount)
     {
         Skill_Data _skillData = DataBase_Manager.Instance.skillDataArr[_rewardID];
