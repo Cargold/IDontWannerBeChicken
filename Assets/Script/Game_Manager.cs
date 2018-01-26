@@ -22,11 +22,12 @@ public class Game_Manager : MonoBehaviour
     public SoundSystem_Manager soundManager;
     public TutorialSystem_Manager tutorialManager;
     public SmoothFollow_Script cameraClass;
+    public GetTheMoney_Script getMoneyClass;
 
     public GameState gameState;
     public Button loadingBtn;
     public Text loadingText;
-
+    
     void Awake()
     {
         StartCoroutine(Init_Cor());
@@ -68,6 +69,8 @@ public class Game_Manager : MonoBehaviour
         //int _width = Screen.currentResolution.width;
 
         //Debug.Log("Test : " + _width + ", " + _height);
+
+        getMoneyClass.Init_Func();
     }
     
     IEnumerator Loading_Cor()
@@ -119,5 +122,7 @@ public class Game_Manager : MonoBehaviour
         directionClass.EnterUI_Func(GameState.Lobby);
         
         lobbyClass.Enter_Func(LobbyState.MainLobby);
+
+        getMoneyClass.CheckShowAD_Func();
     }
 }
