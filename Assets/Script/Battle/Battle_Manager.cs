@@ -385,37 +385,29 @@ public class Battle_Manager : MonoBehaviour
         killCount++;
     }
 
-    public void OnMoveLeft_Func(bool _isDown)
+    public void OnMoveLeft_Func()
     {
         // Call : Btn Event
 
         if(m_BattleState == BattleState.Play)
         {
-            if(_isDown == true)
-            {
-                playerClass.MoveLeft_Func();
-            }
-            else if(_isDown == false)
-            {
-                playerClass.MoveOver_Func();
-            }
+            playerClass.MoveLeft_Func();
         }
     }
-    public void OnMoveRight_Func(bool _isDown)
+    public void OnMoveRight_Func()
     {
         // Call : Btn Event
 
         if (m_BattleState == BattleState.Play)
         {
-            if (_isDown == true)
-            {
-                playerClass.MoveRight_Func();
-            }
-            else if (_isDown == false)
-            {
-                playerClass.MoveOver_Func();
-            }
+            playerClass.MoveRight_Func();
         }
+    }
+    public void OnMoveOver_Func()
+    {
+        // Call : Btn Event
+
+        playerClass.MoveOver_Func();
     }
 
     public void Pause_Func()

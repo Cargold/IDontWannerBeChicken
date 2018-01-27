@@ -56,6 +56,7 @@ public class Unit_Script : Character_Script
         unitRend = this.transform.Find("Pivot").Find("Image").GetComponent<SpriteRenderer>();
         unitRend.color = Color.white;
         unitRend.sprite = _unitData.unitSprite;
+        unitRendPos_Init = unitRend.transform.localPosition;
         if (groupType == GroupType.Enemy)
             unitRend.flipX = true;
         imagePivotAxisY = _unitData.imagePivotAxisY;

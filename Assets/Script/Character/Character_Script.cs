@@ -64,6 +64,7 @@ public class Character_Script : MonoBehaviour
     [Header("Rendering Data")]
     public Animator animator;
     public SpriteRenderer unitRend;
+    public Vector3 unitRendPos_Init;
     public SpriteRenderer[] unitRendArr;
     public SpriteRenderer shadowRend;
     public SpriteRenderer hpRend;
@@ -241,8 +242,11 @@ public class Character_Script : MonoBehaviour
         animator.speed = 1f;
         charState = CharacterState.Idle;
 
-        if (unitSprite != null)
-            unitRend.sprite = unitSprite;
+        //if (unitSprite != null)
+        //    unitRend.sprite = unitSprite;
+
+        unitRend.sprite = unitSprite;
+        unitRend.transform.localPosition = unitRendPos_Init;
     }
     protected virtual void Move_Func()
     {

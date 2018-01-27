@@ -25,9 +25,9 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
 
     public void Init_Func()
     {
-        if (SystemInfo.deviceType == DeviceType.Desktop) return;
-
         Instance = this;
+
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
 
         adCount = 0;
         
@@ -40,6 +40,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     #region AppLovin
     public void ShowAD_Func()
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         adCount++;
 
         if(adCount_Show <= adCount)
@@ -50,6 +52,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
 
             if (AppLovin.HasPreloadedInterstitial())
             {
+                Screen.autorotateToLandscapeLeft = true;
+
                 AppLovin.ShowInterstitial();
             }
             else
@@ -60,6 +64,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void ShowReward_Func()
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         if (AppLovin.IsIncentInterstitialReady())
         {
             AppLovin.ShowRewardedInterstitial();
@@ -73,6 +79,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void InitializePurchasing()
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         if (IsInitialized())
             return;
 
@@ -132,36 +140,40 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void BuyProductID_Func(int _buyID)
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         switch (_buyID)
         {
             case 0:
-                BuyProductID(productId_0);
-                break;
-            case 1:
-                BuyProductID(productId_1);
-                break;
-            case 2:
-                BuyProductID(productId_2);
-                break;
-            case 3:
-                BuyProductID(productId_3);
-                break;
-            case 16:
                 BuyProductID(mineral_0);
                 break;
-            case 17:
+            case 1:
                 BuyProductID(mineral_2);
                 break;
-            case 18:
+            case 2:
                 BuyProductID(mineral_3);
                 break;
-            case 19:
+            case 3:
                 BuyProductID(mineral_4);
+                break;
+            case 16:
+                BuyProductID(productId_0);
+                break;
+            case 17:
+                BuyProductID(productId_1);
+                break;
+            case 18:
+                BuyProductID(productId_2);
+                break;
+            case 19:
+                BuyProductID(productId_3);
                 break;
         }
     }
     public void BuyProductID(string productId)
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         try
         {
             if (IsInitialized())
@@ -190,6 +202,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void RestorePurchase()
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         if (!IsInitialized())
         {
             Debug.Log("RestorePurchases FAIL. Not initialized.");
@@ -214,6 +228,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void OnInitialized(IStoreController sc, IExtensionProvider ep)
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         Debug.Log("OnInitialized : PASS");
 
         storeController = sc;
@@ -221,6 +237,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void OnInitializeFailed(InitializationFailureReason reason)
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         Debug.Log("OnInitializeFailed InitializationFailureReason:" + reason);
     }
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
@@ -266,6 +284,8 @@ public class GetTheMoney_Script : MonoBehaviour, IStoreListener
     }
     public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason)
     {
+        if (SystemInfo.deviceType == DeviceType.Desktop) return;
+
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }
     #endregion

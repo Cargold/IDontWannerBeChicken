@@ -38,11 +38,7 @@ public class MainLobby_Script : LobbyUI_Parent
     {
         // Call : Btn Event . PartyRoom Exit
 
-        StartCoroutine(PrintPartyMember_Cor());
-    }
-    private IEnumerator PrintPartyMember_Cor()
-    {
-        yield return new WaitForFixedUpdate();
+        HidePartyMember_Func();
 
         for (int i = 0; i < 5; i++)
         {
@@ -67,14 +63,10 @@ public class MainLobby_Script : LobbyUI_Parent
     public void HidePartyMember_Func()
     {
         // Call : Btn Event . PartyRoom Enter
-
-        GameObject[] _partyMemberObjArr = partyMemberObjList.ToArray();
-
+        
         for (int i = 0; i < partyMemberObjList.Count; i++)
         {
             partyMemberObjList[i].GetComponent<Unit_Script>().Die_Func(true);
-
-            //ObjectPool_Manager.Instance.Free_Func(_partyMemberObjArr[i]);
         }
 
         partyMemberObjList.Clear();
