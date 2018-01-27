@@ -88,6 +88,7 @@ public class Character_Script : MonoBehaviour
     public SoundType[] sfxArr_Fire;
     public SoundType[] sfxArr_Hitted;
     public bool isTest;
+    public bool isNothing;
 
     [System.Serializable]
     public struct KnockBackData
@@ -146,6 +147,17 @@ public class Character_Script : MonoBehaviour
 
         // Init Var
         RestoreControl_Func();
+    }
+    public void SetSortingOrder_Func()
+    {
+        unitRend.sortingOrder = (int)(this.transform.position.y * -100f) + 210;
+
+        for (int i = 0; i < unitRendArr.Length; i++)
+        {
+            unitRendArr[i].sortingOrder = (int)(this.transform.position.y * -100f) + 209 - i;
+        }
+
+        shadowRend.sortingOrder = (int)(this.transform.position.y * -100f) + 200;
     }
     public void OnLanding_Func()
     {
@@ -237,6 +249,10 @@ public class Character_Script : MonoBehaviour
         }
     }
 
+    public void SetIdle_Func()
+    {
+        SetState_Func(CharacterState.Idle);
+    }
     protected virtual void Idle_Func()
     {
         animator.speed = 1f;

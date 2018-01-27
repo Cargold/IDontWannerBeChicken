@@ -55,6 +55,7 @@ public class MainLobby_Script : LobbyUI_Parent
 
                 Unit_Script _unitClass = _unitObj.GetComponent<Unit_Script>();
                 _unitClass.Init_Func(GroupType.Ally, true);
+                _unitClass.SetSortingOrder_Func();
 
                 partyMemberObjList.Add(_unitObj);
             }
