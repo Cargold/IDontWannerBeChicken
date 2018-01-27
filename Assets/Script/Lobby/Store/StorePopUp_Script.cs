@@ -46,17 +46,41 @@ public class StorePopUp_Script : MonoBehaviour
     }
     public void OnPayButton_Func()
     {
-        bool _isPayable
-            = Player_Data.Instance.PayWealth_Func(storeData.costType, storeData.costValue);
-        
-        if (_isPayable == true)
+        bool _isPayable = false;
+        bool _isPlayReal = false;
+
+        switch (storeData.storeDataID)
         {
-            storeRoomClass.BuyStoreGoods_Func(storeData.storeDataID);
-            Deactive_Func();
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+                _isPlayReal = true;
+                break;
         }
-        else if (_isPayable == false)
+
+        if(_isPlayReal == false)
         {
-            btnRTrf.DOPunchScale(Vector3.one * 0.1f, 0.25f).OnComplete(ResetCard_Func);
+            _isPayable
+                = Player_Data.Instance.PayWealth_Func(storeData.costType, storeData.costValue);
+
+            if (_isPayable == true)
+            {
+                storeRoomClass.BuyStoreGoods_Func(storeData.storeDataID);
+                Deactive_Func();
+            }
+            else if (_isPayable == false)
+            {
+                btnRTrf.DOPunchScale(Vector3.one * 0.1f, 0.25f).OnComplete(ResetCard_Func);
+            }
+        }
+        else
+        {
+            GetTheMoney_Script.Instance.BuyProductID_Func(storeData.storeDataID);
         }
     }
     void ResetCard_Func()

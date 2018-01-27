@@ -341,6 +341,16 @@ public class StoreRoom_Script : LobbyUI_Parent
     {
         gachaClass.Init_Func(this);
     }
+    void InitPackageBuyHistoryCheck_Func()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(Player_Data.Instance.isPackageAlreadyBuyArr[i] == true)
+            {
+                Destroy(storeListCardTrfArr[i+16].gameObject);
+            }
+        }
+    }
 
     public void OnTapBtn_Func(int _listID)
     {

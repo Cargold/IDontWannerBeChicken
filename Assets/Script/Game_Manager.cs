@@ -122,7 +122,5 @@ public class Game_Manager : MonoBehaviour
         directionClass.EnterUI_Func(GameState.Lobby);
         
         lobbyClass.Enter_Func(LobbyState.MainLobby);
-
-        getMoneyClass.CheckShowAD_Func();
     }
 }

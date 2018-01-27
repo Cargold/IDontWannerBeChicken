@@ -794,6 +794,8 @@ public class Battle_Manager : MonoBehaviour
         Game_Manager.Instance.LobbyEnter_Func();
 
         battleUITrf.DOSizeDelta(new Vector2(0f, 600f), 1f);
+
+        GetTheMoney_Script.Instance.ShowAD_Func();
     }
     void ClearBattleData_Func()
     {

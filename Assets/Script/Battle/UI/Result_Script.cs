@@ -287,11 +287,13 @@ public class Result_Script : MonoBehaviour
     }
     public void WatchAD_Func()
     {
-        Debug.LogWarning("Warning : 광고 기능 여기다가 붙이셈");
+        // Btn Event
+
+        GetTheMoney_Script.Instance.ShowReward_Func();
 
         WatchAD_Clear_Func();
     }
-    public void WatchAD_Clear_Func()
+    void WatchAD_Clear_Func()
     {
         int _adValue = battleManager.GetGoldByWatchedAD_Func();
         resultRewardTextArr[0].text = "골드 " + _adValue;
