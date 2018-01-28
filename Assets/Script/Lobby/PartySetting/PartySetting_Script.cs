@@ -72,6 +72,8 @@ public class PartySetting_Script : LobbyUI_Parent
 
         Player_Data.Instance.ActiveWealthUI_Func();
 
+        Lobby_Manager.Instance.mainLobbyClass.PrintPartyMember_Func();
+
         this.gameObject.SetActive(false);
     }
     #endregion

@@ -13,4 +13,9 @@ public class BattleStart_Script : MonoBehaviour
     {
         SoundSystem_Manager.Instance.PlaySFX_Func(SoundType.SFX_btn_start1);
     }
+
+    public void AniStart_Func()
+    {
+        Lobby_Manager.Instance.mainLobbyClass.SetSortingOrder_Func();
+    }
 }

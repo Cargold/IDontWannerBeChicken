@@ -119,8 +119,8 @@ public class Game_Manager : MonoBehaviour
     {
         gameState = GameState.Lobby;
         
-        directionClass.EnterUI_Func(GameState.Lobby);
-        
         lobbyClass.Enter_Func(LobbyState.MainLobby);
+        
+        directionClass.EnterUI_Func(GameState.Lobby);
     }
 }

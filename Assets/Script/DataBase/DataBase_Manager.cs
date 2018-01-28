@@ -38,7 +38,9 @@ public class DataBase_Manager : MonoBehaviour
     }
     private Unit_Data[] m_MonsterDataArr;
     public Dictionary<int, Unit_Script> monsterClassDic;
+    [HideInInspector]
     public float chickenHouseHp_Default;
+    public ChickenHouse_Script chickenHouseClass;
 
     [Header("Food Data")]
     public GameObject[] foodDataObjArr;
@@ -169,6 +171,8 @@ public class DataBase_Manager : MonoBehaviour
         }
 
         monsterClassDic = new Dictionary<int, Unit_Script>();
+
+        chickenHouseHp_Default = chickenHouseClass.healthPoint_Max;
 
         yield break;
     }

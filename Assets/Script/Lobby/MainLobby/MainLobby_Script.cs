@@ -34,9 +34,10 @@ public class MainLobby_Script : LobbyUI_Parent
         thisRTrf.DOSizeDelta(new Vector3(0f, 600f), 1f);
     }
     #endregion
-    private void PrintPartyMember_Func()
+    public void PrintPartyMember_Func()
     {
-        // Call : Btn Event . PartyRoom Exit
+        // Call : PartyRoom Exit
+        // Call : Battle Exit
 
         HidePartyMember_Func();
 
@@ -71,5 +72,12 @@ public class MainLobby_Script : LobbyUI_Parent
         }
 
         partyMemberObjList.Clear();
+    }
+    public void SetSortingOrder_Func()
+    {
+        for (int i = 0; i < partyMemberObjList.Count; i++)
+        {
+            partyMemberObjList[i].GetComponent<Unit_Script>().SetSortingOrder_Func();
+        }
     }
 }

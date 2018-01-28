@@ -702,8 +702,10 @@ public class TranslationSystem_Manager : MonoBehaviour
     {
         // 기기 언어 불러오기 ㄱㄱ
 
-        LanguageType _languageType;
-        //languageType = _languageType;
+        LanguageType _languageType= LanguageType.English;
+        Debug.Log("Test, Language : " + Application.systemLanguage);
+        if (Application.systemLanguage == SystemLanguage.Korean)
+            _languageType = LanguageType.Korea;
 
         languageTypeID = (int)languageType;
     }
