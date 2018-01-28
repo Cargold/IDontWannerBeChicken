@@ -18,6 +18,7 @@ public class TutorialSystem_Manager : MonoBehaviour
             Top,
             Center,
             Bottom,
+            Bottom_Right,
         }
 
         public ChatBoxPos chatBoxPos;
