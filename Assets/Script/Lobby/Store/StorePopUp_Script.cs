@@ -80,7 +80,15 @@ public class StorePopUp_Script : MonoBehaviour
         }
         else
         {
-            GetTheMoney_Script.Instance.BuyProductID_Func(storeData.storeDataID);
+            if(SystemInfo.deviceType == DeviceType.Desktop)
+            {
+                storeRoomClass.BuyStoreGoods_Func(storeData.storeDataID);
+                Deactive_Func();
+            }
+            else
+            {
+                GetTheMoney_Script.Instance.BuyProductID_Func(storeData.storeDataID);
+            }
         }
     }
     void ResetCard_Func()

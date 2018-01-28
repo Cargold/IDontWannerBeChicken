@@ -186,7 +186,6 @@ public class Player_Script : Character_Script
         charState = CharacterState.Attack;
 
         animator.speed = attackRate_AniSpeed;
-        Debug.Log("Test : " + animator.speed);
         animator.Play("Attack");
     }
     protected override IEnumerator CheckAttack_Cor()

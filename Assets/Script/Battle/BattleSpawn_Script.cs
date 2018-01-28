@@ -174,8 +174,6 @@ public class BattleSpawn_Script : MonoBehaviour
     }
     private void OnSpawnAllyDirection_Func(Unit_Script _spawnUnitClass)
     {
-        _spawnUnitClass.Test_Func();
-
         Transform _spawnUnitTrf = _spawnUnitClass.transform;
 
         float spawnPosX_Calc = Random.Range(-battleManagerClass.spawnPosX_Range, battleManagerClass.spawnPosX_Range);

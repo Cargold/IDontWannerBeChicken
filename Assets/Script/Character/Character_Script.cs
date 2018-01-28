@@ -258,11 +258,9 @@ public class Character_Script : MonoBehaviour
         animator.speed = 1f;
         charState = CharacterState.Idle;
 
-        //if (unitSprite != null)
-        //    unitRend.sprite = unitSprite;
-
         unitRend.sprite = unitSprite;
         unitRend.transform.localPosition = unitRendPos_Init;
+        unitRend.transform.localEulerAngles = Vector3.zero;
     }
     protected virtual void Move_Func()
     {
@@ -542,6 +540,7 @@ public class Character_Script : MonoBehaviour
     public virtual void Die_Func(bool _isImmediate = false)
     {
         isAlive = false;
+        SetState_Func(CharacterState.Idle);
         charState = CharacterState.Die;
         contactCharClassList.Clear();
 
@@ -559,8 +558,6 @@ public class Character_Script : MonoBehaviour
 
         if(groupType == GroupType.Enemy)
             Battle_Manager.Instance.CountKillMonster_Func(unitID);
-
-        isTest = false;
 
         ObjectPool_Manager.Instance.Free_Func(this.gameObject);
     }
@@ -655,6 +652,11 @@ public class Character_Script : MonoBehaviour
             }
 
             SoundSystem_Manager.Instance.PlaySFX_Func(sfxArr_Fire);
+        }
+        else
+        {
+            // AttackReady 상태이기 때문에 공격 모션을 취하는 중임.
+            // 고로 이곳으로 진입할 로직은 불가능함
         }
     }
     private void OnAttack_Func()
@@ -801,12 +803,4 @@ public class Character_Script : MonoBehaviour
         animator.SetBool("AttackReady", false);
     }
     #endregion
-
-    public void Test_Func()
-    {
-        if (isTest == true)
-            Debug.LogError("Test");
-        else
-            isTest = true;
-    }
 }
